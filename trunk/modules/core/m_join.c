@@ -41,6 +41,7 @@
 
 static int m_join(struct Client *, struct Client *, int, const char **);
 static int ms_join(struct Client *, struct Client *, int, const char **);
+static int mc_sjoin(struct Client *, struct Client *, int, const char **);
 static int ms_sjoin(struct Client *, struct Client *, int, const char **);
 
 struct Message join_msgtab = {
@@ -50,7 +51,7 @@ struct Message join_msgtab = {
 
 struct Message sjoin_msgtab = {
 	"SJOIN", 0, 0, 0, MFLG_SLOW,
-	{mg_unreg, mg_ignore, mg_ignore, {ms_sjoin, 0}, mg_ignore, mg_ignore}
+	{mg_unreg, mg_ignore, {mc_sjoin, 0}, {ms_sjoin, 0}, mg_ignore, mg_ignore}
 };
 
 mapi_clist_av1 join_clist[] = { &join_msgtab, &sjoin_msgtab, NULL };
@@ -276,7 +277,11 @@ m_join(struct Client *client_p, struct Client *source_p, int parc, const char *p
 				      ":%s JOIN %ld %s +",
 				      use_id(source_p), (long)chptr->channelts, chptr->chname);
 
-			sendto_server(client_p, chptr, NOCAPS, CAP_TS6,
+			sendto_server(client_p, chptr, CAP_SSJOIN, CAP_TS6,
+				      ":%s SJOIN %ld %s",
+				      source_p->name, (long)chptr->channelts, chptr->chname);
+
+			sendto_server(client_p, chptr, NOCAPS, CAP_TS6 | CAP_SSJOIN,
 				      ":%s SJOIN %ld %s + :%s",
 				      me.name, (long)chptr->channelts,
 				      chptr->chname, source_p->name);
@@ -405,6 +410,98 @@ ms_join(struct Client *client_p, struct Client *source_p, int parc, const char *
 	return 0;
 }
 
+/*
+ * mc_sjoin
+ *
+ * inputs	-
+ * output	- none
+ * side effects	- handles SJOINs sent by remote clients.
+ */
+static int
+mc_sjoin(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
+{
+	struct Channel *chptr;
+	static struct Mode mode;
+	time_t oldts;
+	time_t newts;
+	int isnew;
+	int keep_our_modes = YES;
+	int keep_new_modes = YES;
+
+	if(parc < 3)
+		return 0;
+
+	if(!IsChannelName(parv[2]) || !check_channel_name(parv[2]))
+		return 0;
+
+	/* joins for local channels cant happen. */
+	if(parv[2][0] == '&')
+		return 0;
+
+	mode.key[0] = '\0';
+	mode.mode = mode.limit = 0;
+
+	if((chptr = get_or_create_channel(source_p, parv[2], &isnew)) == NULL)
+		return 0;
+
+	newts = atol(parv[1]);
+	oldts = chptr->channelts;
+
+	/* making a channel TS0 */
+	if(!isnew && !newts && oldts)
+	{
+		sendto_channel_local(ALL_MEMBERS, chptr,
+				     ":%s NOTICE %s :*** Notice -- TS for %s changed from %ld to 0",
+				     me.name, chptr->chname, chptr->chname, (long)oldts);
+		sendto_realops_flags(UMODE_ALL, L_ALL,
+				     "Server %s changing TS on %s from %ld to 0",
+				     source_p->name, chptr->chname, (long)oldts);
+	}
+
+	if(isnew)
+		chptr->channelts = newts;
+	else if(newts == 0 || oldts == 0)
+		chptr->channelts = 0;
+	else if(newts == oldts)
+		;
+	else if(newts < oldts)
+	{
+		keep_our_modes = NO;
+		chptr->channelts = newts;
+	}
+	else
+		keep_new_modes = NO;
+
+	/* Lost the TS, other side wins, so remove modes on this side */
+	if(!keep_our_modes)
+	{
+		remove_our_modes(chptr);
+		sendto_channel_local(ALL_MEMBERS, chptr,
+				     ":%s NOTICE %s :*** Notice -- TS for %s changed from %ld to %ld",
+				     me.name, chptr->chname, chptr->chname, (long)oldts,
+				     (long)newts);
+		set_final_mode(source_p->servptr, chptr, &mode, &chptr->mode);
+		chptr->mode = mode;
+	}
+
+	if(!IsMember(source_p, chptr))
+	{
+		add_user_to_channel(chptr, source_p, CHFL_PEON);
+		sendto_channel_local(ALL_MEMBERS, chptr, ":%s!%s@%s JOIN :%s",
+				     source_p->name, source_p->username,
+				     source_p->host, chptr->chname);
+	}
+
+	sendto_server(client_p, chptr, CAP_TS6, NOCAPS,
+		      ":%s JOIN %ld %s +", source_p->id, (long)chptr->channelts, chptr->chname);
+	sendto_server(client_p, chptr, CAP_SSJOIN, CAP_TS6,
+		      ":%s SJOIN %ld %s", source_p->name, (long)chptr->channelts, chptr->chname);
+	sendto_server(client_p, chptr, NOCAPS, CAP_TS6 | CAP_SSJOIN,
+		      ":%s SJOIN %ld %s %s :%s",
+		      source_p->servptr->name, (long)chptr->channelts,
+		      chptr->chname, keep_new_modes ? "+" : "0", source_p->name);
+	return 0;
+}
 /*
  * ms_sjoin
  * parv[0] - sender

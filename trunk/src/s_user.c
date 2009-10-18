@@ -562,10 +562,19 @@ introduce_client(struct Client *client_p, struct Client *source_p)
 			      source_p->hopcount + 1,
 			      (long)source_p->tsinfo, ubuf,
 			      source_p->username, source_p->host,
-			      IsIPSpoof(source_p) ? "0" : source_p->sockhost,
+			      IsIPSpoof(source_p) ? "0.0.0.0" : source_p->sockhost,
 			      source_p->id, source_p->info);
 
-		sendto_server(client_p, NULL, NOCAPS, CAP_TS6,
+		sendto_server(client_p, NULL, CAP_NICKIP, CAP_TS6,
+			      "NICK %s %d %ld %s %s %s %s 0 %s :%s",
+			      source_p->name, source_p->hopcount + 1,
+			      (long)source_p->tsinfo,
+			      ubuf, source_p->username, source_p->host,
+			      source_p->servptr->name,
+			      IsIPSpoof(source_p) ? "0.0.0.0" : source_p->sockhost,
+			      source_p->info);
+
+		sendto_server(client_p, NULL, NOCAPS, CAP_TS6 | CAP_NICKIP,
 			      "NICK %s %d %ld %s %s %s %s :%s",
 			      source_p->name, source_p->hopcount + 1,
 			      (long)source_p->tsinfo,
@@ -573,12 +582,23 @@ introduce_client(struct Client *client_p, struct Client *source_p)
 			      source_p->servptr->name, source_p->info);
 	}
 	else
-		sendto_server(client_p, NULL, NOCAPS, NOCAPS,
+	{
+		sendto_server(client_p, NULL, CAP_NICKIP, NOCAPS,
+			      "NICK %s %d %ld %s %s %s %s 0 %s :%s",
+			      source_p->name, source_p->hopcount + 1,
+			      (long)source_p->tsinfo,
+			      ubuf, source_p->username, source_p->host,
+			      source_p->servptr->name,
+			      IsIPSpoof(source_p) ? "0.0.0.0" : source_p->sockhost,
+			      source_p->info);
+
+		sendto_server(client_p, NULL, NOCAPS, CAP_NICKIP,
 			      "NICK %s %d %ld %s %s %s %s :%s",
 			      source_p->name, source_p->hopcount + 1,
 			      (long)source_p->tsinfo,
 			      ubuf, source_p->username, source_p->host,
 			      source_p->servptr->name, source_p->info);
+	}
 }
 
 /* report_and_set_user_flags

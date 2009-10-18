@@ -250,15 +250,21 @@ m_nick(struct Client *client_p, struct Client *source_p, int parc, const char *p
  *    parv[2] = TS when nick change
  *
  * server introducing new nick
- *    parv[0] = sender prefix
- *    parv[1] = nickname
- *    parv[2] = hop count
- *    parv[3] = TS
- *    parv[4] = umode
- *    parv[5] = username
- *    parv[6] = hostname
- *    parv[7] = server
- *    parv[8] = ircname
+ *    parv[0]  = sender prefix
+ *    parv[1]  = nickname
+ *    parv[2]  = hop count
+ *    parv[3]  = TS
+ *    parv[4]  = umode
+ *    parv[5]  = username
+ *    parv[6]  = hostname
+ *    parv[7]  = server
+ *    -- If client_p is NICKIP cabable
+ *    parv[8]  = servicesid
+ *    parv[9]  = IP
+ *    parv[10] = ircname
+ *    -- Else
+ *    parv[8]  = ircname
+ *    -- End If
  */
 static int
 mc_nick(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
@@ -315,12 +321,14 @@ ms_nick(struct Client *client_p, struct Client *source_p, int parc, const char *
 {
 	struct Client *target_p;
 	time_t newts = 0;
+	int expected_parc = IsCapable(client_p, CAP_NICKIP) ? 11 : 9;
+	int gcos_idx = expected_parc - 1;
 
-	if(parc != 9)
+	if(parc != expected_parc)
 	{
 		sendto_realops_flags(UMODE_ALL, L_ALL,
 				     "Dropping server %s due to (invalid) command 'NICK' "
-				     "with %d arguments (expecting 9)", client_p->name, parc);
+				     "with %d arguments (expecting %d)", client_p->name, parc, expected_parc);
 		ilog(L_SERVER, "Excess parameters (%d) for command 'NICK' from %s.",
 		     parc, client_p->name);
 		exit_client(client_p, client_p, client_p, "Excess parameters to NICK command");
@@ -350,9 +358,9 @@ ms_nick(struct Client *client_p, struct Client *source_p, int parc, const char *
 	}
 
 	/* check the length of the clients gecos */
-	if(strlen(parv[8]) > REALLEN)
+	if(strlen(parv[gcos_idx]) > REALLEN)
 	{
-		parv[8] = LOCAL_COPY_N(parv[8], REALLEN);
+		parv[gcos_idx] = LOCAL_COPY_N(parv[gcos_idx], REALLEN);
 		/* why exactly do we care? --fl */
 		/* sendto_realops_flags(UMODE_ALL, L_ALL,
 		 *              "Long realname from server %s for %s", parv[7],
@@ -1063,7 +1071,13 @@ register_client(struct Client *client_p, struct Client *server,
 	}
 	else
 	{
-		rb_strlcpy(source_p->info, parv[8], sizeof(source_p->info));
+		if (parc == 9)
+			rb_strlcpy(source_p->info, parv[8], sizeof(source_p->info));
+		else
+		{
+			rb_strlcpy(source_p->sockhost, parv[9], sizeof(source_p->sockhost));
+			rb_strlcpy(source_p->info, parv[10], sizeof(source_p->info));
+		}
 
 		if((server = find_server(NULL, parv[7])) == NULL)
 		{

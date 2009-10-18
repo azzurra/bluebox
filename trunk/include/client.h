@@ -105,7 +105,7 @@ struct LocalUser;
  * ts stuff
  */
 #define TS_CURRENT	6
-#define TS_MIN          6
+#define TS_MIN          5
 
 #define TS_DOESTS       0x10000000
 #define DoesTS(x)       ((x)->tsinfo & TS_DOESTS)

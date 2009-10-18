@@ -83,6 +83,10 @@ struct Capability captab[] = {
 #endif
 	{"SAVE", CAP_SAVE},
 	{"SAVETS_100", CAP_SAVETS_100},
+	/* Legacy capabilities */
+	{"NOQUIT", CAP_QS},
+	{"SSJOIN", CAP_SSJOIN},
+	{"NICKIP", CAP_NICKIP},
 	{0, 0}
 };
 
@@ -329,7 +333,8 @@ send_capabilities(struct Client *client_p, int cap_can_send)
 	t--;
 	*t = '\0';
 
-	sendto_one(client_p, "CAPAB :%s", msgbuf);
+	/* Hack for bahamut compatibility */
+	sendto_one(client_p, "CAPAB %s", msgbuf);
 }
 
 /*

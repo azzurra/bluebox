@@ -180,7 +180,8 @@ mr_server(struct Client *client_p, struct Client *source_p, int parc, const char
 		break;
 	}
 
-	/* require TS6 for direct links */
+#if 0
+	/* require TS6 for direct links - i don't think so... */
 	if(!IsCapable(client_p, CAP_TS6))
 	{
 		sendto_realops_flags(UMODE_ALL, L_ALL,
@@ -188,6 +189,7 @@ mr_server(struct Client *client_p, struct Client *source_p, int parc, const char
 		exit_client(client_p, client_p, client_p, "Incompatible TS version");
 		return 0;
 	}
+#endif
 
 	if((target_p = server_exists(name)))
 	{
@@ -909,11 +911,20 @@ burst_TS5(struct Client *client_p)
 			ubuf[1] = '\0';
 		}
 
-		sendto_one(client_p, "NICK %s %d %ld %s %s %s %s :%s",
-			   target_p->name, target_p->hopcount + 1,
-			   (long)target_p->tsinfo, ubuf,
-			   target_p->username, target_p->host,
-			   target_p->servptr->name, target_p->info);
+		if (IsCapable(client_p, CAP_NICKIP))
+			sendto_one(client_p, "NICK %s %d %ld %s %s %s %s 0 %s :%s",
+				   target_p->name, target_p->hopcount + 1,
+				   (long)target_p->tsinfo, ubuf,
+				   target_p->username, target_p->host,
+				   target_p->servptr->name,
+				   IsIPSpoof(target_p) ? "0.0.0.0" : target_p->sockhost,
+				   target_p->info);
+		else
+			sendto_one(client_p, "NICK %s %d %ld %s %s %s %s :%s",
+				   target_p->name, target_p->hopcount + 1,
+				   (long)target_p->tsinfo, ubuf,
+				   target_p->username, target_p->host,
+				   target_p->servptr->name, target_p->info);
 
 		if(ConfigFileEntry.burst_away && !EmptyString(target_p->user->away))
 			sendto_one(client_p, ":%s AWAY :%s", target_p->name, target_p->user->away);
