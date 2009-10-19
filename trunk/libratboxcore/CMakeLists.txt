@@ -7,9 +7,7 @@ INCLUDE(CheckIncludeFiles)
 INCLUDE(CheckLibraryExists)
 INCLUDE(CheckFunctionExists)
 INCLUDE(CheckTypeSize)
-#INCLUDE(${libratboxcore_SOURCE_DIR}/CheckStructMember.cmake)
 INCLUDE(FindOpenSSL)
-#INCLUDE(FindZLIB)
 
 SET(libratboxcore_LIB_SRCS
   bandbi.c
@@ -55,7 +53,9 @@ SET(libratboxcore_LIB_SRCS
   version.c
 )
 
-INCLUDE_DIRECTORIES(../include ../libltdl ${CMAKE_BINARY_DIR} ${libratbox_SOURCE_DIR}/include ${libratbox_BINARY_DIR})
+INCLUDE_DIRECTORIES(${bluebox_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR} ${libratbox_SOURCE_DIR}/include ${libratbox_BINARY_DIR})
+
 ADD_CUSTOM_COMMAND(OUTPUT version.c
                   COMMAND ${PROJECT_SOURCE_DIR}/version.c.SH
                   COMMENT "generating version.c")
@@ -89,13 +89,4 @@ ENDIF (HAVE_CRYPT)
 
 SET_TARGET_PROPERTIES(ratboxcore PROPERTIES VERSION 4.2.0 SOVERSION 4)
 INSTALL(TARGETS ratboxcore DESTINATION lib)
-
-#CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/librb-config.h.cmake
-#               ${PROJECT_BINARY_DIR}/librb-config.h)
-
-#CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/libratboxcore_config.h.cmake
-#               ${PROJECT_BINARY_DIR}/libratboxcore_config.h)
-
-########### install files ###############
-
 

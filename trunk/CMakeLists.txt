@@ -35,6 +35,7 @@ CHECK_FUNCTION_EXISTS(snprintf HAVE_SNPRINTF)
 
 IF (UNIX)
   SET(SHLIBEXT ".so")
+  SET(IRCD_PREFIX "${CMAKE_INSTALL_PREFIX}")
 ENDIF (UNIX)
 
 SET(CMAKE_BUILD_TYPE "Debug")
@@ -60,3 +61,6 @@ TARGET_LINK_LIBRARIES(ircd ratbox ratboxcore)
 
 ADD_CUSTOM_TARGET(bluebox ALL)
 ADD_DEPENDENCIES(bluebox libratbox libratboxcore libresolver modules contrib ssld bandb)
+
+INSTALL(TARGETS ircd DESTINATION bin)
+#INSTALL(TARGETS doc DESTINATION etc)

@@ -31,14 +31,15 @@
 #define NICKLEN 30
 #define TOPICLEN 307
 
-#define IRCD_PREFIX "/home/tsk/ircd"
+#cmakedefine IRCD_PREFIX "${IRCD_PREFIX}"
+
 #define LIBEXEC_DIR IRCD_PREFIX "/libexec/bluebox"
 #define ETC_DIR IRCD_PREFIX "/etc/bluebox"
 #define LOG_DIR IRCD_PREFIX "/var/log/bluebox"
 #define HELP_DIR IRCD_PREFIX "/etc/bluebox/help"
 #define MODULE_DIR IRCD_PREFIX "/modules"
 
-#define RATBOX_CONFIGURE_OPTS " '--enable-ipv6' '--prefix=/home/tsk/Code/ircd2' '--with-nicklen=30' '--with-topiclen=307' '--enable-services' --enable-ltdl-convenience"
+#define RATBOX_CONFIGURE_OPTS "powered by t[c]make"
 
 #define NICKNAMEHISTORYLENGTH 30000
 

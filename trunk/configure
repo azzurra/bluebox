@@ -1,0 +1,19 @@
+#!/bin/sh
+
+cmake_p=`which cmake`
+
+if [ -z "$cmake_p" ]; then
+  echo "Go install cmake, fool you!"
+  exit
+fi
+
+echo -n "Where do you want to install ircd? -> "
+read IRCD_PREFIX
+
+cd build
+$cmake_p -DCMAKE_INSTALL_PREFIX=$IRCD_PREFIX ..
+cd ..
+
+echo "=============================="
+echo "Now 'cd build' and then 'make'"
+echo "=============================="
