@@ -75,7 +75,7 @@ const char *infotext[] =
 
 IFS='
 '
-for i in `grep -v '^$Id' ../CREDITS |tr -d '"'` ; do
+for i in `grep -v '^$Id' ../../CREDITS |tr -d '"'` ; do
 echo "  \"$i\"," >> version.c
 done
 $spitshell >>version.c <<!SUB!THISTOO!

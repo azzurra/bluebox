@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 */
 
+#include "ltdl-config.h"
+
 #if HAVE_CONFIG_H
 #  include <config.h>
 #endif

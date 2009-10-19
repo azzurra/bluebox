@@ -42,6 +42,13 @@
 #ifndef STATIC_MODULES
 
 #include "ltdl.h"
+#define lt_dlclose dlclose
+#define lt_dlopen dlopen
+#define lt_dlerror dlerror
+#define lt_dlsym dlsym
+
+int lt_dlinit() { return 0; }
+
 struct module **modlist = NULL;
 static char unknown_ver[] = "<unknown>";
 static const char *core_module_table[] = {
