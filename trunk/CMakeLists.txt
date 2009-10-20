@@ -33,6 +33,8 @@ CHECK_INCLUDE_FILES(unistd.h HAVE_UNISTD_H)
 
 CHECK_FUNCTION_EXISTS(snprintf HAVE_SNPRINTF)
 
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+
 IF (UNIX)
   SET(SHLIBEXT ".so")
   SET(IRCD_PREFIX "${CMAKE_INSTALL_PREFIX}")
@@ -49,7 +51,7 @@ CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/include/setup.h.cmake ${PROJECT_BINARY_DIR}
 
 ADD_SUBDIRECTORY(libratbox)
 ADD_SUBDIRECTORY(libratboxcore)
-ADD_SUBDIRECTORY(libresolver)
+ADD_SUBDIRECTORY(resolver)
 ADD_SUBDIRECTORY(modules)
 ADD_SUBDIRECTORY(contrib)
 ADD_SUBDIRECTORY(ssld)
@@ -60,7 +62,9 @@ ADD_EXECUTABLE(ircd main.c)
 TARGET_LINK_LIBRARIES(ircd ratbox ratboxcore)
 
 ADD_CUSTOM_TARGET(bluebox ALL)
-ADD_DEPENDENCIES(bluebox libratbox libratboxcore libresolver modules contrib ssld bandb)
+ADD_DEPENDENCIES(bluebox libratbox libratboxcore resolver modules contrib ssld bandb)
 
 INSTALL(TARGETS ircd DESTINATION bin)
-#INSTALL(TARGETS doc DESTINATION etc)
+INSTALL(FILES doc/example.conf DESTINATION ${CMAKE_INSTALL_PREFIX}/etc/bluebox)
+INSTALL(FILES doc/ircd.motd DESTINATION ${CMAKE_INSTALL_PREFIX}/etc/bluebox)
+#INSTALL(FILES help DESTINATION ${CMAKE_INSTALL_PREFIX})

@@ -1,5 +1,5 @@
 
-PROJECT(modules)
+PROJECT(modules/contrib)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
@@ -10,77 +10,77 @@ INCLUDE_DIRECTORIES(${bluebox_SOURCE_DIR}/libltdl)
 
 ADD_LIBRARY(example_module MODULE example_module.c)
 SET_TARGET_PROPERTIES(example_module PROPERTIES VERSION 4.2.0 SOVERSION 4 PREFIX "")
-INSTALL(TARGETS example_module DESTINATION modules)
+INSTALL(TARGETS example_module DESTINATION modules/contrib)
 
 ADD_LIBRARY(m_42 MODULE m_42.c)
 SET_TARGET_PROPERTIES(m_42 PROPERTIES VERSION 4.2.0 SOVERSION 4 PREFIX "")
-INSTALL(TARGETS m_42 DESTINATION modules)
+INSTALL(TARGETS m_42 DESTINATION modules/contrib)
 
 ADD_LIBRARY(m_clearchan MODULE m_clearchan.c)
 SET_TARGET_PROPERTIES(m_clearchan PROPERTIES VERSION 4.2.0 SOVERSION 4 PREFIX "")
-INSTALL(TARGETS m_clearchan DESTINATION modules)
+INSTALL(TARGETS m_clearchan DESTINATION modules/contrib)
 
 ADD_LIBRARY(m_flags MODULE m_flags.c)
 SET_TARGET_PROPERTIES(m_flags PROPERTIES VERSION 4.2.0 SOVERSION 4 PREFIX "")
-INSTALL(TARGETS m_flags DESTINATION modules)
+INSTALL(TARGETS m_flags DESTINATION modules/contrib)
 
 ADD_LIBRARY(m_force MODULE m_force.c)
 SET_TARGET_PROPERTIES(m_force PROPERTIES VERSION 4.2.0 SOVERSION 4 PREFIX "")
-INSTALL(TARGETS m_force DESTINATION modules)
+INSTALL(TARGETS m_force DESTINATION modules/contrib)
 
 ADD_LIBRARY(m_mkpasswd MODULE m_mkpasswd.c)
 SET_TARGET_PROPERTIES(m_mkpasswd PROPERTIES VERSION 4.2.0 SOVERSION 4 PREFIX "")
-INSTALL(TARGETS m_mkpasswd DESTINATION modules)
+INSTALL(TARGETS m_mkpasswd DESTINATION modules/contrib)
 
 ADD_LIBRARY(m_ojoin MODULE m_ojoin.c)
 SET_TARGET_PROPERTIES(m_ojoin PROPERTIES VERSION 4.2.0 SOVERSION 4 PREFIX "")
-INSTALL(TARGETS m_ojoin DESTINATION modules)
+INSTALL(TARGETS m_ojoin DESTINATION modules/contrib)
 
 ADD_LIBRARY(m_okick MODULE m_okick.c)
 SET_TARGET_PROPERTIES(m_okick PROPERTIES VERSION 4.2.0 SOVERSION 4 PREFIX "")
-INSTALL(TARGETS m_okick DESTINATION modules)
+INSTALL(TARGETS m_okick DESTINATION modules/contrib)
 
 ADD_LIBRARY(m_olist MODULE m_olist.c)
 SET_TARGET_PROPERTIES(m_olist PROPERTIES VERSION 4.2.0 SOVERSION 4 PREFIX "")
-INSTALL(TARGETS m_olist DESTINATION modules)
+INSTALL(TARGETS m_olist DESTINATION modules/contrib)
 
 ADD_LIBRARY(m_opme MODULE m_opme.c)
 SET_TARGET_PROPERTIES(m_opme PROPERTIES VERSION 4.2.0 SOVERSION 4 PREFIX "")
-INSTALL(TARGETS m_opme DESTINATION modules)
+INSTALL(TARGETS m_opme DESTINATION modules/contrib)
 
 ADD_LIBRARY(m_webirc MODULE m_webirc.c)
 SET_TARGET_PROPERTIES(m_webirc PROPERTIES VERSION 4.2.0 SOVERSION 4 PREFIX "")
-INSTALL(TARGETS m_webirc DESTINATION modules)
+INSTALL(TARGETS m_webirc DESTINATION modules/contrib)
 
 ADD_LIBRARY(spy_admin_notice MODULE spy_admin_notice.c)
 SET_TARGET_PROPERTIES(spy_admin_notice PROPERTIES VERSION 4.2.0 SOVERSION 4 PREFIX "")
-INSTALL(TARGETS spy_admin_notice DESTINATION modules)
+INSTALL(TARGETS spy_admin_notice DESTINATION modules/contrib)
 
 ADD_LIBRARY(spy_info_notice MODULE spy_info_notice.c)
 SET_TARGET_PROPERTIES(spy_info_notice PROPERTIES VERSION 4.2.0 SOVERSION 4 PREFIX "")
-INSTALL(TARGETS spy_info_notice DESTINATION modules)
+INSTALL(TARGETS spy_info_notice DESTINATION modules/contrib)
 
 ADD_LIBRARY(spy_links_notice MODULE spy_links_notice.c)
 SET_TARGET_PROPERTIES(spy_links_notice PROPERTIES VERSION 4.2.0 SOVERSION 4 PREFIX "")
-INSTALL(TARGETS spy_links_notice DESTINATION modules)
+INSTALL(TARGETS spy_links_notice DESTINATION modules/contrib)
 
 ADD_LIBRARY(spy_motd_notice MODULE spy_motd_notice.c)
 SET_TARGET_PROPERTIES(spy_motd_notice PROPERTIES VERSION 4.2.0 SOVERSION 4 PREFIX "")
-INSTALL(TARGETS spy_motd_notice DESTINATION modules)
+INSTALL(TARGETS spy_motd_notice DESTINATION modules/contrib)
 
 ADD_LIBRARY(spy_stats_notice MODULE spy_stats_notice.c)
 SET_TARGET_PROPERTIES(spy_stats_notice PROPERTIES VERSION 4.2.0 SOVERSION 4 PREFIX "")
-INSTALL(TARGETS spy_stats_notice DESTINATION modules)
+INSTALL(TARGETS spy_stats_notice DESTINATION modules/contrib)
 
 ADD_LIBRARY(spy_stats_p_notice MODULE spy_stats_p_notice.c)
 SET_TARGET_PROPERTIES(spy_stats_p_notice PROPERTIES VERSION 4.2.0 SOVERSION 4 PREFIX "")
-INSTALL(TARGETS spy_stats_p_notice DESTINATION modules)
+INSTALL(TARGETS spy_stats_p_notice DESTINATION modules/contrib)
 
 ADD_LIBRARY(spy_whois_notice MODULE spy_whois_notice.c)
 SET_TARGET_PROPERTIES(spy_whois_notice PROPERTIES VERSION 4.2.0 SOVERSION 4 PREFIX "")
-INSTALL(TARGETS spy_whois_notice DESTINATION modules)
+INSTALL(TARGETS spy_whois_notice DESTINATION modules/contrib)
 
 ADD_LIBRARY(spy_whois_notice_global MODULE spy_whois_notice_global.c)
 SET_TARGET_PROPERTIES(spy_whois_notice_global PROPERTIES VERSION 4.2.0 SOVERSION 4 PREFIX "")
-INSTALL(TARGETS spy_whois_notice_global DESTINATION modules)
+INSTALL(TARGETS spy_whois_notice_global DESTINATION modules/contrib)
 
