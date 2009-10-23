@@ -8,6 +8,7 @@ INCLUDE(CheckLibraryExists)
 INCLUDE(CheckFunctionExists)
 INCLUDE(CheckTypeSize)
 INCLUDE(FindOpenSSL)
+INCLUDE(FindCrypto)
 
 SET(libratboxcore_LIB_SRCS
   bandbi.c
@@ -63,6 +64,9 @@ ADD_CUSTOM_COMMAND(OUTPUT version.c
 ADD_LIBRARY(ratboxcore SHARED ${libratboxcore_LIB_SRCS})
 ADD_DEPENDENCIES(ratboxcore version_c)
 INCLUDE_DIRECTORIES(include ${PROJECT_BINARY_DIR})
+IF (APPLE)
+  TARGET_LINK_LIBRARIES(ratboxcore ratbox)
+ENDIF(APPLE)
 
 IF (HAVE_SOCKET)
   TARGET_LINK_LIBRARIES(ratboxcore socket)
@@ -75,6 +79,14 @@ ENDIF (HAVE_RESOLV)
 IF (OPENSSL_FOUND)
   ADD_DEFINITIONS(-DHAVE_OPENSSL -DHAVE_SSL)
   TARGET_LINK_LIBRARIES(ratboxcore ${OPENSSL_LIBRARIES})
+  IF (APPLE)
+    # OSX's broken linker requires explicit linking against libcrypto
+    IF (CRYPTO_FOUND)
+      TARGET_LINK_LIBRARIES(ratboxcore ${CRYPTO_LIBRARIES})
+    ELSE (CRYPTO_FOUND)
+      MESSAGE(FATAL_ERROR "libcrypto not found (broken OpenSSL setup?)")
+    ENDIF (CRYPTO_FOUND)
+  ENDIF (APPLE)
 ENDIF (OPENSSL_FOUND)
 
 IF (HAVE_CRYPT)

@@ -18,7 +18,7 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  *  USA
  *
- *  $Id: sslproc.c 26517 2009-05-13 15:10:29Z androsyn $
+ *  $Id: sslproc.c,v 8f2ff5ef5048 2009/10/19 21:45:33 tsk $
  */
 
 #include <ratbox_lib.h>
@@ -274,7 +274,7 @@ start_ssldaemon(int count, const char *ssl_cert, const char *ssl_private_key,
 			{
 				ilog(L_MAIN,
 				     "Unable to execute ssld%s in %s/libexec/ircd-ratbox or %s",
-				     ConfigFileEntry.dpath, suffix, LIBEXEC_DIR);
+				     suffix, ConfigFileEntry.dpath, LIBEXEC_DIR);
 				return 0;
 			}
 		}

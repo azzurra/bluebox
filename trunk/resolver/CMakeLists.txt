@@ -18,6 +18,5 @@ ADD_DEPENDENCIES(resolver ratbox)
 INCLUDE_DIRECTORIES(include ${bluebox_BINARY_DIR} ${libratbox_SOURCE_DIR}/include ${libratbox_BINARY_DIR})
 TARGET_LINK_LIBRARIES(resolver ratbox)
 
-#SET_TARGET_PROPERTIES(resolver PROPERTIES VERSION 4.2.0 SOVERSION 4)
 INSTALL(TARGETS resolver DESTINATION libexec/bluebox)
 

@@ -8,6 +8,7 @@
 #cmakedefine HAVE_KEVENT 1
 #cmakedefine HAVE_MMAP 1
 #cmakedefine HAVE_NANOSLEEP 1
+#cmakedefine HAVE_OPENSSL 1
 #cmakedefine HAVE_POLL 1
 #cmakedefine HAVE_PORT_CREATE 1
 #cmakedefine HAVE_POSIX_SPAWN 1

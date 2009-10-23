@@ -98,21 +98,21 @@ serverinfo {
 	default_max_clients = 10000;
 
 	/* ssl_private_key: our ssl private key */
-        ssl_private_key = "etc/test.key";
+        ssl_private_key = "etc/bluebox/test.key";
 
 	/* ssl_cert: certificate for our ssl server */
-        ssl_cert = "etc/test.cert";
+        ssl_cert = "etc/bluebox/test.cert";
 
 	/* ssl_dh_params: DH parameters, generate with openssl dhparam -out dh.pem 1024 */
-        ssl_dh_params = "etc/dh.pem";
+        ssl_dh_params = "etc/bluebox/dh.pem";
 
 	/* ssld_count: number of ssld processes you want to start, if you have a really busy 
 	 * server, using N-1 where N is the number of cpu/cpu cores you have might be useful
  	 */
         ssld_count = 1;
 
-	/* bandb: path to the ban database - default is PREFIX/etc/ban.db */
-	bandb = "etc/ban.db";
+	/* bandb: path to the ban database - default is PREFIX/etc/bluebox/ban.db */
+	bandb = "etc/bluebox/ban.db";
 };
 
 /* admin {}: contains admin information about the server. (OLD A:) */
@@ -139,16 +139,16 @@ log {
 	 * - operspylog: operspy usage
 	 * - ioerrorlog: IO errors
 	 */
-	fname_userlog = "logs/userlog";
-	#fname_fuserlog = "logs/fuserlog";
-	fname_operlog = "logs/operlog";
-	#fname_foperlog = "logs/foperlog";
-	fname_serverlog = "logs/serverlog";
-	fname_glinelog = "logs/glinelog";
-	#fname_klinelog = "logs/klinelog";
-	fname_killlog = "logs/killlog";
-	fname_operspylog = "logs/operspylog";
-	#fname_ioerrorlog = "logs/ioerror";
+	fname_userlog = "var/log/bluebox/userlog";
+	#fname_fuserlog = "var/log/bluebox/fuserlog";
+	fname_operlog = "var/log/bluebox/operlog";
+	#fname_foperlog = "var/log/bluebox/foperlog";
+	fname_serverlog = "var/log/bluebox/serverlog";
+	fname_glinelog = "var/log/bluebox/glinelog";
+	#fname_klinelog = "var/log/bluebox/klinelog";
+	fname_killlog = "var/log/bluebox/killlog";
+	fname_operspylog = "var/log/bluebox/operspylog";
+	#fname_ioerrorlog = "var/log/bluebox/ioerror";
 };
 
 /* class {}: contain information about classes for users (OLD Y:) */
@@ -351,7 +351,7 @@ operator "god" {
 	 * A password should not be defined when this is used, see 
 	 * doc/challenge.txt for more information.
 	 */
-	#rsa_public_key_file = "/usr/local/ircd/etc/oper.pub";
+	#rsa_public_key_file = "@CMAKE_INSTALL_PREFIX@/etc/bluebox/oper.pub";
 
 	/* umodes: the specific umodes this oper gets when they oper.
 	 * If this is specified an oper will not be given oper_umodes
@@ -1015,8 +1015,8 @@ modules {
 	/* module path: paths to search for modules specified below and 
 	 * in /modload.
 	 */
-	path = "/usr/local/ircd/modules";
-	path = "/usr/local/ircd/modules/autoload";
+	path = "@CMAKE_INSTALL_PREFIX@/modules";
+	path = "@CMAKE_INSTALL_PREFIX@/modules/autoload";
 
 	/* module: the name of a module to load on startup/rehash */
 	#module = "some_module.so";

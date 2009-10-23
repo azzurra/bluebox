@@ -19,11 +19,9 @@ ADD_EXECUTABLE(bantool bantool.c rsdb_sqlite3.c rsdb_snprintf.c)
 ADD_DEPENDENCIES(bantool sqlite3 ratbox)
 TARGET_LINK_LIBRARIES(bantool sqlite3 ratbox pthread)
 
-SET_TARGET_PROPERTIES(bantool PROPERTIES VERSION 4.2.0 SOVERSION 4)
 INSTALL(TARGETS bantool DESTINATION bin)
 
-SET_TARGET_PROPERTIES(bandb PROPERTIES VERSION 4.2.0 SOVERSION 4)
-INSTALL(TARGETS bandb DESTINATION bin)
+INSTALL(TARGETS bandb DESTINATION libexec/bluebox)
 
 ADD_CUSTOM_TARGET(bandb-tools ALL)
 ADD_DEPENDENCIES(bandb-tools sqlite3 bandb bantool)

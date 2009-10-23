@@ -19,3 +19,5 @@ ENDIF (ZLIB_FOUND)
 
 ADD_DEPENDENCIES(ssld libratbox)
 TARGET_LINK_LIBRARIES(ssld ratbox)
+
+INSTALL(TARGETS ssld DESTINATION libexec/bluebox)

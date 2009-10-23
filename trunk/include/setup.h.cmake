@@ -24,12 +24,16 @@
 #cmakedefine HAVE_STRINGS_H 1
 #cmakedefine HAVE_STRING_H 1
 #cmakedefine HAVE_UNISTD_H 1
+#cmakedefine USE_CHALLENGE 1
 
 #cmakedefine SHLIBEXT "${SHLIBEXT}"
 
-/* static values XXX perhaps add a shell script to obtain these values? */
+/* static values XXX perhaps add a shell script to obtain these values? 
+ * Maybe some cmake options? -morph
+ */
 #define NICKLEN 30
-#define TOPICLEN 307
+/* This is for compatibility only - will disappear in subsequent commits */
+#define ENABLE_SERVICES 1
 
 #cmakedefine IRCD_PREFIX "${IRCD_PREFIX}"
 
