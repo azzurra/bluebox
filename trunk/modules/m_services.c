@@ -31,7 +31,6 @@
 
 #include "stdinc.h"
 
-#ifdef ENABLE_SERVICES
 #include "struct.h"
 #include "send.h"
 #include "client.h"
@@ -289,5 +288,3 @@ h_svc_stats(hook_data_int * data)
 		}
 	}
 }
-
-#endif

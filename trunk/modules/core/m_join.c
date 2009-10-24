@@ -588,11 +588,9 @@ ms_sjoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 		case 't':
 			mode.mode |= MODE_TOPICLIMIT;
 			break;
-#ifdef ENABLE_SERVICES
 		case 'r':
 			mode.mode |= MODE_REGONLY;
 			break;
-#endif
 		case 'S':
 			mode.mode |= MODE_SSLONLY;
 			break;
@@ -1035,10 +1033,8 @@ can_join(struct Client *source_p, struct Channel *chptr, char *key)
 	   rb_dlink_list_length(&chptr->members) >= (unsigned long)chptr->mode.limit)
 		return (ERR_CHANNELISFULL);
 
-#ifdef ENABLE_SERVICES
 	if(chptr->mode.mode & MODE_REGONLY && EmptyString(source_p->user->suser))
 		return ERR_NEEDREGGEDNICK;
-#endif
 
 	if(ConfigChannel.use_sslonly && chptr->mode.mode & MODE_SSLONLY && !IsSSL(source_p))
 		return ERR_SSLONLYCHAN;
@@ -1064,10 +1060,8 @@ static struct mode_letter
 	MODE_INVITEONLY, 'i'},
 	{
 	MODE_PRIVATE, 'p'},
-#ifdef ENABLE_SERVICES
 	{
 	MODE_REGONLY, 'r'},
-#endif
 	{
 	MODE_SSLONLY, 'S'},
 	{

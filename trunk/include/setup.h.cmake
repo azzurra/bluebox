@@ -32,8 +32,6 @@
  * Maybe some cmake options? -morph
  */
 #define NICKLEN 30
-/* This is for compatibility only - will disappear in subsequent commits */
-#define ENABLE_SERVICES 1
 
 #cmakedefine IRCD_PREFIX "${IRCD_PREFIX}"
 

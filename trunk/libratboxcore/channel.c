@@ -49,12 +49,7 @@ static rb_bh *topic_heap;
 static rb_bh *member_heap;
 struct ev_entry *checksplit_ev;
 
-static int channel_capabs[] = { CAP_EX, CAP_IE,
-#ifdef ENABLE_SERVICES
-	CAP_SERVICE,
-#endif
-	CAP_TS6
-};
+static int channel_capabs[] = { CAP_EX, CAP_IE, CAP_SERVICE, CAP_TS6 };
 
 #define NCHCAPS         (sizeof(channel_capabs)/sizeof(int))
 #define NCHCAP_COMBOS   (1 << NCHCAPS)
@@ -816,10 +811,8 @@ channel_modes(struct Channel *chptr, struct Client *client_p)
 		*mbuf++ = 'i';
 	if(chptr->mode.mode & MODE_NOPRIVMSGS)
 		*mbuf++ = 'n';
-#ifdef ENABLE_SERVICES
 	if(chptr->mode.mode & MODE_REGONLY)
 		*mbuf++ = 'r';
-#endif
 	if(chptr->mode.mode & MODE_SSLONLY)
 		*mbuf++ = 'S';
 

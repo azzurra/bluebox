@@ -150,11 +150,7 @@ static struct InfoStruct info_table[] = {
 	{	
 		"ENABLE_SERVICES", 
 		OUTPUT_BOOLEAN_RAW,
-#ifdef ENABLE_SERVICES
 		{ (void *)1 },
-#else
-		{ (void *)0 },
-#endif
 		"ratbox-services compatibility code",
 	},
 	{

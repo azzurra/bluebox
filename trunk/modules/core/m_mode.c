@@ -953,14 +953,12 @@ chm_op(struct Client *source_p, struct Channel *chptr,
 	}
 	else
 	{
-#ifdef ENABLE_SERVICES
 		if(MyClient(source_p) && IsService(targ_p))
 		{
 			sendto_one(source_p, form_str(ERR_ISCHANSERVICE),
 				   me.name, source_p->name, targ_p->name, chptr->chname);
 			return;
 		}
-#endif
 
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_DEL;
@@ -1187,7 +1185,6 @@ chm_key(struct Client *source_p, struct Channel *chptr,
 	}
 }
 
-#ifdef ENABLE_SERVICES
 static void
 chm_regonly(struct Client *source_p, struct Channel *chptr,
 	    int alevel, int parc, int *parn,
@@ -1222,7 +1219,6 @@ chm_regonly(struct Client *source_p, struct Channel *chptr,
 	mode_changes[mode_count].id = NULL;
 	mode_changes[mode_count++].arg = NULL;
 }
-#endif
 
 
 static void
@@ -1328,11 +1324,7 @@ static struct ChannelMode ModeTable[255] =
   {chm_op,	0 },			/* o */
   {chm_simple,	MODE_PRIVATE },		/* p */
   {chm_nosuch,	0 },			/* q */
-#ifdef ENABLE_SERVICES
   {chm_regonly, 0 },			/* r */
-#else
-  {chm_nosuch,	0 },			/* r */
-#endif
   {chm_simple,	MODE_SECRET },		/* s */
   {chm_simple,	MODE_TOPICLIMIT },	/* t */
   {chm_nosuch,	0 },			/* u */

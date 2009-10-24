@@ -150,14 +150,12 @@ m_kick(struct Client *client_p, struct Client *source_p, int parc, const char *p
 
 	if(msptr != NULL)
 	{
-#ifdef ENABLE_SERVICES
 		if(MyClient(source_p) && IsService(who))
 		{
 			sendto_one(source_p, form_str(ERR_ISCHANSERVICE),
 				   me.name, source_p->name, who->name, chptr->chname);
 			return 0;
 		}
-#endif
 
 		comment = LOCAL_COPY_N((EmptyString(parv[3])) ? who->name : parv[3], REASONLEN);
 

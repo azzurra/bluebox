@@ -2053,7 +2053,6 @@ conf_set_shared_flags(confentry_t * entry, conf_t * conf, struct conf_items *ite
 	t_shared = NULL;
 }
 
-#ifdef ENABLE_SERVICES
 static void
 conf_set_service_start(conf_t * conf)
 {
@@ -2083,7 +2082,6 @@ conf_set_service_name(confentry_t * entry, conf_t * conf, struct conf_items *ite
 	if((target_p = find_server(NULL, entry->string)))
 		target_p->flags |= FLAGS_SERVICE;
 }
-#endif
 
 
 static void
@@ -2468,13 +2466,11 @@ static struct conf_items conf_cluster_table[] =
 	{ "\0",	0, NULL, 0, NULL }
 };
 
-#ifdef ENABLE_SERVICES
 static struct conf_items conf_service_table[] =
 {
 	{ "name",  CF_QSTRING,		  conf_set_service_name,  0, NULL },
 	{ "\0",	0, NULL, 0, NULL }
 };
-#endif
 
 struct top_conf_table_t
 {
@@ -2502,9 +2498,7 @@ static struct top_conf_table_t top_conf_table[] =
 	{ "connect",	conf_set_start_connect,  conf_set_end_connect,	conf_connect_table,	1},
 	{ "shared",	conf_set_shared_cleanup, conf_set_shared_cleanup,conf_shared_table,	0},
 	{ "cluster",	conf_set_cluster_cleanup,conf_set_cluster_cleanup,conf_cluster_table,	0},
-#ifdef ENABLE_SERVICES
 	{ "service",	conf_set_service_start,  NULL,			conf_service_table,	0},
-#endif
 	{ NULL,		NULL,			 NULL,			NULL,			0},
 };
 

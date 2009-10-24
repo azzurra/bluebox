@@ -77,10 +77,8 @@ struct Capability captab[] = {
 	{"ZIP", CAP_ZIP},
 	{"TB", CAP_TB},
 	{"ENCAP", CAP_ENCAP},
-#ifdef ENABLE_SERVICES
 	{"SERVICES", CAP_SERVICE},
 	{"RSFNC", CAP_RSFNC},
-#endif
 	{"SAVE", CAP_SAVE},
 	{"SAVETS_100", CAP_SAVETS_100},
 	/* Legacy capabilities */

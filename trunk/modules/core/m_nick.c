@@ -1113,7 +1113,6 @@ register_client(struct Client *client_p, struct Client *server,
 	{
 		flag = UserModeBitmask(*m);
 
-#ifdef ENABLE_SERVICES
 		if(flag & UMODE_SERVICE)
 		{
 			int hit = 0;
@@ -1134,7 +1133,6 @@ register_client(struct Client *client_p, struct Client *server,
 				continue;
 			}
 		}
-#endif
 
 		/* increment +i count if theyre invis */
 		if(!(source_p->umodes & UMODE_INVISIBLE) && (flag & UMODE_INVISIBLE))

@@ -218,12 +218,7 @@ isupport_chanmodes(const void *ptr)
 
 	rb_snprintf(result, sizeof result, "%s%sb,k,l,imnpstS%s",
 		    ConfigChannel.use_except ? "e" : "", ConfigChannel.use_invex ? "I" : "",
-#ifdef ENABLE_SERVICES
-		    rb_dlink_list_length(&service_list) ? "r" : ""
-#else
-		    ""
-#endif
-		);
+		    rb_dlink_list_length(&service_list) ? "r" : "");
 	return result;
 }
 
