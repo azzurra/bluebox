@@ -1052,13 +1052,26 @@ burst_TS6(struct Client *client_p)
 				   IsIPSpoof(target_p) ? "0" : target_p->sockhost,
 				   target_p->id, target_p->info);
 		else
-			sendto_one(client_p, "NICK %s %d %ld %s %s %s %s :%s",
-				   target_p->name,
-				   target_p->hopcount + 1,
-				   (long)target_p->tsinfo,
-				   ubuf,
-				   target_p->username, target_p->host,
-				   target_p->servptr->name, target_p->info);
+		{
+			if (IsCapable(client_p, CAP_NICKIP))
+				sendto_one(client_p, "NICK %s %d %ld %s %s %s %s 0 %s :%s",
+					   target_p->name,
+					   target_p->hopcount + 1,
+					   (long)target_p->tsinfo,
+					   ubuf,
+					   target_p->username, target_p->host,
+					   target_p->servptr->name,
+					   IsIPSpoof(target_p) ? "0.0.0.0" : target_p->sockhost,
+					   target_p->info);
+			else
+				sendto_one(client_p, "NICK %s %d %ld %s %s %s %s :%s",
+					   target_p->name,
+					   target_p->hopcount + 1,
+					   (long)target_p->tsinfo,
+					   ubuf,
+					   target_p->username, target_p->host,
+					   target_p->servptr->name, target_p->info);
+		}
 
 		if(ConfigFileEntry.burst_away && !EmptyString(target_p->user->away))
 			sendto_one(client_p, ":%s AWAY :%s",

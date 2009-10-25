@@ -403,6 +403,8 @@ ms_join(struct Client *client_p, struct Client *source_p, int parc, const char *
 
 	sendto_server(client_p, chptr, CAP_TS6, NOCAPS,
 		      ":%s JOIN %ld %s +", source_p->id, (long)chptr->channelts, chptr->chname);
+	sendto_server(client_p, chptr, CAP_SSJOIN, CAP_TS6,
+		      ":%s SJOIN %ld %s", source_p->name, (long)chptr->channelts, chptr->chname);
 	sendto_server(client_p, chptr, NOCAPS, CAP_TS6,
 		      ":%s SJOIN %ld %s %s :%s",
 		      source_p->servptr->name, (long)chptr->channelts,
@@ -492,11 +494,10 @@ mc_sjoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 				     source_p->host, chptr->chname);
 	}
 
-	sendto_server(client_p, chptr, CAP_TS6, NOCAPS,
-		      ":%s JOIN %ld %s +", source_p->id, (long)chptr->channelts, chptr->chname);
-	sendto_server(client_p, chptr, CAP_SSJOIN, CAP_TS6,
+	/* Obviously a remote client doing an SJOIN doesn't have a damn UID... */
+	sendto_server(client_p, chptr, CAP_SSJOIN, NOCAPS,
 		      ":%s SJOIN %ld %s", source_p->name, (long)chptr->channelts, chptr->chname);
-	sendto_server(client_p, chptr, NOCAPS, CAP_TS6 | CAP_SSJOIN,
+	sendto_server(client_p, chptr, NOCAPS, CAP_SSJOIN,
 		      ":%s SJOIN %ld %s %s :%s",
 		      source_p->servptr->name, (long)chptr->channelts,
 		      chptr->chname, keep_new_modes ? "+" : "0", source_p->name);
