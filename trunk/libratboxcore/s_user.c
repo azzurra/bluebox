@@ -66,27 +66,35 @@ struct flag_item
 
 /* *INDENT-OFF* */
 static struct flag_item user_modes[] = {
-	{UMODE_ADMIN,		'a'},
+	{UMODE_SADMIN,		'a'},
+	{UMODE_ADMIN,		'A'},
 	{UMODE_BOTS,		'b'},
 	{UMODE_CCONN,		'c'},
 	{UMODE_CCONNEXT,	'C'},
 	{UMODE_DEBUG,		'd'},
 	{UMODE_DEAF,		'D'},
+	{UMODE_REJ,		'e'},
+	{UMODE_EXTERNAL,	'E'},
 	{UMODE_FULL,		'f'},
 	{UMODE_CALLERID,	'g'},
+	{UMODE_HELPOP,		'h'},
 	{UMODE_INVISIBLE,	'i'},
+	{UMODE_NOIDLE,		'I'},
 	{UMODE_SKILL,		'k'},
 	{UMODE_LOCOPS,		'l'},
+	{UMODE_SPAMNOTICE,	'm'},
 	{UMODE_NCHANGE,		'n'},
 	{UMODE_OPER,		'o'},
-	{UMODE_REJ,		'r'},
+	{UMODE_REGISTERED,	'r'},
+	{UMODE_REGONLY,		'R'},
 	{UMODE_SERVNOTICE,	's'},
-	{UMODE_SERVICE,		'S'},
+	{UMODE_SSL,		'S'},
 	{UMODE_UNAUTH,		'u'},
+	{UMODE_OPERWALL,	'W'},
 	{UMODE_WALLOP,		'w'},
-	{UMODE_EXTERNAL,	'x'},
+	{UMODE_CRYPTHOST,	'x'},
 	{UMODE_SPY,		'y'},
-	{UMODE_OPERWALL,	'z'},
+	{UMODE_SERVICE,		'z'},
 	{UMODE_OPERSPY,		'Z'},
 	{0, 0}
 };
@@ -98,15 +106,15 @@ int user_modes_from_c_to_bitmask[] = {
 	/* 0x20 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 0x2F */
 	/* 0x30 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 0x3F */
 	0,			/* @ */
-	0,			/* A */
+	UMODE_ADMIN,		/* A */
 	0,			/* B */
 	UMODE_CCONNEXT,		/* C */
 	UMODE_DEAF,		/* D */
-	0,			/* E */
+	UMODE_EXTERNAL,		/* E */
 	0,			/* F */
 	0,			/* G */
 	0,			/* H */
-	0,			/* I */
+	UMODE_NOIDLE,		/* I */
 	0,			/* J */
 	0,			/* K */
 	0,			/* L */
@@ -115,42 +123,42 @@ int user_modes_from_c_to_bitmask[] = {
 	0,			/* O */
 	0,			/* P */
 	0,			/* Q */
-	0,			/* R */
-	UMODE_SERVICE,		/* S */
+	UMODE_REGONLY,		/* R */
+	UMODE_SSL,		/* S */
 	0,			/* T */
 	0,			/* U */
 	0,			/* V */
-	0,			/* W */
+	UMODE_OPERWALL,		/* W */
 	0,			/* X */
 	0,			/* Y */
 	UMODE_OPERSPY,		/* Z */
 	/* 0x5B */ 0, 0, 0, 0, 0, 0, /* 0x60 */
-	UMODE_ADMIN,		/* a */
+	UMODE_SADMIN,		/* a */
 	UMODE_BOTS,		/* b */
 	UMODE_CCONN,		/* c */
 	UMODE_DEBUG,		/* d */
-	0,			/* e */
+	UMODE_REJ,		/* e */
 	UMODE_FULL,		/* f */
 	UMODE_CALLERID,		/* g */
-	0,			/* h */
+	UMODE_HELPOP,		/* h */
 	UMODE_INVISIBLE,	/* i */
 	0,			/* j */
 	UMODE_SKILL,		/* k */
 	UMODE_LOCOPS,		/* l */
-	0,			/* m */
+	UMODE_SPAMNOTICE,	/* m */
 	UMODE_NCHANGE,		/* n */
 	UMODE_OPER,		/* o */
 	0,			/* p */
 	0,			/* q */
-	UMODE_REJ,		/* r */
+	UMODE_REGISTERED,	/* r */
 	UMODE_SERVNOTICE,	/* s */
 	0,			/* t */
 	UMODE_UNAUTH,		/* u */
 	0,			/* v */
 	UMODE_WALLOP,		/* w */
-	UMODE_EXTERNAL,		/* x */
+	UMODE_CRYPTHOST,	/* x */
 	UMODE_SPY,		/* y */
-	UMODE_OPERWALL,		/* z */
+	UMODE_SERVICE,		/* z */
 	/* 0x7B */ 0, 0, 0, 0, 0, /* 0x7F */
 	/* 0x80 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 0x9F */
 	/* 0x90 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 0x9F */
@@ -795,12 +803,20 @@ user_mode(struct Client *client_p, struct Client *source_p, int parc, const char
 				 */
 
 				/* can only be set on burst */
+			case 'z':
+			case 'a':
+			case 'r':
 			case 'S':
 			case ' ':
 			case '\n':
 			case '\r':
 			case '\t':
 				break;
+
+			case 'h':
+				/* May only be unset */
+				if (what == MODE_ADD)
+					break;
 
 			default:
 				if((flag = UserModeBitmask(*pm)))
@@ -832,7 +848,7 @@ user_mode(struct Client *client_p, struct Client *source_p, int parc, const char
 
 	if((source_p->umodes & UMODE_OPERWALL) && !IsOperOperwall(source_p))
 	{
-		sendto_one_notice(source_p, ":*** You need oper and operwall flag for +z");
+		sendto_one_notice(source_p, ":*** You need oper and operwall flag for +W");
 		source_p->umodes &= ~UMODE_OPERWALL;
 	}
 
@@ -845,7 +861,7 @@ user_mode(struct Client *client_p, struct Client *source_p, int parc, const char
 	if(MyConnect(source_p) && (source_p->umodes & UMODE_ADMIN) &&
 	   (!IsOperAdmin(source_p) || IsOperHiddenAdmin(source_p)))
 	{
-		sendto_one_notice(source_p, ":*** You need oper and admin flag for +a");
+		sendto_one_notice(source_p, ":*** You need oper and admin flag for +A");
 		source_p->umodes &= ~UMODE_ADMIN;
 	}
 

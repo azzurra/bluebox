@@ -958,8 +958,8 @@ general {
 	 */
 	 
 	/* oper only umodes: usermodes only opers may set */
-	oper_only_umodes = bots, cconn, debug, full, skill, nchange, 
-                     rej, spy, external, operwall, locops, unauth;
+	oper_only_umodes = bots, cconn, cconnext, debug, full, skill, nchange, 
+                     rej, spy, external, operwall, locops, unauth, spamnotice, noidle;
 
 	/* oper umodes: default usermodes opers get when they /oper */
 	oper_umodes = locops, servnotice, operwall, wallop;

@@ -4,8 +4,14 @@ Usermodes:
 
      USERMODE     DESCRIPTION
 -----------------------------------------------------------------
-         +o     - Designates this client is an IRC Operator.
+         +o     - Designates this client as an IRC Operator.
                   Use the /oper command to attain this.
+         +h     - User is a Help Operator.
          +i     - Designates this client 'invisible'.
          +g     - "caller id" mode only allow accept clients to message you
          +D     - Deaf - ignores all channel messages.
+         +r     - Designates this client as identified to network services.
+                  May only be set by services.
+         +R     - Only user identified to services may message you.
+         +S     - User is connected through SSL.
+         +x     - Hide your real hostname.
