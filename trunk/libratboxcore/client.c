@@ -1568,7 +1568,8 @@ show_ip(struct Client *source_p, struct Client *target_p)
 		if(!ConfigFileEntry.hide_spoof_ips && (source_p == NULL || MyOper(source_p)))
 			return 1;
 
-		return 0;
+		/* A spoofed user can ALWAYS see their real IP */
+		return source_p == target_p;
 	}
 	else
 		return 1;

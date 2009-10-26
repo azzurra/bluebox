@@ -71,6 +71,7 @@ struct LocalUser;
 #define IsAdmin(x)		((x)->umodes & UMODE_ADMIN)
 #define IsSAdmin(x)		((x)->umodes & UMODE_SADMIN)
 #define IsHelpOp(x)		((x)->umodes & UMODE_HELPOP)
+#define IsHiddenIdle(x)		((x)->umodes & UMODE_NOIDLE)
 
 #define SetReject(x)		{(x)->status = STAT_REJECT; \
 				 (x)->handler = UNREGISTERED_HANDLER; }
