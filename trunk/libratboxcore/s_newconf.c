@@ -341,13 +341,14 @@ static struct oper_flags oper_flagtable[] = {
 	{OPER_SPY, 'S', 's'},
 	{OPER_INVIS, 'P', 'p'},
 	{OPER_REMOTEBAN, 'B', 'b'},
+	{OPER_SPAMNOTICE, 'M', 'm'},
 	{0, '\0', '\0'}
 };
 
 const char *
 get_oper_privs(int flags)
 {
-	static char buf[20];
+	static char buf[21];
 	char *p;
 	int i;
 

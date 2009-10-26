@@ -813,6 +813,25 @@ user_mode(struct Client *client_p, struct Client *source_p, int parc, const char
 			case '\t':
 				break;
 
+			case 'x':
+				/* Handle IPv6 and spoofed clients */
+				if(MyConnect(source_p) && (IsIPSpoof(source_p)
+#ifdef RB_IPV6
+				   || GET_SS_FAMILY(&source_p->localClient->ip) == AF_INET6
+#endif
+				  ))
+				{
+					badflag = YES;
+				}
+				else
+				{
+					if(what == MODE_ADD)
+						source_p->umodes |= UMODE_CRYPTHOST;
+					else
+						source_p->umodes &= ~UMODE_CRYPTHOST;
+				}
+				break;
+
 			case 'h':
 				/* May only be unset */
 				if (what == MODE_ADD)
@@ -856,6 +875,12 @@ user_mode(struct Client *client_p, struct Client *source_p, int parc, const char
 	{
 		sendto_one_notice(source_p, ":*** You need oper and nick_changes flag for +n");
 		source_p->umodes &= ~UMODE_NCHANGE;	/* only tcm's really need this */
+	}
+
+	if(MyConnect(source_p) && (source_p->umodes & UMODE_SPAMNOTICE) && !IsOperSpamNotice(source_p))
+	{
+		sendto_one_notice(source_p, ":*** You need oper and spamnotice flag for +m");
+		source_p->umodes &= ~UMODE_SPAMNOTICE;
 	}
 
 	if(MyConnect(source_p) && (source_p->umodes & UMODE_ADMIN) &&

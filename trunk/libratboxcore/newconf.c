@@ -165,6 +165,7 @@ static struct mode_table flag_table[] = {
 	{"hidden_oper",		OPER_INVIS		},
 	{"remoteban",		OPER_REMOTEBAN		},
 	{"need_ssl",		OPER_NEEDSSL		},
+	{"spamnotice",		OPER_SPAMNOTICE		},
 	{NULL, 0}
 };
 
