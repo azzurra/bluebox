@@ -332,7 +332,7 @@ static  const char *  replies[] = {
 /* 307 */       NULL,
 /* 308 */       NULL,
 /* 309 */       NULL,
-/* 310 */       NULL,
+/* 310 RPL_WHOISHELPER */       "%s :is a Help Operator",
 /* 311 RPL_WHOISUSER, */        "%s %s %s * :%s",
 /* 312 RPL_WHOISSERVER, */      "%s %s :%s",
 /* 313 RPL_WHOISOPERATOR, */    "%s :%s",

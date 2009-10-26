@@ -320,6 +320,9 @@ single_whois(struct Client *source_p, struct Client *target_p, int operspy)
 				   GlobalSetOptions.operstring);
 	}
 
+	if(IsHelpOp(target_p))
+		sendto_one_numeric(source_p, RPL_WHOISHELPER, form_str(RPL_WHOISHELPER), target_p->name);
+
 	if(MyClient(target_p))
 	{
 		if(IsSSL(target_p))

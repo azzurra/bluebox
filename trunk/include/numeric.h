@@ -129,6 +129,7 @@ const char *form_str(int);
 
 /*      RPL_WHOISADMIN       308 -- hybrid */
 
+#define RPL_WHOISHELPER      310
 #define RPL_WHOISUSER        311
 #define RPL_WHOISSERVER      312
 #define RPL_WHOISOPERATOR    313
