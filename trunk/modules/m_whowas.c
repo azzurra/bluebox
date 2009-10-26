@@ -103,17 +103,9 @@ m_whowas(struct Client *client_p, struct Client *source_p, int parc, const char 
 		{
 			sendto_one(source_p, form_str(RPL_WHOWASUSER),
 				   me.name, source_p->name, temp->name,
-				   temp->username, temp->hostname, temp->realname);
-
-			if(ConfigFileEntry.use_whois_actually && !EmptyString(temp->sockhost))
-			{
-				if(!temp->spoof
-				   || (temp->spoof && !ConfigFileEntry.hide_spoof_ips
-				       && MyOper(source_p)))
-					sendto_one_numeric(source_p, RPL_WHOISACTUALLY,
-							   form_str(RPL_WHOISACTUALLY), temp->name,
-							   temp->sockhost);
-			}
+				   temp->username,
+				   !IsOper(source_p) && temp->cloak ? temp->virthost : temp->hostname,
+				   temp->realname);
 
 			sendto_one_numeric(source_p, RPL_WHOISSERVER,
 					   form_str(RPL_WHOISSERVER),

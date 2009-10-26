@@ -693,7 +693,9 @@ change_local_nick(struct Client *client_p, struct Client *source_p, char *nick, 
 
 	/* send the nick change to the users channels */
 	sendto_common_channels_local(source_p, ":%s!%s@%s NICK :%s",
-				     source_p->name, source_p->username, source_p->host, nick);
+				     source_p->name, source_p->username,
+				     IsCloaked(source_p) ? source_p->virthost : source_p->host,
+				     nick);
 
 	/* send the nick change to servers.. */
 	if(source_p->user)
@@ -753,7 +755,9 @@ change_remote_nick(struct Client *client_p, struct Client *source_p,
 	}
 
 	sendto_common_channels_local(source_p, ":%s!%s@%s NICK :%s",
-				     source_p->name, source_p->username, source_p->host, nick);
+				     source_p->name, source_p->username,
+				     IsCloaked(source_p) ? source_p->virthost : source_p->host,
+				     nick);
 
 	if(source_p->user)
 	{
@@ -1061,6 +1065,8 @@ register_client(struct Client *client_p, struct Client *server,
 	source_p->name = source_p->user->name;
 	rb_strlcpy(source_p->username, parv[5], sizeof(source_p->username));
 	rb_strlcpy(source_p->host, parv[6], sizeof(source_p->host));
+	/* FIXME: Encrypt host */
+	rb_strlcpy(source_p->virthost, source_p->host, sizeof(source_p->virthost));
 
 	if(parc == 10)
 	{

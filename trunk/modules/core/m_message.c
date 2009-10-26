@@ -642,7 +642,8 @@ msg_client(int p_or_n, const char *command,
 				sendto_one(target_p, ":%s!%s@%s %s %s :%s",
 					   source_p->name,
 					   source_p->username,
-					   source_p->host, command, target_p->name, text);
+					   IsCloaked(source_p) ? source_p->virthost : source_p->host,
+					   command, target_p->name, text);
 			}
 			else
 			{
@@ -664,7 +665,8 @@ msg_client(int p_or_n, const char *command,
 
 					sendto_one(target_p, form_str(RPL_UMODEGMSG),
 						   me.name, target_p->name, source_p->name,
-						   source_p->username, source_p->host);
+						   source_p->username,
+						   IsCloaked(source_p) ? source_p->virthost : source_p->host);
 
 					target_p->localClient->last_caller_id_time =
 						rb_current_time();

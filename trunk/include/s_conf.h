@@ -175,6 +175,7 @@ struct config_file_entry
 	int pace_wait_simple;
 	int short_motd;
 	int default_invisible;
+	int default_cloak;
 	int no_oper_flood;
 	int glines;
 	int gline_time;
@@ -194,7 +195,6 @@ struct config_file_entry
 	int use_egd;
 	int ping_cookie;
 	int tkline_expire_notices;
-	int use_whois_actually;
 	int disable_auth;
 	int connect_timeout;
 	int burst_away;

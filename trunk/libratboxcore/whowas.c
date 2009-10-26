@@ -74,22 +74,10 @@ add_history(struct Client *client_p, int online)
 	strcpy(who->name, client_p->name);
 	strcpy(who->username, client_p->username);
 	strcpy(who->hostname, client_p->host);
+	strcpy(who->virthost, client_p->virthost);
 	strcpy(who->realname, client_p->info);
 
-	if(MyClient(client_p))
-	{
-		strcpy(who->sockhost, client_p->sockhost);
-		who->spoof = (uint8_t)(IsIPSpoof(client_p) ? 1 : 0);
-
-	}
-	else
-	{
-		who->spoof = 0;
-		if(EmptyString(client_p->sockhost) || !strcmp(client_p->sockhost, "0"))
-			who->sockhost[0] = '\0';
-		else
-			strcpy(who->sockhost, client_p->sockhost);
-	}
+	who->cloak = IsCloaked(client_p);
 
 	who->servername = client_p->servptr->name;
 

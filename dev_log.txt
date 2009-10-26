@@ -1,0 +1,6 @@
+Modifiche al conf:
+ * general{use_whois_actually} non e' piu' un'opzione valida e DEVE essere rimossa
+ * nuova opzione booleana general{default_cloak} per impostare il +x al connect (default: YES)
+ * nuovo token per oper{flags}: spamnotice (controlla l'uso dell'umode +m)
+ * nuovi umode oper-only: noidle spamnotice (aggiornare TASSATIVAMENTE general{oper_only_umodes})
+Nel conf di default mancava cconnext in general{oper_only_umodes}.

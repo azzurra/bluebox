@@ -68,7 +68,7 @@ struct Message etrace_msgtab = {
 
 struct Message trace_msgtab = {
 	"TRACE", 0, 0, 0, MFLG_SLOW,
-	{mg_unreg, {m_trace, 0}, {m_trace, 0}, mg_ignore, mg_ignore, {m_trace, 0}}
+	{mg_unreg, mg_not_oper, {m_trace, 0}, mg_ignore, mg_ignore, {m_trace, 0}}
 };
 
 static void do_etrace(struct Client *source_p, int ipv4, int ipv6);

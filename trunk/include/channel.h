@@ -183,7 +183,7 @@ void destroy_channel(struct Channel *);
 
 int can_send(struct Channel *chptr, struct Client *who, struct membership *);
 int is_banned(struct Channel *chptr, struct Client *who,
-	      struct membership *msptr, const char *, const char *);
+	      struct membership *msptr, const char *, const char *, const char *);
 
 struct membership *find_channel_membership(struct Channel *, struct Client *);
 const char *find_channel_status(struct membership *msptr, int combine);

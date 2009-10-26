@@ -427,7 +427,8 @@ add_id(struct Client *source_p, struct Channel *chptr, const char *banid,
 
 
 	if(IsClient(source_p))
-		rb_sprintf(who, "%s!%s@%s", source_p->name, source_p->username, source_p->host);
+		rb_sprintf(who, "%s!%s@%s", source_p->name, source_p->username,
+			   IsCloaked(source_p) ? source_p->virthost : source_p->host);
 	else
 		rb_strlcpy(who, source_p->name, sizeof(who));
 
@@ -1410,7 +1411,8 @@ set_channel_mode(struct Client *client_p, struct Client *source_p,
 	else
 		mlen = rb_sprintf(modebuf, ":%s!%s@%s MODE %s ",
 				  source_p->name, source_p->username,
-				  source_p->host, chptr->chname);
+				  IsCloaked(source_p) ? source_p->virthost : source_p->host,
+				  chptr->chname);
 
 	for(j = 0, flags = ALL_MEMBERS; j < 2; j++, flags = ONLY_CHANOPS)
 	{

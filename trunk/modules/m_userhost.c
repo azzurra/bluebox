@@ -92,7 +92,8 @@ m_userhost(struct Client *client_p, struct Client *source_p, int parc, const cha
 						target_p->name,
 						IsOper(target_p) ? "*" : "",
 						(target_p->user->away) ? '-' : '+',
-						target_p->username, target_p->host);
+						target_p->username,
+						IsCloaked(target_p) ? target_p->virthost : target_p->host);
 			}
 
 			if((rl + cur_len) < (BUFSIZE - 10))

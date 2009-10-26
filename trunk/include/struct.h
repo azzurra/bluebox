@@ -96,6 +96,7 @@ struct Client
 	 * considered a read-only field after the client has registered.
 	 */
 	char host[HOSTLEN + 1];	/* client's hostname */
+	char virthost[HOSTLEN + 1];	/* Virtual (cloaked, actually) host */
 	char sockhost[HOSTIPLEN + 1];	/* clients ip */
 	char info[REALLEN + 1];	/* Free form additional client info */
 

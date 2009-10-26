@@ -368,6 +368,12 @@ static struct InfoStruct info_table[] = {
 		"Clients are set +i on connect"
 	},
 	{
+		"default_cloak",
+		OUTPUT_BOOLEAN_YN,
+		{ &ConfigFileEntry.default_cloak }, 
+		"Clients are set +x on connect"
+	},
+	{
 		"disable_auth",
 		OUTPUT_BOOLEAN_YN,
 		{ &ConfigFileEntry.disable_auth }, 
@@ -721,12 +727,6 @@ static struct InfoStruct info_table[] = {
 		OUTPUT_DECIMAL,
 		{ &ConfigFileEntry.ts_warn_delta }, 
 		"Maximum permitted TS delta before displaying a warning"
-	},
-	{
-		"use_whois_actually",
-		OUTPUT_BOOLEAN_YN,
-		{ &ConfigFileEntry.use_whois_actually },
-		"RPL_WHOISACTUALLY sent in reply to whois requests"
 	},
 	{
 		"warn_no_nline",

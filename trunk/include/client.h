@@ -288,6 +288,7 @@ struct LocalUser;
 #define IsSetCallerId(x)	((x)->umodes & UMODE_CALLERID)
 #define IsService(x)		((x)->umodes & UMODE_SERVICE)
 #define IsDeaf(x)		((x)->umodes & UMODE_DEAF)
+#define IsCloaked(x)		((x)->umodes & UMODE_CRYPTHOST)
 
 #define SetNeedId(x)            ((x)->flags |= FLAGS_NEEDID)
 #define IsNeedId(x)             (((x)->flags & FLAGS_NEEDID) != 0)

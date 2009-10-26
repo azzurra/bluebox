@@ -113,7 +113,8 @@ mo_kill(struct Client *client_p, struct Client *source_p, int parc, const char *
 
 	if(MyConnect(target_p))
 		sendto_one(target_p, ":%s!%s@%s KILL %s :%s",
-			   source_p->name, source_p->username, source_p->host,
+			   source_p->name, source_p->username,
+			   IsCloaked(source_p) ? source_p->virthost : source_p->host,
 			   target_p->name, reason);
 
 	/* Do not change the format of this message.  There's no point in changing messages
@@ -220,7 +221,8 @@ ms_kill(struct Client *client_p, struct Client *source_p, int parc, const char *
 		}
 		else
 			sendto_one(target_p, ":%s!%s@%s KILL %s :%s",
-				   source_p->name, source_p->username, source_p->host,
+				   source_p->name, source_p->username,
+				   IsCloaked(source_p) ? source_p->virthost : source_p->host,
 				   target_p->name, reason);
 	}
 

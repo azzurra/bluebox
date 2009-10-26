@@ -130,7 +130,8 @@ part_one_client(struct Client *client_p, struct Client *source_p, char *name, ch
 			      ":%s PART %s :%s", source_p->name, chptr->chname, reason);
 		sendto_channel_local(ALL_MEMBERS, chptr, ":%s!%s@%s PART %s :%s",
 				     source_p->name, source_p->username,
-				     source_p->host, chptr->chname, reason);
+				     IsCloaked(source_p) ? source_p->virthost : source_p->host,
+				     chptr->chname, reason);
 	}
 	else
 	{
@@ -140,7 +141,8 @@ part_one_client(struct Client *client_p, struct Client *source_p, char *name, ch
 			      ":%s PART %s", source_p->name, chptr->chname);
 		sendto_channel_local(ALL_MEMBERS, chptr, ":%s!%s@%s PART %s",
 				     source_p->name, source_p->username,
-				     source_p->host, chptr->chname);
+				     IsCloaked(source_p) ? source_p->virthost : source_p->host,
+				     chptr->chname);
 	}
 	remove_user_from_channel(msptr);
 }

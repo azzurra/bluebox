@@ -39,6 +39,7 @@
 #include "ircd.h"
 #include "match.h"
 #include "send.h"
+#include "client.h"
 
 struct monitor *monitorTable[MONITOR_HASH_SIZE];
 static rb_bh *monitor_heap;
@@ -107,7 +108,7 @@ monitor_signon(struct Client *client_p)
 		return;
 
 	rb_snprintf(buf, sizeof(buf), "%s!%s@%s", client_p->name, client_p->username,
-		    client_p->host);
+		    IsCloaked(client_p) ? client_p->virthost : client_p->host);
 
 	sendto_monitor(monptr, form_str(RPL_MONONLINE), me.name, "*", buf);
 }

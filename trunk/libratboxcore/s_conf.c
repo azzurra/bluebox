@@ -774,6 +774,7 @@ set_default_conf(void)
 	ConfigFileEntry.short_motd = NO;
 	ConfigFileEntry.no_oper_flood = NO;
 	ConfigFileEntry.default_invisible = NO;
+	ConfigFileEntry.default_cloak = YES;
 	ConfigFileEntry.fname_userlog = NULL;
 	ConfigFileEntry.fname_fuserlog = NULL;
 	ConfigFileEntry.fname_operlog = NULL;
@@ -792,7 +793,6 @@ set_default_conf(void)
 	ConfigFileEntry.dots_in_ident = 0;
 	ConfigFileEntry.max_targets = MAX_TARGETS_DEFAULT;
 	ConfigFileEntry.egdpool_path = NULL;
-	ConfigFileEntry.use_whois_actually = YES;
 	ConfigFileEntry.burst_away = NO;
 	ConfigFileEntry.hide_spoof_ips = YES;
 #ifdef HAVE_ZLIB

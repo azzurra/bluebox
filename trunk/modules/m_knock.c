@@ -120,7 +120,7 @@ m_knock(struct Client *client_p, struct Client *source_p, int parc, const char *
 	if(MyClient(source_p))
 	{
 		/* don't allow a knock if the user is banned */
-		if(is_banned(chptr, source_p, NULL, NULL, NULL) == CHFL_BAN)
+		if(is_banned(chptr, source_p, NULL, NULL, NULL, NULL) == CHFL_BAN)
 		{
 			sendto_one_numeric(source_p, ERR_CANNOTSENDTOCHAN,
 					   form_str(ERR_CANNOTSENDTOCHAN), name);
@@ -157,7 +157,8 @@ m_knock(struct Client *client_p, struct Client *source_p, int parc, const char *
 	if(ConfigChannel.use_knock)
 		sendto_channel_local(ONLY_CHANOPS, chptr, form_str(RPL_KNOCK),
 				     me.name, name, name, source_p->name,
-				     source_p->username, source_p->host);
+				     source_p->username,
+				     IsCloaked(source_p) ? source_p->virthost : source_p->host);
 
 	sendto_server(client_p, chptr, CAP_KNOCK | CAP_TS6, NOCAPS,
 		      ":%s KNOCK %s", use_id(source_p), name);

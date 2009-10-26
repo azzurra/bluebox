@@ -52,12 +52,12 @@ mapi_clist_av1 who_clist[] = { &who_msgtab, NULL };
 DECLARE_MODULE_AV1(who, NULL, NULL, who_clist, NULL, NULL, "$Revision: 26094 $");
 
 static void do_who_on_channel(struct Client *source_p, struct Channel *chptr,
-			      int server_oper, int member);
+			      int server_oper, int member, int operspy);
 
 static void who_global(struct Client *source_p, const char *mask, int server_oper, int operspy);
 
 static void do_who(struct Client *source_p,
-		   struct Client *target_p, const char *chname, const char *op_flags);
+		   struct Client *target_p, const char *chname, const char *op_flags, int operspy);
 
 
 /*
@@ -83,24 +83,6 @@ m_who(struct Client *client_p, struct Client *source_p, int parc, const char *pa
 
 	collapse(mask);
 
-	/* '/who *' */
-	if((*(mask + 1) == '\0') && (*mask == '*'))
-	{
-		if(source_p->user == NULL)
-			return 0;
-
-		if((lp = source_p->user->channel.head) != NULL)
-		{
-			msptr = lp->data;
-			SetCork(source_p);
-			do_who_on_channel(source_p, msptr->chptr, server_oper, YES);
-			ClearCork(source_p);
-		}
-
-		sendto_one(source_p, form_str(RPL_ENDOFWHO), me.name, source_p->name, "*");
-		return 0;
-	}
-
 	if(IsOperSpy(source_p) && *mask == '!')
 	{
 		mask++;
@@ -114,6 +96,24 @@ m_who(struct Client *client_p, struct Client *source_p, int parc, const char *pa
 		}
 	}
 
+	/* '/who *' */
+	if((*(mask + 1) == '\0') && (*mask == '*'))
+	{
+		if(source_p->user == NULL)
+			return 0;
+
+		if((lp = source_p->user->channel.head) != NULL)
+		{
+			msptr = lp->data;
+			SetCork(source_p);
+			do_who_on_channel(source_p, msptr->chptr, server_oper, YES, operspy);
+			ClearCork(source_p);
+		}
+
+		sendto_one(source_p, form_str(RPL_ENDOFWHO), me.name, source_p->name, "*");
+		return 0;
+	}
+
 	/* '/who #some_channel' */
 	if(IsChannelName(mask))
 	{
@@ -125,9 +125,9 @@ m_who(struct Client *client_p, struct Client *source_p, int parc, const char *pa
 				report_operspy(source_p, "WHO", chptr->chname);
 			SetCork(source_p);
 			if(IsMember(source_p, chptr) || operspy)
-				do_who_on_channel(source_p, chptr, server_oper, YES);
+				do_who_on_channel(source_p, chptr, server_oper, YES, operspy);
 			else if(!SecretChannel(chptr))
-				do_who_on_channel(source_p, chptr, server_oper, NO);
+				do_who_on_channel(source_p, chptr, server_oper, NO, operspy);
 			ClearCork(source_p);
 		}
 		sendto_one(source_p, form_str(RPL_ENDOFWHO),
@@ -149,10 +149,10 @@ m_who(struct Client *client_p, struct Client *source_p, int parc, const char *pa
 
 			member = IsMember(source_p, chptr);
 
-			if(isinvis && !member)
+			if(isinvis && !member && !operspy)
 				continue;
 
-			if(member || (!isinvis && PubChannel(chptr)))
+			if(member || operspy || (!isinvis && PubChannel(chptr)))
 				break;
 		}
 
@@ -162,9 +162,9 @@ m_who(struct Client *client_p, struct Client *source_p, int parc, const char *pa
 		if(lp != NULL)
 			do_who(source_p, target_p, chptr->chname,
 			       find_channel_status(lp->data,
-						   IsCapable(source_p, CLICAP_MULTI_PREFIX)));
+						   IsCapable(source_p, CLICAP_MULTI_PREFIX)), operspy);
 		else
-			do_who(source_p, target_p, NULL, "");
+			do_who(source_p, target_p, NULL, "", operspy);
 
 		sendto_one(source_p, form_str(RPL_ENDOFWHO), me.name, source_p->name, mask);
 		return 0;
@@ -234,12 +234,14 @@ who_common_channel(struct Client *source_p, struct Channel *chptr,
 
 		if(*maxmatches > 0)
 		{
+			/* Match virtual host if target is +x -- we don't do operspy here */
 			if((mask == NULL) ||
 			   match(mask, target_p->name) || match(mask, target_p->username) ||
-			   match(mask, target_p->host) || match(mask, target_p->servptr->name) ||
+			   match(mask, IsCloaked(target_p) ? target_p->virthost : target_p->host) ||
+			   match(mask, target_p->servptr->name) ||
 			   match(mask, target_p->info))
 			{
-				do_who(source_p, target_p, NULL, "");
+				do_who(source_p, target_p, NULL, "", NO);
 				--(*maxmatches);
 			}
 		}
@@ -302,12 +304,14 @@ who_global(struct Client *source_p, const char *mask, int server_oper, int opers
 
 		if(maxmatches > 0)
 		{
+			/* Match on real host only if target is -x or we're doing an operspy WHO */
 			if(!mask ||
 			   match(mask, target_p->name) || match(mask, target_p->username) ||
-			   match(mask, target_p->host) || match(mask, target_p->servptr->name) ||
+			   match(mask, (IsCloaked(target_p) && !operspy) ? target_p->virthost : target_p->host) ||
+			   match(mask, target_p->servptr->name) ||
 			   match(mask, target_p->info))
 			{
-				do_who(source_p, target_p, NULL, "");
+				do_who(source_p, target_p, NULL, "", operspy);
 				--maxmatches;
 			}
 		}
@@ -330,7 +334,7 @@ who_global(struct Client *source_p, const char *mask, int server_oper, int opers
  * side effects - do a who on given channel
  */
 static void
-do_who_on_channel(struct Client *source_p, struct Channel *chptr, int server_oper, int member)
+do_who_on_channel(struct Client *source_p, struct Channel *chptr, int server_oper, int member, int operspy)
 {
 	struct Client *target_p;
 	struct membership *msptr;
@@ -347,7 +351,7 @@ do_who_on_channel(struct Client *source_p, struct Channel *chptr, int server_ope
 
 		if(member || !IsInvisible(target_p))
 			do_who(source_p, target_p, chptr->chname,
-			       find_channel_status(msptr, combine));
+			       find_channel_status(msptr, combine), operspy);
 	}
 }
 
@@ -358,12 +362,13 @@ do_who_on_channel(struct Client *source_p, struct Channel *chptr, int server_ope
  *		- pointer to client to do who on
  *		- The reported name
  *		- channel flags
+ *		- forcibly report clear host or not
  * output	- NONE
  * side effects - do a who on given person
  */
 
 static void
-do_who(struct Client *source_p, struct Client *target_p, const char *chname, const char *op_flags)
+do_who(struct Client *source_p, struct Client *target_p, const char *chname, const char *op_flags, int operspy)
 {
 	char status[5];
 
@@ -373,6 +378,7 @@ do_who(struct Client *source_p, struct Client *target_p, const char *chname, con
 	sendto_one(source_p, form_str(RPL_WHOREPLY), me.name, source_p->name,
 		   (chname) ? (chname) : "*",
 		   target_p->username,
-		   target_p->host, target_p->servptr->name, target_p->name,
+		   (IsCloaked(target_p) && !operspy) ? target_p->virthost : target_p->host,
+		   target_p->servptr->name, target_p->name,
 		   status, ConfigServerHide.flatten_links ? 0 : target_p->hopcount, target_p->info);
 }

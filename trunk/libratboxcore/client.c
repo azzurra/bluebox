@@ -1103,7 +1103,8 @@ static inline void
 exit_generic_client(struct Client *source_p, const char *comment)
 {
 	sendto_common_channels_local(source_p, ":%s!%s@%s QUIT :%s",
-				     source_p->name, source_p->username, source_p->host, comment);
+				     source_p->name, source_p->username,
+				     IsCloaked(source_p) ? source_p->virthost : source_p->host, comment);
 
 	remove_user_from_channels(source_p);
 

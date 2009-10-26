@@ -490,9 +490,10 @@ del_invite(struct Channel *chptr, struct Client *who)
  */
 int
 is_banned(struct Channel *chptr, struct Client *who, struct membership *msptr,
-	  const char *s, const char *s2)
+	  const char *s, const char *s2, const char *s3)
 {
 	char src_host[NICKLEN + USERLEN + HOSTLEN + 6];
+	char src_vhost[NICKLEN + USERLEN + HOSTLEN + 6];
 	char src_iphost[NICKLEN + USERLEN + HOSTLEN + 6];
 	rb_dlink_node *ptr;
 	struct Ban *actualBan = NULL;
@@ -505,17 +506,20 @@ is_banned(struct Channel *chptr, struct Client *who, struct membership *msptr,
 	if(s == NULL)
 	{
 		rb_sprintf(src_host, "%s!%s@%s", who->name, who->username, who->host);
+		rb_sprintf(src_vhost, "%s!%s@%s", who->name, who->username, who->virthost);
 		rb_sprintf(src_iphost, "%s!%s@%s", who->name, who->username, who->sockhost);
 
 		s = src_host;
-		s2 = src_iphost;
+		s2 = src_vhost;
+		s3 = src_iphost;
 	}
 
 	RB_DLINK_FOREACH(ptr, chptr->banlist.head)
 	{
 		actualBan = ptr->data;
 		if(match(actualBan->banstr, s) ||
-		   match(actualBan->banstr, s2) || match_cidr(actualBan->banstr, s2))
+		   match(actualBan->banstr, s2) ||
+		   match(actualBan->banstr, s3) || match_cidr(actualBan->banstr, s3))
 			break;
 		else
 			actualBan = NULL;
@@ -529,7 +533,8 @@ is_banned(struct Channel *chptr, struct Client *who, struct membership *msptr,
 
 			/* theyre exempted.. */
 			if(match(actualExcept->banstr, s) ||
-			   match(actualExcept->banstr, s2) || match_cidr(actualExcept->banstr, s2))
+			   match(actualExcept->banstr, s2) ||
+			   match(actualExcept->banstr, s3) || match_cidr(actualExcept->banstr, s3))
 			{
 				/* cache the fact theyre not banned */
 				if(msptr != NULL)
@@ -610,7 +615,7 @@ can_send(struct Channel *chptr, struct Client *source_p, struct membership *mspt
 			if(can_send_banned(msptr))
 				return CAN_SEND_NO;
 		}
-		else if(is_banned(chptr, source_p, msptr, NULL, NULL) == CHFL_BAN)
+		else if(is_banned(chptr, source_p, msptr, NULL, NULL, NULL) == CHFL_BAN)
 			return CAN_SEND_NO;
 	}
 

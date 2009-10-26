@@ -83,6 +83,7 @@ add_monitor(struct Client *client_p, const char *nicks)
 	const char *name;
 	char *tmp;
 	char *p;
+	char *pub_host;
 	char *onptr, *offptr;
 	int mlen, arglen;
 	int cur_onlen, cur_offlen;
@@ -133,8 +134,9 @@ add_monitor(struct Client *client_p, const char *nicks)
 
 		if((target_p = find_named_person(name)) != NULL)
 		{
+			pub_host = IsCloaked(target_p) ? target_p->virthost : target_p->host;
 			if(cur_onlen + strlen(target_p->name) +
-			   strlen(target_p->username) + strlen(target_p->host) + 3 >= BUFSIZE - 3)
+			   strlen(target_p->username) + strlen(pub_host) + 3 >= BUFSIZE - 3)
 			{
 				sendto_one_buffer(client_p, onbuf);
 				cur_onlen = mlen;
@@ -147,7 +149,7 @@ add_monitor(struct Client *client_p, const char *nicks)
 				cur_onlen++;
 			}
 			arglen = rb_sprintf(onptr, "%s!%s@%s",
-					    target_p->name, target_p->username, target_p->host);
+					    target_p->name, target_p->username, pub_host);
 			onptr += arglen;
 			cur_onlen += arglen;
 		}
@@ -255,6 +257,7 @@ show_monitor_status(struct Client *client_p)
 	struct Client *target_p;
 	struct monitor *monptr;
 	char *onptr, *offptr;
+	char *pub_host;
 	int cur_onlen, cur_offlen;
 	int mlen, arglen;
 	rb_dlink_node *ptr;
@@ -271,8 +274,9 @@ show_monitor_status(struct Client *client_p)
 
 		if((target_p = find_named_person(monptr->name)) != NULL)
 		{
+			pub_host = IsCloaked(target_p) ? target_p->virthost : target_p->host;
 			if(cur_onlen + strlen(target_p->name) +
-			   strlen(target_p->username) + strlen(target_p->host) + 3 >= BUFSIZE - 3)
+			   strlen(target_p->username) + strlen(pub_host) + 3 >= BUFSIZE - 3)
 			{
 				sendto_one_buffer(client_p, onbuf);
 				cur_onlen = mlen;
@@ -285,7 +289,7 @@ show_monitor_status(struct Client *client_p)
 				cur_onlen++;
 			}
 			arglen = rb_sprintf(onptr, "%s!%s@%s",
-					    target_p->name, target_p->username, target_p->host);
+					    target_p->name, target_p->username, pub_host);
 			onptr += arglen;
 			cur_onlen += arglen;
 		}

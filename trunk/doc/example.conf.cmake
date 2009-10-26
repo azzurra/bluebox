@@ -686,6 +686,9 @@ general {
 	/* default invisible: set clients +i on connect */
 	default_invisible = no;
 
+	/* default cloak: set clients +x on connect */
+	default_cloak = yes;
+
 	/* default operstring: defines the default oper response
 	 * in /whois queries, eg "is an IRC Operator"
 	 */
@@ -928,11 +931,6 @@ general {
 	 * they are dropped for flooding.
 	 */
 	client_flood = 20;
-
-        /* use_whois_actually: send clients requesting a whois a numeric
-         * giving the real IP of non-spoofed clients to prevent DNS abuse.
-         */
-        use_whois_actually = yes;
 
 	/* usermodes configurable: a list of usermodes for the options below
 	 *

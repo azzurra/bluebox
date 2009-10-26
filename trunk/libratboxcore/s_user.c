@@ -461,6 +461,16 @@ register_local_user(struct Client *client_p, struct Client *source_p, const char
 		return CLIENT_EXITED;
 
 	rb_inet_ntop_sock((struct sockaddr *)&source_p->localClient->ip, ipaddr, sizeof(ipaddr));
+	/* TODO: Cloak host - This is just a stub */
+	rb_strlcpy(source_p->virthost, source_p->host, sizeof(source_p->virthost));
+	if(ConfigFileEntry.default_cloak
+#ifdef RB_IPV6
+	  && GET_SS_FAMILY(&source_p->localClient->ip) == AF_INET
+#endif
+	  && !IsIPSpoof(source_p))
+	{
+		source_p->umodes |= UMODE_CRYPTHOST;
+	}
 
 	sendto_realops_flags(UMODE_CCONN, L_ALL,
 			     "Client connecting: %s (%s@%s) [%s] {%s} [%s]",

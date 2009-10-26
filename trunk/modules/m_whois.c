@@ -255,7 +255,19 @@ single_whois(struct Client *source_p, struct Client *target_p, int operspy)
 	a2client_p = target_p->servptr;
 
 	sendto_one_numeric(source_p, RPL_WHOISUSER, form_str(RPL_WHOISUSER),
-			   target_p->name, target_p->username, target_p->host, target_p->info);
+			   target_p->name, target_p->username,
+			   IsCloaked(target_p) ? target_p->virthost : target_p->host,
+			   target_p->info);
+
+	if(IsOper(source_p) && show_ip(source_p, target_p) &&
+	   (MyClient(target_p) ||
+	   (!EmptyString(target_p->sockhost) && strcmp(target_p->sockhost, "0.0.0.0"))))
+	{
+		sendto_one_numeric(source_p, RPL_WHOISACTUALLY,
+				   form_str(RPL_WHOISACTUALLY),
+				   target_p->name, target_p->host, target_p->sockhost);
+	}
+
 
 	cur_len = mlen = rb_sprintf(buf, form_str(RPL_WHOISCHANNELS),
 				    get_id(&me, source_p), get_id(source_p, source_p),
@@ -329,28 +341,12 @@ single_whois(struct Client *source_p, struct Client *target_p, int operspy)
 			sendto_one_numeric(source_p, RPL_WHOISSECURE,
 					   form_str(RPL_WHOISSECURE), target_p->name);
 
-		if(ConfigFileEntry.use_whois_actually && show_ip(source_p, target_p))
-			sendto_one_numeric(source_p, RPL_WHOISACTUALLY,
-					   form_str(RPL_WHOISACTUALLY),
-					   target_p->name, target_p->sockhost);
 
 		if(IsOper(source_p) || !IsHiddenIdle(target_p) || source_p == target_p)
 			sendto_one_numeric(source_p, RPL_WHOISIDLE, form_str(RPL_WHOISIDLE),
 					   target_p->name,
 					   rb_current_time() - target_p->localClient->last,
 					   target_p->localClient->firsttime);
-	}
-	else
-	{
-		if(ConfigFileEntry.use_whois_actually && show_ip(source_p, target_p) &&
-		   !EmptyString(target_p->sockhost) && strcmp(target_p->sockhost, "0.0.0.0"))
-		{
-			sendto_one_numeric(source_p, RPL_WHOISACTUALLY,
-					   form_str(RPL_WHOISACTUALLY),
-					   target_p->name, target_p->sockhost);
-
-		}
-
 	}
 
 	send_pop_queue(source_p);

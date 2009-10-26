@@ -247,7 +247,9 @@ m_join(struct Client *client_p, struct Client *source_p, int parc, const char *p
 		 */
 		sendto_channel_local(ALL_MEMBERS, chptr, ":%s!%s@%s JOIN :%s",
 				     source_p->name,
-				     source_p->username, source_p->host, chptr->chname);
+				     source_p->username,
+				     IsCloaked(source_p) ? source_p->virthost : source_p->host,
+				     chptr->chname);
 
 		/* its a new channel, set +nt and burst. */
 		if(flags & CHFL_CHANOP)
@@ -398,7 +400,8 @@ ms_join(struct Client *client_p, struct Client *source_p, int parc, const char *
 		add_user_to_channel(chptr, source_p, CHFL_PEON);
 		sendto_channel_local(ALL_MEMBERS, chptr, ":%s!%s@%s JOIN :%s",
 				     source_p->name, source_p->username,
-				     source_p->host, chptr->chname);
+				     IsCloaked(source_p) ? source_p->virthost : source_p->host,
+				     chptr->chname);
 	}
 
 	sendto_server(client_p, chptr, CAP_TS6, NOCAPS,
@@ -491,7 +494,8 @@ mc_sjoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 		add_user_to_channel(chptr, source_p, CHFL_PEON);
 		sendto_channel_local(ALL_MEMBERS, chptr, ":%s!%s@%s JOIN :%s",
 				     source_p->name, source_p->username,
-				     source_p->host, chptr->chname);
+				     IsCloaked(source_p) ? source_p->virthost : source_p->host,
+				     chptr->chname);
 	}
 
 	/* Obviously a remote client doing an SJOIN doesn't have a damn UID... */
@@ -790,7 +794,9 @@ ms_sjoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 			add_user_to_channel(chptr, target_p, fl);
 			sendto_channel_local(ALL_MEMBERS, chptr, ":%s!%s@%s JOIN :%s",
 					     target_p->name,
-					     target_p->username, target_p->host, parv[2]);
+					     target_p->username,
+					     IsCloaked(target_p) ? target_p->virthost : target_p->host,
+					     parv[2]);
 			joins++;
 		}
 
@@ -948,7 +954,9 @@ do_join_0(struct Client *client_p, struct Client *source_p)
 		chptr = msptr->chptr;
 		sendto_channel_local(ALL_MEMBERS, chptr, ":%s!%s@%s PART %s",
 				     source_p->name,
-				     source_p->username, source_p->host, chptr->chname);
+				     source_p->username,
+				     IsCloaked(source_p) ? source_p->virthost : source_p->host,
+				     chptr->chname);
 		remove_user_from_channel(msptr);
 	}
 }
@@ -993,14 +1001,16 @@ can_join(struct Client *source_p, struct Channel *chptr, char *key)
 	rb_dlink_node *ptr;
 	struct Ban *invex = NULL;
 	char src_host[NICKLEN + USERLEN + HOSTLEN + 6];
+	char src_vhost[NICKLEN + USERLEN + HOSTLEN + 6];
 	char src_iphost[NICKLEN + USERLEN + HOSTLEN + 6];
 
 	s_assert(source_p->localClient != NULL);
 
 	rb_sprintf(src_host, "%s!%s@%s", source_p->name, source_p->username, source_p->host);
+	rb_sprintf(src_vhost, "%s!%s@%s", source_p->name, source_p->username, source_p->virthost);
 	rb_sprintf(src_iphost, "%s!%s@%s", source_p->name, source_p->username, source_p->sockhost);
 
-	if((is_banned(chptr, source_p, NULL, src_host, src_iphost)) == CHFL_BAN)
+	if((is_banned(chptr, source_p, NULL, src_host, src_vhost, src_iphost)) == CHFL_BAN)
 		return (ERR_BANNEDFROMCHAN);
 
 	if(chptr->mode.mode & MODE_INVITEONLY)
@@ -1018,6 +1028,7 @@ can_join(struct Client *source_p, struct Channel *chptr, char *key)
 			{
 				invex = ptr->data;
 				if(match(invex->banstr, src_host)
+				   || match(invex->banstr, src_vhost)
 				   || match(invex->banstr, src_iphost)
 				   || match_cidr(invex->banstr, src_iphost))
 					break;
