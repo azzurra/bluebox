@@ -16,6 +16,7 @@ SET(libratboxcore_LIB_SRCS
   channel.c
   class.c
   client.c
+  cloak.c
   dns.c
   getopt.c
   hash.c
@@ -48,6 +49,7 @@ SET(libratboxcore_LIB_SRCS
   s_user.c
   scache.c
   send.c
+  sha1.c
   sslproc.c
   supported.c
   whowas.c

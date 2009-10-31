@@ -60,3 +60,61 @@
 #define ND_HEAP_SIZE 512
 #define TOPIC_HEAP_SIZE 4096
 #define USER_HEAP_SIZE 8192
+
+/* Try to figure out *TARGET* endianess.
+ * We rely on target's libc and/or compiler-defined macros so
+ * cross-compilation (or multitarget compilation - hello, Darwin!)
+ * works properly.
+ *
+ * Code shamelessly stolen and adapted from Boost's endian.hpp.
+ * Copyright 2005 Caleb Epstein
+ * Copyright 2006 John Maddock
+ * Distributed under the Boost Software License, Version 1.0. (See
+ * http://www.boost.org/LICENSE_1_0.txt)
+ * Copyright (c) 1997
+ * Silicon Graphics Computer Systems, Inc.
+ *
+ * Permission to use, copy, modify, distribute and sell this software
+ * and its documentation for any purpose is hereby granted without fee,
+ * provided that the above copyright notice appear in all copies and
+ * that both that copyright notice and this permission notice appear
+ * in supporting documentation.  Silicon Graphics makes no
+ * representations about the suitability of this software for any
+ * purpose.  It is provided "as is" without express or implied warranty.
+ */
+ 
+#if defined(__GLIBC__)
+#include <endian.h>
+#if (__BYTE_ORDER == __LITTLE_ENDIAN)
+#define BLUEBOX_LITTLE_ENDIAN
+#elif (__BYTE_ORDER == __BIG_ENDIAN)
+#define BLUEBOX_BIG_ENDIAN
+#else
+#error "Is this a real PDP-11? Wow..."
+#endif
+#define BLUEBOX_BYTE_ORDER __BYTE_ORDER
+#elif defined(_BIG_ENDIAN)
+#define BLUEBOX_BIG_ENDIAN
+#define BLUEBOX_BYTE_ORDER 4321
+#elif defined(_LITTLE_ENDIAN)
+#define BLUEBOX_LITTLE_ENDIAN
+#define BLUEBOX_BYTE_ORDER 1234
+#elif defined(__sparc) || defined(__sparc__) \
+	|| defined(_POWER) || defined(__powerpc__) \
+	|| defined(__ppc__) || defined(__hpux) \
+	|| defined(_MIPSEB) || defined(_POWER) \
+	|| defined(__s390__)
+#define BLUEBOX_BIG_ENDIAN
+#define BLUEBOX_BYTE_ORDER 4321
+#elif defined(__i386__) || defined(__alpha__) \
+	|| defined(__ia64) || defined(__ia64__) \
+	|| defined(_M_IX86) || defined(_M_IA64) \
+	|| defined(_M_ALPHA) || defined(__amd64) \
+	|| defined(__amd64__) || defined(_M_AMD64) \
+	|| defined(__x86_64) || defined(__x86_64__) \
+	|| defined(_M_X64)
+#define BLUEBOX_LITTLE_ENDIAN
+#define BLUEBOX_BYTE_ORDER 1234
+#else
+#error "Unknown CPU endianess."
+#endif

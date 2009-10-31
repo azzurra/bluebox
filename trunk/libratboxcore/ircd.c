@@ -61,6 +61,7 @@
 #include "bandbi.h"
 #include "sslproc.h"
 #include "supported.h"
+#include "cloak.h"
 /*
  * Try and find the correct name to use with getrlimit() for setting the max.
  * number of files allowed to be open by this process.
@@ -760,6 +761,7 @@ ratbox_main(int argc, char *argv[])
 	write_pidfile(pidFileName);
 	load_help();
 	open_logfiles(logFileName);
+	init_cloak();
 
 	ilog(L_MAIN, "Server Ready");
 

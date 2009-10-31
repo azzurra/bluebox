@@ -50,6 +50,7 @@
 #include "cache.h"
 #include "hook.h"
 #include "monitor.h"
+#include "cloak.h"
 
 static void report_and_set_user_flags(struct Client *, struct ConfItem *);
 void user_welcome(struct Client *source_p);
@@ -461,8 +462,10 @@ register_local_user(struct Client *client_p, struct Client *source_p, const char
 		return CLIENT_EXITED;
 
 	rb_inet_ntop_sock((struct sockaddr *)&source_p->localClient->ip, ipaddr, sizeof(ipaddr));
-	/* TODO: Cloak host - This is just a stub */
-	rb_strlcpy(source_p->virthost, source_p->host, sizeof(source_p->virthost));
+
+	/* Try to cloak this client's host or copy the cleartext version if it fails */
+	if (!cloak_host(source_p))
+		rb_strlcpy(source_p->virthost, source_p->host, sizeof(source_p->virthost));
 	if(ConfigFileEntry.default_cloak
 #ifdef RB_IPV6
 	  && GET_SS_FAMILY(&source_p->localClient->ip) == AF_INET

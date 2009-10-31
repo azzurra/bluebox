@@ -1,3 +1,5 @@
+!!! E' NECESSARIO AVERE ircd.cloak IN ETC_DIR ALTRIMENTI L'IRCD NON STARTA !!!
+
 Modifiche al conf:
  * general{use_whois_actually} non e' piu' un'opzione valida e DEVE essere rimossa
  * nuova opzione booleana general{default_cloak} per impostare il +x al connect (default: YES)

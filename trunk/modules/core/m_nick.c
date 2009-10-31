@@ -46,6 +46,7 @@
 #include "s_newconf.h"
 #include "monitor.h"
 #include "reject.h"
+#include "cloak.h"
 
 /* Give all UID nicks the same TS. This ensures nick TS is always the same on
  * all servers for each nick-user pair, also if a user with a UID nick changes
@@ -1065,8 +1066,9 @@ register_client(struct Client *client_p, struct Client *server,
 	source_p->name = source_p->user->name;
 	rb_strlcpy(source_p->username, parv[5], sizeof(source_p->username));
 	rb_strlcpy(source_p->host, parv[6], sizeof(source_p->host));
-	/* FIXME: Encrypt host */
-	rb_strlcpy(source_p->virthost, source_p->host, sizeof(source_p->virthost));
+	/* Cloak host */
+	if (!cloak_host(source_p))
+		rb_strlcpy(source_p->virthost, source_p->host, sizeof(source_p->virthost));
 
 	if(parc == 10)
 	{
