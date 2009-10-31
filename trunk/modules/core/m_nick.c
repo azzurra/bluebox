@@ -1083,7 +1083,14 @@ register_client(struct Client *client_p, struct Client *server,
 			rb_strlcpy(source_p->info, parv[8], sizeof(source_p->info));
 		else
 		{
-			rb_strlcpy(source_p->sockhost, parv[9], sizeof(source_p->sockhost));
+			/* Goddamn bahamut... */
+			struct sockaddr_in in;
+			char *errptr = NULL;
+			in.sin_addr.s_addr = htonl(strtoul(parv[9], &errptr, 10));
+			if (errptr == parv[9] || *errptr != '\0')
+				rb_strlcpy(source_p->sockhost, parv[9], sizeof(source_p->sockhost));
+			else
+				rb_inet_ntop(AF_INET, &in.sin_addr, source_p->sockhost, sizeof(source_p->sockhost));
 			rb_strlcpy(source_p->info, parv[10], sizeof(source_p->info));
 		}
 
