@@ -1,11 +1,11 @@
-/* doc/example.conf - ircd-ratbox Example configuration file
+/* doc/example.conf - bluebox Example configuration file
  *
  * Copyright (C) 2000-2002 Hybrid Development Team
  * Copyright (C) 2002-2003 ircd-ratbox development team
+ * Copyright (C) 2009 Azzurra IRC Network
  *
  * Written by ejb, wcampbel, db, leeh and others
  *
- * $Id: example.conf 26351 2008-12-22 00:04:42Z androsyn $
  */
 
 /* IMPORTANT NOTES:
@@ -35,10 +35,10 @@
  * Sizes and times may be singular or plural.  
  */ 
 
-/* EFNET NOTE:
+/* Azzurra NOTE:
  * 
- * This config file is NOT suitable for EFNet.  EFNet admins should use
- * example.efnet.conf
+ * Unless otherwise noted, most settings should be suitable
+ * for servers linked to Azzurra IRC Network.
  */
  
  /* serverinfo {}:  Contains information about the server. (OLD M:) */
@@ -57,10 +57,12 @@ serverinfo {
 	/* description: the description of our server.  '[' and ']' may not
 	 * be used here for compatibility with older servers.
 	 */
-	description = "ircd-ratbox test server";
+	description = "bluebox test server";
 
 	/* network info: the name and description of the network this server
 	 * is on.  Shown in the 005 reply and used with serverhiding.
+	 * Network name is also used by host cloaking code and SHOULD be
+	 * the same on the whole network
 	 */
 	network_name = "MyNet";
 	network_desc = "This is My Network";
@@ -145,7 +147,7 @@ log {
 	#fname_foperlog = "var/log/bluebox/foperlog";
 	fname_serverlog = "var/log/bluebox/serverlog";
 	fname_glinelog = "var/log/bluebox/glinelog";
-	#fname_klinelog = "var/log/bluebox/klinelog";
+	fname_klinelog = "var/log/bluebox/klinelog";
 	fname_killlog = "var/log/bluebox/killlog";
 	fname_operspylog = "var/log/bluebox/operspylog";
 	#fname_ioerrorlog = "var/log/bluebox/ioerror";
@@ -158,45 +160,45 @@ class "users" {
 	/* ping time: how often a client must reply to a PING from the
 	 * server before they are dropped.
 	 */
-	ping_time = 2 minutes;
+	ping_time = 3 minutes;
 
         /* number per ident: the number of users per user@host networkwide
          * allowed to connect.  Unidented connections are classified as
          * the same ident.
          */
-        number_per_ident = 2;
+        number_per_ident = 0;
 
 	/* number per ip: the number of local users per host allowed */
-	number_per_ip = 3;
+	number_per_ip = 0;
 
         /* number per ip global: the number of network wide connections
          * per host allowed for a user, including connections to the
          * local server.
          */
-        number_per_ip_global = 5;
+        number_per_ip_global = 0;
 
 	/* cidr_ipv4_bitlen:  Limits numbers of connections from a subnet size
 	 */
-	cidr_ipv4_bitlen = 24;
+	cidr_ipv4_bitlen = 0;
 
 	/* cidr_ipv6_bitlen:  Limits numbers of connections from a subnet size
 	 * the following example makes the subnet /64 this is useful
 	 * for IPv6 connections in particular
 	 */
-	cidr_ipv6_bitlen = 64;
+	cidr_ipv6_bitlen = 0;
 
 	/* number_per_cidr:  Number of connections to allow from a subnet of the 
 	 * size given in cidr_bitlen.  4 seems to be a good default to me.
 	 */
-	number_per_cidr = 4;
+	number_per_cidr = 0;
 
 	/* max number: the maximum number of users allowed in this class */
-	max_number = 100;
+	max_number = 8192;
 
 	/* sendq: the amount of data allowed in a clients queue before
 	 * they are dropped.
 	 */
-	sendq = 100 kbytes;
+	sendq = 150 kbytes;
 };
 
 class "restricted" {
@@ -210,11 +212,11 @@ class "opers" {
 	ping_time = 5 minutes;
 	number_per_ip = 10;
 	max_number = 100;
-	sendq = 100kbytes;
+	sendq = 4 megabytes;
 };
 
 class "server" {
-	ping_time = 5 minutes;
+	ping_time = 90 seconds;
 
 	/* connectfreq: only used in server classes.  specifies the delay
 	 * between autoconnecting to servers.
@@ -225,7 +227,7 @@ class "server" {
 	max_number = 1;
 
 	/* sendq: servers need a higher sendq as they send more data */
-	sendq=2 megabytes;
+	sendq = 12 megabytes;
 };
 
 /* listen {}: contain information about the ports ircd listens on (OLD P:) */
@@ -393,9 +395,10 @@ operator "god" {
 	 * hidden_oper:  hides the oper from /stats p    (OLD UMODE +p)	
 	 * remoteban:    allows remote kline etc [DEFAULT]
 	 * need_ssl:     oper must be connected via SSL/TLS to oper up
+	 * spamnotice:   oper can set mode +m
 	 *               
          */
-	flags = global_kill, remote, kline, unkline, gline,
+	flags = global_kill, remote, kline, unkline, gline, spamnotice,
 		die, rehash, admin, xline, resv, operwall;
 };
 
@@ -463,6 +466,9 @@ connect "ipv6.some.server" {
  *       you must add a seperate shared block for that.  Clustering will
  *       only be done for actions by LOCAL opers, that arent directed
  *       remotely.
+ * AZZURRA NOTE: clustering is *STRONGLY* discouraged and could result
+ *               in the server being juped if configured incorrectly.
+ *               Just play it safe and comment out the whole section.
  */
 cluster {
 	/* name: the server to share with, this can be a wildcard and may be
@@ -501,11 +507,16 @@ cluster {
  * need a separate shared{} for that.
  * Do not place normal servers here.
  * There may be only one service{} block.
+ * AZZURRA NOTE: *LEAVE THIS SECTION UNTOUCHED*.
  */
-#service {
-#	/* name: the server name. These may be stacked. */
-#	name = "ratbox.services";
-#};
+service {
+	/* name: the server name. These may be stacked. */
+	name = "services.azzurra.org";
+	name = "stats.azzurra.org";
+	name = "cybcop.azzurra.org";
+	name = "chanstats.azzurra.org";
+	name = "snow.azzurra.org";
+};
 
 /* shared {}: users that are allowed to place remote bans on our server.
  * NOTE: These are ordered top down.  The first one the user@host and server
@@ -535,22 +546,11 @@ shared {
 	 *    none    - disallow everything
 	 */
 
-	/* allow flame@*.leeh.co.uk on server irc.ircd-ratbox.org and
-	 * allow leeh@*.leeh.co.uk on server ircd.ircd-ratbox.org to kline
-	 */
-	oper = "flame@*.leeh.co.uk", "irc.ircd-ratbox.org";
-	oper = "leeh@*.leeh.co.uk", "ircd.ircd-ratbox.org";
-	flags = kline;
-
-	/* you may forbid certain opers/servers from doing anything */
-	oper = "irc@vanity.oper", "*";
-	oper = "*@*", "irc.vanity.server";
-	oper = "irc@another.vanity.oper", "bigger.vanity.server";
-	flags = none;
-
-	/* or allow everyone to place temp klines */
-	oper = "*@*";
-	flags = tkline;
+	/* AZZURRA NOTE: Do not remove or modify the following lines */
+	oper = "service@azzurra.org", "services.azzurra.org";
+	flags = all;
+	oper = "service@azzurra.org", "cybcop.azzurra.org";
+	flags = kline, unkline;
 };
 
 /* exempt {}: IPs that are exempt from deny {} and Dlines. (OLD d:) */
@@ -566,22 +566,29 @@ exempt {
 channel {
 	/* invex: Enable/disable channel mode +I, a n!u@h list of masks
 	 * that can join a +i channel without an invite.
+	 * NOTE: some broken clients (irssi) won't recognize this mode
+	 *       unless mode +e is enabled as well.
 	 */
 	use_invex = yes;
 
 	/* except: Enable/disable channel mode +e, a n!u@h list of masks
 	 * that can join a channel through a ban (+b).
+	 * NOTE: some broken clients (irssi) won't recognize this mode
+	 *       unless mode +I is enabled as well.
 	 */
 	use_except = yes;
 
 	/* knock: Allows users to request an invite to a channel that
 	 * is locked somehow (+ikl).  If the channel is +p or you are banned
 	 * the knock will not be sent.
+	 * AZZURRA NOTE: knock should be disabled unless a proper policy
+	 *               is established.
 	 */
-	use_knock = yes;
+	use_knock = no;
 
 	/* invite ops only: Restrict /invite to ops on channels, rather than
 	 * allowing unopped users to invite people to a -i channel.
+	 * AZZURRA NOTE: *DON'T* change this one. And I really mean it.
 	 */
 	invite_ops_only = yes;
 
@@ -602,7 +609,7 @@ channel {
         quiet_on_ban = yes;
 
         /* max bans: maximum number of +b/e/I modes in a channel */
-        max_bans = 25;
+        max_bans = 100;
 
         /* splitcode: split users, split servers and either no join on split
 	 * or no create on split must be enabled for split checking.
@@ -635,10 +642,10 @@ channel {
 	/* use_sslonly: enables the use of channel mode +S which enforces 
 	 * that users be one ssl/tls enabled connections
 	 */
-	use_sslonly = no;
+	use_sslonly = yes;
 
 	/* topiclen: length of topics */
-	topiclen = 160;
+	topiclen = 307;
 };
 
 
@@ -646,8 +653,10 @@ channel {
 serverhide {
 	/* flatten links: this option will show all servers in /links appear
 	 * that they are linked to this current server
+	 * AZZURRA NOTE: This *MUST* be enabled or the server will be juped
+	 *               right away.
 	 */
-	flatten_links = no;
+	flatten_links = yes;
 
 	/* links delay: how often to update the links file when it is
 	 * flattened.
@@ -656,11 +665,13 @@ serverhide {
 
 	/* hidden: hide this server from a /links output on servers that
 	 * support it.  this allows hub servers to be hidden etc.
+	 * AZZURRA NOTE: do NOT set this flag unless told otherwise
 	 */
         hidden = no;
 
 	/* disable hidden: prevent servers hiding themselves from a
 	 * /links ouput.
+	 * AZZURRA NOTE: do NOT set this flag. Period.
 	 */
 	disable_hidden = no;
 };
@@ -684,7 +695,7 @@ general {
 	hide_spoof_ips = yes;
 
 	/* default invisible: set clients +i on connect */
-	default_invisible = no;
+	default_invisible = yes;
 
 	/* default cloak: set clients +x on connect */
 	default_cloak = yes;
@@ -703,7 +714,7 @@ general {
 	 * of channels, eg #foo^B^B.  Disables bold, mirc colour, reverse,
 	 * underline and hard space.  (ASCII 2, 3, 22, 31, 160 respectively).
 	 */
-	disable_fake_channels = no;
+	disable_fake_channels = yes;
 
         /* tkline_expire_notices: give a notice to opers when a tkline
          * expires
@@ -750,7 +761,7 @@ general {
 	/* max monitor: the maximum amount of nicknames a client may have in
 	 * their monitor (server-side notify) list.
 	 */
-	max_monitor = 100;
+	max_monitor = 128;
 
 	/* nick flood: enable the nickflood control code */
 	anti_nick_flood = yes;
@@ -772,7 +783,7 @@ general {
 	ts_max_delta = 5 minutes;
 
 	/* client exit: prepend a users quit message with "Client exit: " */
-	client_exit = yes;
+	client_exit = no;
 
 	/* collision fnc: change user's nick to their UID instead of
 	 * killing them, if possible. This setting only applies to nick
@@ -815,42 +826,42 @@ general {
 	/* stats e disabled: disable stats e.  useful if server ips are
 	 * exempted and you dont want them listing on irc.
 	 */
-	stats_e_disabled = no;
+	stats_e_disabled = yes;
 
 	/* stats c oper only: make stats c (connect {}) oper only */
-	stats_c_oper_only=no;
+	stats_c_oper_only = yes;
 
 	/* stats h oper only: make stats h (hub_mask/leaf_mask) oper only */
-	stats_h_oper_only=no;
+	stats_h_oper_only = yes;
 
 	/* stats y oper only: make stats y (class {}) oper only */
-	stats_y_oper_only=no;
+	stats_y_oper_only = yes;
 
 	/* stats o oper only: make stats o (opers) oper only */
-	stats_o_oper_only=yes;
+	stats_o_oper_only = yes;
 
 	/* stats P oper only: make stats P (ports) oper only
 	 * NOTE: users doing stats P will never be given the ips that the 
 	 * server listens on, simply the ports.
 	 */
-	stats_P_oper_only=no;
+	stats_P_oper_only = yes;
 
 	/* stats i oper only: make stats i (auth {}) oper only. set to:
 	 *     yes:    show users no auth blocks, made oper only.
 	 *     masked: show users first matching auth block
 	 *     no:     show users all auth blocks.
 	 */
-	stats_i_oper_only=masked;
+	stats_i_oper_only = yes;
 
 	/* stats k/K oper only: make stats k/K (klines) oper only.  set to:
 	 *     yes:    show users no auth blocks, made oper only
 	 *     masked: show users first matching auth block
 	 *     no:     show users all auth blocks.
 	 */
-	stats_k_oper_only=masked;
+	stats_k_oper_only = yes;
 
         /* map oper only: make /map oper only */
-        map_oper_only = no;
+        map_oper_only = yes;
 
 	/* operspy admin only: make operspy notices to +Z admin only */
 	operspy_admin_only = no;
@@ -877,6 +888,8 @@ general {
 
 	/* ping cookies: require clients to respond exactly to a ping command,
 	 * can help block certain types of drones and FTP PASV mode spoofing.
+	 * AZZURRA NOTE: while it may be useful, this should be left disabled
+	 *               for the time being.
 	 */
 	ping_cookie = no;
 
@@ -911,13 +924,14 @@ general {
 	 *
  	 * The reason these are not in classes is that remote clients do not get assigned classes
  	 * Also this needs TS6 across the entire network to work in a reliable way
+	 * AZZURRA NOTE: this defeats network-wide exempts, so please LEAVE these flags as they are.
   	 */
-	global_cidr_ipv4_bitlen = 24;
-	global_cidr_ipv4_count = 384;
+	global_cidr_ipv4_bitlen = 0;
+	global_cidr_ipv4_count = 0;
 
-	global_cidr_ipv6_bitlen = 64;
-	global_cidr_ipv6_count = 128;
-	global_cidr = yes;
+	global_cidr_ipv6_bitlen = 0;
+	global_cidr_ipv6_count = 0;
+	global_cidr = no;
 
 	/* REMOVE ME.  The following line checks you've been reading. */
 	havent_read_conf = yes;
@@ -942,8 +956,10 @@ general {
 	 * +g - callerid   - Server Side Ignore
 	 * +i - invisible  - Not shown in NAMES or WHO unless you share a 
 	 *                   a channel
+	 * +I - noidle     - Hide idle time in WHOIS output
 	 * +k - skill      - See server generated KILL messages
 	 * +l - locops     - See LOCOPS messages
+	 * +m - spamnotice - See Spam notices
 	 * +n - nchange    - See client nick changes
 	 * +r - rej        - See rejected client notices
 	 * +s - servnotice - See general server notices
