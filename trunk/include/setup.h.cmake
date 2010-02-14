@@ -1,4 +1,7 @@
 
+#ifndef SETUP_H_INCLUDED
+#define SETUP_H_INCLUDED
+
 #cmakedefine HAVE_SYS_RESOURCE_H 1
 #cmakedefine HAVE_SNPRINTF 1
 
@@ -118,3 +121,5 @@
 #else
 #error "Unknown CPU endianess."
 #endif
+
+#endif /* SETUP_H_INCLUDED */

@@ -125,17 +125,20 @@ struct ChCapCombo
 /* channel status flags */
 #define CHFL_PEON		0x0000	/* normal member of channel */
 #define CHFL_CHANOP     	0x0001	/* Channel operator */
-#define CHFL_VOICE      	0x0002	/* the power to speak */
-#define CHFL_DEOPPED    	0x0004	/* deopped on sjoin, bounce modes */
-#define CHFL_BANNED		0x0008	/* cached as banned */
-#define ONLY_SERVERS		0x0010
+#define CHFL_HALFOP		0x0002	/* Channel half-operator */
+#define CHFL_VOICE      	0x0004	/* the power to speak */
+#define CHFL_DEOPPED    	0x0008	/* deopped on sjoin, bounce modes */
+#define CHFL_BANNED		0x0010	/* cached as banned */
+#define ONLY_SERVERS		0x0020
 #define ALL_MEMBERS		CHFL_PEON
 #define ONLY_CHANOPS		CHFL_CHANOP
-#define ONLY_CHANOPSVOICED	(CHFL_CHANOP|CHFL_VOICE)
+#define ONLY_CHANOPSHALF	(CHFL_CHANOP|CHFL_HALFOP)
+#define ONLY_CHANOPSVOICED	(CHFL_CHANOP|CHFL_HALFOP|CHFL_VOICE)
 
 #define is_chanop(x)	((x) && (x)->flags & CHFL_CHANOP)
+#define is_halfop(x)	((x) && (x)->flags & CHFL_HALFOP)
 #define is_voiced(x)	((x) && (x)->flags & CHFL_VOICE)
-#define is_chanop_voiced(x) ((x) && (x)->flags & (CHFL_CHANOP|CHFL_VOICE))
+#define is_chanop_voiced(x) ((x) && (x)->flags & (CHFL_CHANOP|CHFL_HALFOP|CHFL_VOICE))
 #define is_deop(x)	((x) && (x)->flags & CHFL_DEOPPED)
 #define can_send_banned(x) ((x) && (x)->flags & CHFL_BANNED)
 

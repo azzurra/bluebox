@@ -312,8 +312,10 @@ build_target_list(int p_or_n, const char *command, struct Client *client_p,
 		{
 			if(*nick == '@')
 				type |= CHFL_CHANOP;
+			else if(*nick == '%')
+				type |= CHFL_CHANOP | CHFL_HALFOP;
 			else if(*nick == '+')
-				type |= CHFL_CHANOP | CHFL_VOICE;
+				type |= CHFL_CHANOP | CHFL_HALFOP | CHFL_VOICE;
 			else
 				break;
 			nick++;
@@ -481,6 +483,11 @@ msg_channel_flags(int p_or_n, const char *command, struct Client *client_p,
 	{
 		type = ONLY_CHANOPSVOICED;
 		c = '+';
+	}
+	else if(flags & CHFL_HALFOP)
+	{
+		type = ONLY_CHANOPSHALF;
+		c = '%';
 	}
 	else
 	{

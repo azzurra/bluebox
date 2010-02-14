@@ -163,7 +163,7 @@ find_channel_membership(struct Channel *chptr, struct Client *client_p)
 const char *
 find_channel_status(struct membership *msptr, int combine)
 {
-	static char buffer[3];
+	static char buffer[4];
 	char *p;
 
 	p = buffer;
@@ -173,6 +173,13 @@ find_channel_status(struct membership *msptr, int combine)
 		if(!combine)
 			return "@";
 		*p++ = '@';
+	}
+	
+	if(is_halfop(msptr))
+	{
+		if(!combine)
+			return "%";
+		*p++ = '%';
 	}
 
 	if(is_voiced(msptr))
@@ -431,8 +438,8 @@ channel_member_names(struct Channel *chptr, struct Client *client_p, int show_eo
 			if(IsInvisible(target_p) && !is_member)
 				continue;
 
-			/* space, possible "@+" prefix */
-			if(cur_len + strlen(target_p->name) + 3 >= BUFSIZE - 3)
+			/* space, possible "@%+" prefix */
+			if(cur_len + strlen(target_p->name) + 4 >= BUFSIZE - 4)
 			{
 				*(t - 1) = '\0';
 				sendto_one_buffer(client_p, lbuf);

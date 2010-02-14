@@ -6,3 +6,7 @@ Modifiche al conf:
  * nuovo token per oper{flags}: spamnotice (controlla l'uso dell'umode +m)
  * nuovi umode oper-only: noidle spamnotice (aggiornare TASSATIVAMENTE general{oper_only_umodes})
 Nel conf di default mancava cconnext in general{oper_only_umodes}.
+
+2009/02/14 - Supporto iniziale halfop:
+ * L'ircd riconosce % e +h in MODE, TMODE ed SJOIN (oltre ai comandi cosmetici), mancano ancora
+   modifiche per permettere agli halfop di usare TOPIC, MODE e KICK in maniera limitata.

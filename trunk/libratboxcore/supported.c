@@ -265,12 +265,12 @@ init_isupport(void)
 	add_isupport("INVEX", isupport_boolean, &ConfigChannel.use_invex);
 	add_isupport("CHANMODES", isupport_chanmodes, NULL);
 	add_isupport("CHANLIMIT", isupport_chanlimit, NULL);
-	add_isupport("PREFIX", isupport_string, "(ov)@+");
+	add_isupport("PREFIX", isupport_string, "(ohv)@%+");
 	add_isupport("MAXLIST", isupport_maxlist, NULL);
 	add_isupport("MODES", isupport_intptr, &maxmodes);
 	add_isupport("NETWORK", isupport_stringptr, &ServerInfo.network_name);
 	add_isupport("KNOCK", isupport_boolean, &ConfigChannel.use_knock);
-	add_isupport("STATUSMSG", isupport_string, "@+");
+	add_isupport("STATUSMSG", isupport_string, "@%+");
 	add_isupport("CALLERID", isupport_string, "g");
 	add_isupport("SAFELIST", isupport_string, "");
 	add_isupport("ELIST", isupport_string, "U");

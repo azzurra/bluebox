@@ -717,11 +717,16 @@ ms_sjoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 	{
 		fl = 0;
 
-		for(i = 0; i < 2; i++)
+		for(i = 0; i < 3; i++)
 		{
 			if(*s == '@')
 			{
 				fl |= CHFL_CHANOP;
+				s++;
+			}
+			else if(*s == '%')
+			{
+				fl |= CHFL_HALFOP;
 				s++;
 			}
 			else if(*s == '+')
@@ -764,6 +769,13 @@ ms_sjoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 				len_nick++;
 				len_uid++;
 			}
+			if(fl & CHFL_HALFOP)
+			{
+				*ptr_nick++ = '%';
+				*ptr_uid++ = '%';
+				len_nick++;
+				len_uid++;
+			}
 			if(fl & CHFL_VOICE)
 			{
 				*ptr_nick++ = '+';
@@ -783,7 +795,8 @@ ms_sjoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 
 		if(!keep_new_modes)
 		{
-			if(fl & CHFL_CHANOP)
+			/* Kill all MODE commands coming from halfops as well */
+			if(fl & (CHFL_CHANOP|CHFL_HALFOP))
 				fl = CHFL_DEOPPED;
 			else
 				fl = 0;
@@ -805,6 +818,26 @@ ms_sjoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 			*mbuf++ = 'o';
 			para[pargs++] = target_p->name;
 
+			/* +oh user?? */
+			if(fl & CHFL_HALFOP)
+			{
+				if(pargs >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+							     ":%s MODE %s %s %s %s %s %s",
+							     source_p->name, chptr->chname,
+							     modebuf,
+							     para[0], para[1], para[2], para[3]);
+					mbuf = modebuf;
+					*mbuf++ = '+';
+					para[0] = para[1] = para[2] = para[3] = NULL;
+					pargs = 0;
+				}
+				*mbuf++ = 'h';
+				para[pargs++] = target_p->name;
+				/* Fall through for CHFL_VOICE case */
+			}
 			/* a +ov user.. bleh */
 			if(fl & CHFL_VOICE)
 			{
@@ -825,6 +858,32 @@ ms_sjoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 					pargs = 0;
 				}
 
+				*mbuf++ = 'v';
+				para[pargs++] = target_p->name;
+			}
+		}
+		else if(fl & CHFL_HALFOP)
+		{
+			*mbuf++ = 'h';
+			para[pargs++] = target_p->name;
+			
+			/* handle +hv users */
+			if(fl & CHFL_VOICE)
+			{
+				if(pargs >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+							     ":%s MODE %s %s %s %s %s %s",
+							     source_p->name, chptr->chname,
+							     modebuf,
+							     para[0], para[1], para[2], para[3]);
+					mbuf = modebuf;
+					*mbuf++ = '+';
+					para[0] = para[1] = para[2] = para[3] = NULL;
+					pargs = 0;
+				}
+				
 				*mbuf++ = 'v';
 				para[pargs++] = target_p->name;
 			}
@@ -1211,8 +1270,65 @@ remove_our_modes(struct Channel *chptr)
 			msptr->flags &= ~CHFL_CHANOP;
 			lpara[count++] = msptr->client_p->name;
 			*mbuf++ = 'o';
+			
+			if(is_halfop(msptr))
+			{
+				if(count >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+							     ":%s MODE %s %s %s %s %s %s",
+							     me.name, chptr->chname,
+							     lmodebuf, lpara[0], lpara[1],
+							     lpara[2], lpara[3]);
+
+					/* preserve the initial '-' */
+					mbuf = lmodebuf;
+					*mbuf++ = '-';
+					count = 0;
+
+					for(i = 0; i < MAXMODEPARAMS; i++)
+						lpara[i] = NULL;
+				}
+				
+				msptr->flags &= ~CHFL_HALFOP;
+				lpara[count++] = msptr->client_p->name;
+				*mbuf++ = 'h';
+				/* Fall through for +ohv case */
+			}
 
 			/* +ov, might not fit so check. */
+			if(is_voiced(msptr))
+			{
+				if(count >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+							     ":%s MODE %s %s %s %s %s %s",
+							     me.name, chptr->chname,
+							     lmodebuf, lpara[0], lpara[1],
+							     lpara[2], lpara[3]);
+
+					/* preserve the initial '-' */
+					mbuf = lmodebuf;
+					*mbuf++ = '-';
+					count = 0;
+
+					for(i = 0; i < MAXMODEPARAMS; i++)
+						lpara[i] = NULL;
+				}
+
+				msptr->flags &= ~CHFL_VOICE;
+				lpara[count++] = msptr->client_p->name;
+				*mbuf++ = 'v';
+			}
+		}
+		else if(is_halfop(msptr))
+		{
+			msptr->flags &= ~CHFL_HALFOP;
+			lpara[count++] = msptr->client_p->name;
+			*mbuf++ = 'h';
+			
 			if(is_voiced(msptr))
 			{
 				if(count >= MAXMODEPARAMS)

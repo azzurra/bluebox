@@ -957,10 +957,12 @@ burst_TS5(struct Client *client_p)
 			tlen = strlen(msptr->client_p->name) + 1;
 			if(is_chanop(msptr))
 				tlen++;
+			if(is_halfop(msptr))
+				tlen++;
 			if(is_voiced(msptr))
 				tlen++;
 
-			if(cur_len + tlen >= BUFSIZE - 3)
+			if(cur_len + tlen >= BUFSIZE - 4)
 			{
 				t--;
 				*t = '\0';
@@ -1105,10 +1107,12 @@ burst_TS6(struct Client *client_p)
 			tlen = strlen(use_id(msptr->client_p)) + 1;
 			if(is_chanop(msptr))
 				tlen++;
+			if(is_halfop(msptr))
+				tlen++;
 			if(is_voiced(msptr))
 				tlen++;
 
-			if(cur_len + tlen >= BUFSIZE - 3)
+			if(cur_len + tlen >= BUFSIZE - 4)
 			{
 				*(t - 1) = '\0';
 				sendto_one_buffer(client_p, buf);
