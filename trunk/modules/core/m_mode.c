@@ -667,7 +667,7 @@ fix_key_remote(char *arg)
 static void
 chm_nosuch(struct Client *source_p, struct Channel *chptr,
 	   int alevel, int parc, int *parn,
-	   const char **parv, int *errors, int dir, char c, long mode_type)
+	   const char **parv, int *errors, int dir, char c, long mode_type, int halfop)
 {
 	if(*errors & SM_ERR_UNKNOWN)
 		return;
@@ -678,9 +678,9 @@ chm_nosuch(struct Client *source_p, struct Channel *chptr,
 static void
 chm_simple(struct Client *source_p, struct Channel *chptr,
 	   int alevel, int parc, int *parn,
-	   const char **parv, int *errors, int dir, char c, long mode_type)
+	   const char **parv, int *errors, int dir, char c, long mode_type, int halfop)
 {
-	if(alevel != CHFL_CHANOP)
+	if(alevel == CHFL_PEON || (!halfop && alevel == CHFL_HALFOP))
 	{
 		if(!(*errors & SM_ERR_NOOPS))
 			sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
@@ -723,7 +723,7 @@ chm_simple(struct Client *source_p, struct Channel *chptr,
 static void
 chm_ban(struct Client *source_p, struct Channel *chptr,
 	int alevel, int parc, int *parn,
-	const char **parv, int *errors, int dir, char c, long mode_type)
+	const char **parv, int *errors, int dir, char c, long mode_type, int halfop)
 {
 	const char *mask;
 	const char *raw_mask;
@@ -888,7 +888,7 @@ chm_ban(struct Client *source_p, struct Channel *chptr,
 static void
 chm_op(struct Client *source_p, struct Channel *chptr,
        int alevel, int parc, int *parn,
-       const char **parv, int *errors, int dir, char c, long mode_type)
+       const char **parv, int *errors, int dir, char c, long mode_type, int halfop)
 {
 	struct membership *mstptr;
 	const char *opnick;
@@ -937,7 +937,7 @@ chm_op(struct Client *source_p, struct Channel *chptr,
 
 	if(dir == MODE_ADD)
 	{
-		if(targ_p == source_p)
+		if(targ_p == source_p || is_chanop(mstptr))
 			return;
 
 		mode_changes[mode_count].letter = c;
@@ -954,6 +954,9 @@ chm_op(struct Client *source_p, struct Channel *chptr,
 	}
 	else
 	{
+		if(!is_chanop(mstptr))
+			return;
+
 		if(MyClient(source_p) && IsService(targ_p))
 		{
 			sendto_one(source_p, form_str(ERR_ISCHANSERVICE),
@@ -977,7 +980,7 @@ chm_op(struct Client *source_p, struct Channel *chptr,
 static void
 chm_halfop(struct Client *source_p, struct Channel *chptr,
 	   int alevel, int parc, int *parn,
-	   const char **parv, int *errors, int dir, char c, long mode_type)
+	   const char **parv, int *errors, int dir, char c, long mode_type, int halfop)
 {
 	struct membership *mstptr;
 	const char *halfopnick;
@@ -1026,6 +1029,9 @@ chm_halfop(struct Client *source_p, struct Channel *chptr,
 
 	if(dir == MODE_ADD)
 	{
+		if(is_halfop(mstptr))
+			return;
+
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].caps = 0;
@@ -1040,6 +1046,9 @@ chm_halfop(struct Client *source_p, struct Channel *chptr,
 	}
 	else
 	{
+		if(!is_halfop(mstptr))
+			return;
+
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_DEL;
 		mode_changes[mode_count].caps = 0;
@@ -1056,13 +1065,13 @@ chm_halfop(struct Client *source_p, struct Channel *chptr,
 static void
 chm_voice(struct Client *source_p, struct Channel *chptr,
 	  int alevel, int parc, int *parn,
-	  const char **parv, int *errors, int dir, char c, long mode_type)
+	  const char **parv, int *errors, int dir, char c, long mode_type, int halfop)
 {
 	struct membership *mstptr;
 	const char *opnick;
 	struct Client *targ_p;
 
-	if(alevel != CHFL_CHANOP)
+	if(alevel != CHFL_CHANOP && alevel != CHFL_HALFOP)
 	{
 		if(!(*errors & SM_ERR_NOOPS))
 			sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
@@ -1105,6 +1114,9 @@ chm_voice(struct Client *source_p, struct Channel *chptr,
 
 	if(dir == MODE_ADD)
 	{
+		if(is_voiced(mstptr))
+			return;
+
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].caps = 0;
@@ -1118,6 +1130,9 @@ chm_voice(struct Client *source_p, struct Channel *chptr,
 	}
 	else
 	{
+		if(!is_voiced(mstptr))
+			return;
+
 		mode_changes[mode_count].letter = 'v';
 		mode_changes[mode_count].dir = MODE_DEL;
 		mode_changes[mode_count].caps = 0;
@@ -1134,7 +1149,7 @@ chm_voice(struct Client *source_p, struct Channel *chptr,
 static void
 chm_limit(struct Client *source_p, struct Channel *chptr,
 	  int alevel, int parc, int *parn,
-	  const char **parv, int *errors, int dir, char c, long mode_type)
+	  const char **parv, int *errors, int dir, char c, long mode_type, int halfop)
 {
 	const char *lstr;
 	static char limitstr[30];
@@ -1192,7 +1207,7 @@ chm_limit(struct Client *source_p, struct Channel *chptr,
 static void
 chm_key(struct Client *source_p, struct Channel *chptr,
 	int alevel, int parc, int *parn,
-	const char **parv, int *errors, int dir, char c, long mode_type)
+	const char **parv, int *errors, int dir, char c, long mode_type, int halfop)
 {
 	char *key;
 
@@ -1268,7 +1283,7 @@ chm_key(struct Client *source_p, struct Channel *chptr,
 static void
 chm_regonly(struct Client *source_p, struct Channel *chptr,
 	    int alevel, int parc, int *parn,
-	    const char **parv, int *errors, int dir, char c, long mode_type)
+	    const char **parv, int *errors, int dir, char c, long mode_type, int halfop)
 {
 	if(alevel != CHFL_CHANOP)
 	{
@@ -1304,7 +1319,7 @@ chm_regonly(struct Client *source_p, struct Channel *chptr,
 static void
 chm_sslonly(struct Client *source_p, struct Channel *chptr,
 	    int alevel, int parc, int *parn,
-	    const char **parv, int *errors, int dir, char c, long mode_type)
+	    const char **parv, int *errors, int dir, char c, long mode_type, int halfop)
 {
 	if(alevel != CHFL_CHANOP)
 	{
@@ -1347,72 +1362,73 @@ struct ChannelMode
 {
 	void (*func) (struct Client * source_p, struct Channel * chptr,
 		      int alevel, int parc, int *parn,
-		      const char **parv, int *errors, int dir, char c, long mode_type);
+		      const char **parv, int *errors, int dir, char c, long mode_type, int halfop);
 	long mode_type;
+	int halfop;
 };
 
 /* *INDENT-OFF* */
 static struct ChannelMode ModeTable[255] =
 {
-  {chm_nosuch,	0 },
-  {chm_nosuch,	0 },			/* A */
-  {chm_nosuch,	0 },			/* B */
-  {chm_nosuch,	0 },			/* C */
-  {chm_nosuch,	0 },			/* D */
-  {chm_nosuch,	0 },			/* E */
-  {chm_nosuch,	0 },			/* F */
-  {chm_nosuch,	0 },			/* G */
-  {chm_nosuch,	0 },			/* H */
-  {chm_ban,	CHFL_INVEX },           /* I */
-  {chm_nosuch,	0 },			/* J */
-  {chm_nosuch,	0 },			/* K */
-  {chm_nosuch,	0 },			/* L */
-  {chm_nosuch,	0 },			/* M */
-  {chm_nosuch,	0 },			/* N */
-  {chm_nosuch,	0 },			/* O */
-  {chm_nosuch,	0 },			/* P */
-  {chm_nosuch,	0 },			/* Q */
-  {chm_nosuch,	0 },			/* R */
-  {chm_sslonly, MODE_SSLONLY },         /* S */
-  {chm_nosuch,	0 },			/* T */
-  {chm_nosuch,	0 },			/* U */
-  {chm_nosuch,	0 },			/* V */
-  {chm_nosuch,	0 },			/* W */
-  {chm_nosuch,	0 },			/* X */
-  {chm_nosuch,	0 },			/* Y */
-  {chm_nosuch,	0 },			/* Z */
-  {chm_nosuch,	0 },
-  {chm_nosuch,	0 },
-  {chm_nosuch,	0 },
-  {chm_nosuch,	0 },
-  {chm_nosuch,	0 },
-  {chm_nosuch,	0 },
-  {chm_nosuch,	0 },			/* a */
-  {chm_ban,	CHFL_BAN },		/* b */
-  {chm_nosuch,	0 },			/* c */
-  {chm_nosuch,	0 },			/* d */
-  {chm_ban,	CHFL_EXCEPTION },	/* e */
-  {chm_nosuch,	0 },			/* f */
-  {chm_nosuch,	0 },			/* g */
-  {chm_halfop,	0 },			/* h */
-  {chm_simple,	MODE_INVITEONLY },	/* i */
-  {chm_nosuch,	0 },			/* j */
-  {chm_key,	0 },			/* k */
-  {chm_limit,	0 },			/* l */
-  {chm_simple,	MODE_MODERATED },	/* m */
-  {chm_simple,	MODE_NOPRIVMSGS },	/* n */
-  {chm_op,	0 },			/* o */
-  {chm_simple,	MODE_PRIVATE },		/* p */
-  {chm_nosuch,	0 },			/* q */
-  {chm_regonly, 0 },			/* r */
-  {chm_simple,	MODE_SECRET },		/* s */
-  {chm_simple,	MODE_TOPICLIMIT },	/* t */
-  {chm_nosuch,	0 },			/* u */
-  {chm_voice,	0 },			/* v */
-  {chm_nosuch,	0 },			/* w */
-  {chm_nosuch,	0 },			/* x */
-  {chm_nosuch,	0 },			/* y */
-  {chm_nosuch,	0 },			/* z */
+  {chm_nosuch,	0, 0 },
+  {chm_nosuch,	0, 0 },				/* A */
+  {chm_nosuch,	0, 0 },				/* B */
+  {chm_nosuch,	0, 0 },				/* C */
+  {chm_nosuch,	0, 0 },				/* D */
+  {chm_nosuch,	0, 0 },				/* E */
+  {chm_nosuch,	0, 0 },				/* F */
+  {chm_nosuch,	0, 0 },				/* G */
+  {chm_nosuch,	0, 0 },				/* H */
+  {chm_ban,	CHFL_INVEX, FALSE },		/* I */
+  {chm_nosuch,	0, 0 },				/* J */
+  {chm_nosuch,	0, 0 },				/* K */
+  {chm_nosuch,	0, 0 },				/* L */
+  {chm_nosuch,	0, 0 },				/* M */
+  {chm_nosuch,	0, 0 },				/* N */
+  {chm_nosuch,	0, 0 },				/* O */
+  {chm_nosuch,	0, 0 },				/* P */
+  {chm_nosuch,	0, 0 },				/* Q */
+  {chm_nosuch,	0, 0 },				/* R */
+  {chm_sslonly, MODE_SSLONLY, FALSE },		/* S */
+  {chm_nosuch,	0, 0 },				/* T */
+  {chm_nosuch,	0, 0 },				/* U */
+  {chm_nosuch,	0, 0 },				/* V */
+  {chm_nosuch,	0, 0 },				/* W */
+  {chm_nosuch,	0, 0 },				/* X */
+  {chm_nosuch,	0, 0 },				/* Y */
+  {chm_nosuch,	0, 0 },				/* Z */
+  {chm_nosuch,	0, 0 },
+  {chm_nosuch,	0, 0 },
+  {chm_nosuch,	0, 0 },
+  {chm_nosuch,	0, 0 },
+  {chm_nosuch,	0, 0 },
+  {chm_nosuch,	0, 0 },
+  {chm_nosuch,	0, 0 },				/* a */
+  {chm_ban,	CHFL_BAN, FALSE },		/* b */
+  {chm_nosuch,	0, 0 },				/* c */
+  {chm_nosuch,	0, 0 },				/* d */
+  {chm_ban,	CHFL_EXCEPTION, FALSE },	/* e */
+  {chm_nosuch,	0, 0 },				/* f */
+  {chm_nosuch,	0, 0 },				/* g */
+  {chm_halfop,	0, 0 },				/* h */
+  {chm_simple,	MODE_INVITEONLY, FALSE },	/* i */
+  {chm_nosuch,	0, 0 },				/* j */
+  {chm_key,	0, 0 },				/* k */
+  {chm_limit,	0, 0 },				/* l */
+  {chm_simple,	MODE_MODERATED, TRUE },		/* m */
+  {chm_simple,	MODE_NOPRIVMSGS, TRUE },	/* n */
+  {chm_op,	0, 0 },				/* o */
+  {chm_simple,	MODE_PRIVATE, FALSE },		/* p */
+  {chm_nosuch,	0, 0 },				/* q */
+  {chm_regonly, 0, 0 },				/* r */
+  {chm_simple,	MODE_SECRET, FALSE },		/* s */
+  {chm_simple,	MODE_TOPICLIMIT, TRUE },	/* t */
+  {chm_nosuch,	0, 0 },				/* u */
+  {chm_voice,	0, 0 },				/* v */
+  {chm_nosuch,	0, 0 },				/* w */
+  {chm_nosuch,	0, 0 },				/* x */
+  {chm_nosuch,	0, 0 },				/* y */
+  {chm_nosuch,	0, 0 },				/* z */
 };
 /* *INDENT-ON* */
 
@@ -1421,6 +1437,8 @@ get_channel_access(struct Client *source_p, struct membership *msptr)
 {
 	if(!MyClient(source_p) || is_chanop(msptr))
 		return CHFL_CHANOP;
+	else if(is_halfop(msptr))
+		return CHFL_HALFOP;
 
 	return CHFL_PEON;
 }
@@ -1476,7 +1494,8 @@ set_channel_mode(struct Client *client_p, struct Client *source_p,
 			ModeTable[table_position].func(source_p, chptr, alevel,
 						       parc, &parn, parv,
 						       &errors, dir, c,
-						       ModeTable[table_position].mode_type);
+						       ModeTable[table_position].mode_type,
+						       ModeTable[table_position].halfop);
 			break;
 		}
 	}

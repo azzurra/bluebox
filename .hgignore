@@ -1,3 +1,4 @@
 syntax: glob
 
 trunk/build
+*.swp

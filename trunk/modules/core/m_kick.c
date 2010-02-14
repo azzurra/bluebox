@@ -63,6 +63,7 @@ m_kick(struct Client *client_p, struct Client *source_p, int parc, const char *p
 	struct Client *who;
 	struct Channel *chptr;
 	int chasing = 0;
+	int halfop = 0;
 	char *comment;
 	const char *name;
 	char *p = NULL;
@@ -96,7 +97,7 @@ m_kick(struct Client *client_p, struct Client *source_p, int parc, const char *p
 			return 0;
 		}
 
-		if(!is_chanop(msptr))
+		if(!is_chanop(msptr) && !is_halfop(msptr))
 		{
 			if(MyConnect(source_p))
 			{
@@ -113,6 +114,7 @@ m_kick(struct Client *client_p, struct Client *source_p, int parc, const char *p
 				return 0;
 			}
 		}
+		halfop = !is_chanop(msptr) && is_halfop(msptr);
 
 		/* Its a user doing a kick, but is not showing as chanop locally
 		 * its also not a user ON -my- server, and the channel has a TS.
@@ -155,6 +157,24 @@ m_kick(struct Client *client_p, struct Client *source_p, int parc, const char *p
 			sendto_one(source_p, form_str(ERR_ISCHANSERVICE),
 				   me.name, source_p->name, who->name, chptr->chname);
 			return 0;
+		}
+
+		if(halfop && (is_chanop(msptr) || is_halfop(msptr)))
+		{
+			if(MyConnect(source_p))
+			{
+				sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+					   me.name, source_p->name, name);
+				return 0;
+			}
+
+			/* If its a TS 0 channel, do it the old way */
+			if(chptr->channelts == 0)
+			{
+				sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+					   get_id(&me, source_p), get_id(source_p, source_p), name);
+				return 0;
+			}
 		}
 
 		comment = LOCAL_COPY_N((EmptyString(parv[3])) ? who->name : parv[3], REASONLEN);

@@ -10,3 +10,6 @@ Nel conf di default mancava cconnext in general{oper_only_umodes}.
 2009/02/14 - Supporto iniziale halfop:
  * L'ircd riconosce % e +h in MODE, TMODE ed SJOIN (oltre ai comandi cosmetici), mancano ancora
    modifiche per permettere agli halfop di usare TOPIC, MODE e KICK in maniera limitata.
+2009/02/14 - HalfOp:
+ * Gli halfop sono ora in grado di usare KICK su voice e utenti comuni, possono settare i mode
+   mtnv e cambiare il topic se e' settato il mode +n.
