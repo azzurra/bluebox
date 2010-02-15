@@ -10,28 +10,24 @@ Usermodes: (* designates that the umode is oper only)
          +i     - Designates this client 'invisible'.
          +g     - "caller id" mode only allow accept clients to message you
          +D     - Deaf - ignores all channel messages.
-         +r     - Designates this client as identified to network services.
-                  May only be set by services.
          +R     - Only user identified to services may message you.
-         +S     - User is connected through SSL.
          +x     - Hide your real hostname.
-       * +A     - Is marked as a server admin in whois.
-       * +a     - User is a Services Administrator.
+       * +a     - User is a Server Administrator.
        * +b     - Can see possible bot warnings.
        * +c     - Can see client connections and exits.
        * +C     - Can see extended client connections and exits.
        * +d     - Can see server debug messages.
-       * +e     - Can see 'rejected' client notices.
        * +E     - Can see new server introduction and split messages.
        * +f     - Can see 'I-line is full' notices.
        * +I     - Idle time hidden in whois.
        * +k     - Can see server kill messages.
        * +l     - Can see oper locops (local wallops).
        * +n     - Can see client nick changes.
+       * +r     - Can see 'rejected' client notices
+       * +S     - User is a Services Agent.
        * +s     - Can see generic server messages and oper kills.
        * +u     - Can see unauthorised client connections.
        * +w     - Can see server wallops.
-       * +W     - Can see oper wallops.
        * +y     - Can see stats/links/admin requests to name a few.
-       * +z     - User is a Services Agent.
+       * +z     - Can see oper wallops.
        * +Z     - Can see operspy notices
