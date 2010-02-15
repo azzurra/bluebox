@@ -182,14 +182,11 @@ struct LocalUser;
 /* user information flags, only settable by remote mode or local oper */
 #define UMODE_OPER         0x100000	/* Operator */
 #define UMODE_ADMIN        0x200000	/* Admin on server */
-#define UMODE_SADMIN       0x400000	/* Services admin */
-#define UMODE_NOIDLE       0x800000	/* Don't show idle time in WHOIS */
-#define UMODE_REGISTERED   0x1000000	/* User is identified to services */
-#define UMODE_REGONLY      0x2000000	/* User doesn't wish to receive PRIVMSG/NOTICES from unidentified users */
-#define UMODE_SSL          0x4000000	/* User is connecting through SSL (backwards compatibility) */
-#define UMODE_CRYPTHOST    0x8000000	/* User is masking their hostname */
-#define UMODE_SPAMNOTICE   0x10000000	/* User receives spam notices (a global umode? wtf!?!?!?) */
-#define UMODE_HELPOP       0x20000000	/* User is a help operator */
+#define UMODE_NOIDLE       0x400000	/* Don't show idle time in WHOIS */
+#define UMODE_REGONLY      0x800000	/* User doesn't wish to receive PRIVMSG/NOTICES from unidentified users */
+#define UMODE_CRYPTHOST    0x1000000	/* User is masking their hostname */
+#define UMODE_HELPOP       0x2000000	/* User is a help operator */
+#define UMODE_SPAMNOTICE   0x4000000	/* Operator can receive spam notices */
 
 #define UMODE_ALL	   UMODE_SERVNOTICE
 
@@ -198,18 +195,16 @@ struct LocalUser;
 
 #define SEND_UMODES  (UMODE_INVISIBLE | UMODE_OPER | UMODE_WALLOP | \
 		      UMODE_ADMIN | UMODE_SERVICE | UMODE_DEAF | \
-		      UMODE_SADMIN | UMODE_NOIDLE | UMODE_REGISTERED | \
-		      UMODE_REGONLY | UMODE_SSL | UMODE_CRYPTHOST | \
-		      UMODE_SPAMNOTICE | UMODE_SPY)
+		      UMODE_NOIDLE | UMODE_REGONLY | UMODE_CRYPTHOST | \
+		      UMODE_SPY | UMODE_HELPOP)
 #define DEFAULT_OPER_UMODES (UMODE_SERVNOTICE | UMODE_OPERWALL | \
 			     UMODE_WALLOP | UMODE_LOCOPS)
 #define ALL_UMODES   (SEND_UMODES | UMODE_SERVNOTICE | UMODE_CCONN | \
 		      UMODE_REJ | UMODE_SKILL | UMODE_FULL | \
 		      UMODE_NCHANGE | UMODE_OPERWALL | UMODE_DEBUG | \
 		      UMODE_BOTS | UMODE_EXTERNAL | UMODE_LOCOPS | \
-		      UMODE_ADMIN | UMODE_UNAUTH | UMODE_CALLERID | \
-		      UMODE_OPERSPY | UMODE_CCONNEXT | UMODE_SERVICE | \
-		      UMODE_DEAF)
+		      UMODE_UNAUTH | UMODE_CALLERID | UMODE_SPAMNOTICE | \
+		      UMODE_OPERSPY | UMODE_CCONNEXT | UMODE_DEAF)
 
 #define CLICAP_MULTI_PREFIX	0x0001
 
