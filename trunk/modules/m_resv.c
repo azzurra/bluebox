@@ -305,7 +305,9 @@ parse_resv(struct Client *source_p, const char *name, const char *reason, int te
 
 		rb_dlinkAddAlloc(aconf, &resv_conf_list);
 
-		notify_resv(source_p, aconf->host, aconf->passwd, temp_time);
+		/* Don't notify temporary RESV set by services */
+		if (temp_time == 0 || !IsService(source_p))
+			notify_resv(source_p, aconf->host, aconf->passwd, temp_time);
 
 		if(temp_time > 0)
 		{
@@ -383,6 +385,7 @@ static void
 remove_resv(struct Client *source_p, const char *name)
 {
 	struct ConfItem *aconf = NULL;
+	int is_temp = FALSE;
 
 	if(IsChannelName(name))
 	{
@@ -434,6 +437,8 @@ remove_resv(struct Client *source_p, const char *name)
 		/* schedule it to transaction log */
 		if((aconf->flags & CONF_FLAGS_TEMPORARY) == 0)
 			bandb_del(BANDB_RESV, aconf->host, NULL);
+		else
+			is_temp = TRUE;
 
 		/* already have ptr from the loop above.. */
 		rb_dlinkDestroy(ptr, &resv_conf_list);
@@ -441,7 +446,10 @@ remove_resv(struct Client *source_p, const char *name)
 	}
 
 	sendto_one_notice(source_p, ":RESV for [%s] is removed", name);
-	sendto_realops_flags(UMODE_ALL, L_ALL,
-			     "%s has removed the RESV for: [%s]", get_oper_name(source_p), name);
-	ilog(L_KLINE, "UR %s %s", get_oper_name(source_p), name);
+	if (!is_temp || !IsService(source_p))
+	{
+		sendto_realops_flags(UMODE_ALL, L_ALL,
+				     "%s has removed the RESV for: [%s]", get_oper_name(source_p), name);
+		ilog(L_KLINE, "UR %s %s", get_oper_name(source_p), name);
+	}
 }

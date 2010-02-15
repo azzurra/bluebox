@@ -170,6 +170,7 @@ static int
 m_nick(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
 	struct Client *target_p;
+	struct ConfItem *resv_p;
 	char nick[NICKLEN];
 	char *s;
 
@@ -200,9 +201,11 @@ m_nick(struct Client *client_p, struct Client *source_p, int parc, const char *p
 		return 0;
 	}
 
-	if(find_nick_resv(nick))
+	if((resv_p = find_nick_resv(nick)) != NULL)
 	{
-		sendto_one(source_p, form_str(ERR_ERRONEUSNICKNAME), me.name, source_p->name, nick);
+		/* FIXME */
+		sendto_one(source_p, ":%s 432 %s %s :%s", me.name, source_p->name, nick,
+			   resv_p->passwd ? resv_p->passwd : "Erroneous Nickname");
 		return 0;
 	}
 
