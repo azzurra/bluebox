@@ -21,14 +21,13 @@
 
 # The servername of your services as it appears on IRC.
 # 
-my $servername = "services.ircd-ratbox.org";
+my $servername = "services.azzurra.org";
 
 # The list of services you wish to generate shortcuts for.
 # This list must be the actual nicknames, as they appear on IRC
 # of each service.
 # 
-my @services = ("USERSERV", "CHANSERV", "NICKSERV", "ALIS",
-		"OPERBOT", "OPERSERV", "JUPESERV", "GLOBAL");
+my @services = ("NICKSERV", "CHANSERV", "MEMOSERV", "OPERSERV", "AZZURRA", "ALIS");
 
 
 ######################################

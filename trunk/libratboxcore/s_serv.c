@@ -331,8 +331,8 @@ send_capabilities(struct Client *client_p, int cap_can_send)
 	t--;
 	*t = '\0';
 
-	/* Hack for bahamut compatibility */
-	sendto_one(client_p, "CAPAB %s", msgbuf);
+	/* Fuck bahamut, we need this for Atheme! */
+	sendto_one(client_p, "CAPAB :%s", msgbuf);
 }
 
 /*

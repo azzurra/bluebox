@@ -1034,4 +1034,5 @@ modules {
 
 	/* module: the name of a module to load on startup/rehash */
 	#module = "some_module.so";
+	#module = "contrib/m_rsshortcut.so";
 };

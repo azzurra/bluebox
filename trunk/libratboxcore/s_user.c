@@ -89,13 +89,13 @@ static struct flag_item user_modes[] = {
 	{UMODE_REGISTERED,	'r'},
 	{UMODE_REGONLY,		'R'},
 	{UMODE_SERVNOTICE,	's'},
-	{UMODE_SSL,		'S'},
+	{UMODE_SERVICE,		'S'},
 	{UMODE_UNAUTH,		'u'},
 	{UMODE_OPERWALL,	'W'},
 	{UMODE_WALLOP,		'w'},
 	{UMODE_CRYPTHOST,	'x'},
 	{UMODE_SPY,		'y'},
-	{UMODE_SERVICE,		'z'},
+	{UMODE_SSL,		'z'},
 	{UMODE_OPERSPY,		'Z'},
 	{0, 0}
 };
@@ -125,7 +125,7 @@ int user_modes_from_c_to_bitmask[] = {
 	0,			/* P */
 	0,			/* Q */
 	UMODE_REGONLY,		/* R */
-	UMODE_SSL,		/* S */
+	UMODE_SERVICE,		/* S */
 	0,			/* T */
 	0,			/* U */
 	0,			/* V */
@@ -159,7 +159,7 @@ int user_modes_from_c_to_bitmask[] = {
 	UMODE_WALLOP,		/* w */
 	UMODE_CRYPTHOST,	/* x */
 	UMODE_SPY,		/* y */
-	UMODE_SERVICE,		/* z */
+	UMODE_SSL,		/* z */
 	/* 0x7B */ 0, 0, 0, 0, 0, /* 0x7F */
 	/* 0x80 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 0x9F */
 	/* 0x90 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 0x9F */
