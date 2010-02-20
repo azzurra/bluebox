@@ -773,6 +773,7 @@ set_default_conf(void)
 	ConfigFileEntry.pace_wait_simple = 1;
 	ConfigFileEntry.short_motd = NO;
 	ConfigFileEntry.no_oper_flood = NO;
+	ConfigFileEntry.post_registration_delay = 0;
 	ConfigFileEntry.default_invisible = NO;
 	ConfigFileEntry.default_cloak = YES;
 	ConfigFileEntry.fname_userlog = NULL;
@@ -990,8 +991,28 @@ expire_temp_kd(void *list)
 						     "Temporary K-line for [%s@%s] expired",
 						     (aconf->user) ? aconf->user : "*",
 						     (aconf->host) ? aconf->host : "*");
-
-			if(aconf->status & CONF_DLINE)
+			if(aconf->status & CONF_DLINE && aconf->pnode == NULL)
+			{
+				/* XXX this shouldn't be happening...I'm not sure why it does, but it only seems to happen 
+				 * on one server...add debugging code to look at it -androsyn
+				 */
+				#define a_string(x) ((aconf->x) ? aconf->x : "*")
+				#define a_x(x) (aconf->x)
+				ilog(L_MAIN, "WARNING: DLINE with aconf->status & CONF_DLINE but aconf->pnode == NULL! " 
+					"status:%x flags:%x clients:%d info.name:%s info.oper:%s host:%s passwd:%s spasswd:%s user:%s port:%d " 
+					"hold:%ld, class:%p pnode:%p", a_x(status), a_x(flags), a_x(clients), a_string(info.name), a_string(info.oper),
+					a_string(host), a_string(passwd), a_string(spasswd), a_string(user), a_x(port), a_x(hold), a_x(c_class), a_x(pnode));	
+				sendto_realops_flags(UMODE_ALL, L_ALL, "WARNING: DLINE with aconf->status & CONF_DLINE but aconf->pnode == NULL! " 
+					"status:%x flags:%x clients:%d info.name:%s info.oper:%s host:%s passwd:%s spasswd:%s user:%s port:%d " 
+					"hold:%ld, class:%p pnode:%p", a_x(status), a_x(flags), a_x(clients), a_string(info.name), a_string(info.oper),
+					a_string(host), a_string(passwd), a_string(spasswd), a_string(user), a_x(port), a_x(hold), a_x(c_class), a_x(pnode));
+				#undef a_string
+				#undef a_x
+				ilog(L_MAIN, "WARNING: Calling delete_one_address_conf() on this and hoping for the best");
+				sendto_realops_flags(UMODE_ALL, L_ALL, "WARNING: Calling delete_one_address_conf() on this and hoping for the best");
+				delete_one_address_conf(aconf->host, aconf);
+			} 
+			else if(aconf->status & CONF_DLINE)
 				remove_dline(aconf);
 			else
 				delete_one_address_conf(aconf->host, aconf);

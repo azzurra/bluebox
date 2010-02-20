@@ -46,6 +46,7 @@ static void client_dopacket(struct Client *client_p, char *buffer, size_t length
 static void
 parse_client_queued(struct Client *client_p)
 {
+	int tested = 0;
 	int dolen = 0;
 	int checkflood = 1;
 
@@ -107,6 +108,17 @@ parse_client_queued(struct Client *client_p)
 		 */
 		for(;;)
 		{
+			/* if we have a post reg delay, dont parse anything from a client until
+			 * the delay has passed.. Everything else will continue to be queued, 
+			 * so just hope the queue is big enough for them.. --anfl
+			 */
+			if(!tested && 
+			   (client_p->localClient->firsttime + ConfigFileEntry.post_registration_delay) > 
+			    rb_current_time())
+				break;
+			else
+				tested = 1;
+
 			/* This flood protection works as follows:
 			 *
 			 * A client is given allow_read lines to send to the server.  Every

@@ -197,6 +197,7 @@ struct config_file_entry
 	int tkline_expire_notices;
 	int disable_auth;
 	int connect_timeout;
+	int post_registration_delay;
 	int burst_away;
 	int reject_after_count;
 	int reject_duration;

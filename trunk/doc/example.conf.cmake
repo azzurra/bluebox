@@ -946,6 +946,15 @@ general {
 	 */
 	client_flood = 20;
 
+	/* post registration delay: after a user has registered, delay
+	 * parsing any commands from them for this amount of time in order
+	 * to perform bopm checks etc.
+	 *
+	 * Warning: if this is set too high (i.e. above 5-10s), it is
+	 * likely to cause issues for clients.
+	 */
+	post_registration_delay = 0 seconds;
+
 	/* usermodes configurable: a list of usermodes for the options below
 	 *
 	 * +b - bots       - See bot and drone flooding notices

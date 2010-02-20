@@ -13,3 +13,5 @@ Nel conf di default mancava cconnext in general{oper_only_umodes}.
 2009/02/14 - HalfOp:
  * Gli halfop sono ora in grado di usare KICK su voice e utenti comuni, possono settare i mode
    mtnv e cambiare il topic se e' settato il mode +n.
+2009/02/20:
+ * Rebase con ircd-ratbox-3.0.6

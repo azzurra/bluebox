@@ -306,7 +306,14 @@ rb_setup_ssl_server(const char *cert, const char *keyfile, const char *dhfile)
 		rb_lib_log("rb_setup_ssl_server: Error loading key: %s", strerror(errno));
 		return 0;
 	}
-
+	
+	gnutls_certificate_free_credentials(x509);
+	
+	if(gnutls_certificate_allocate_credentials(&x509) != GNUTLS_E_SUCCESS)
+	{
+		rb_lib_log("rb_init_ssl: Unable to allocate SSL/TLS certificate credentials");
+		return 0;
+	}
 
 	if((ret =
 	    gnutls_certificate_set_x509_key_mem(x509, d_cert, d_key,

@@ -172,8 +172,7 @@ rehash_tdlines(struct Client *source_p)
 		RB_DLINK_FOREACH_SAFE(ptr, next_ptr, temp_dlines[i].head)
 		{
 			aconf = ptr->data;
-
-			delete_one_address_conf(aconf->host, aconf);
+			remove_dline(aconf);
 			rb_dlinkDestroy(ptr, &temp_dlines[i]);
 		}
 	}

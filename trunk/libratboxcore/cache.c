@@ -114,11 +114,24 @@ cache_file(const char *filename, const char *shortname, int flags)
 	struct cachefile *cacheptr;
 	struct cacheline *lineptr;
 	char line[BUFSIZE];
+	struct stat st;
+
 	char *p;
 
 	if((in = fopen(filename, "r")) == NULL)
 		return NULL;
 
+	/* check and make sure we have something that is a file... */
+	if(fstat(fileno(in), &st) == -1)
+	{
+		fclose(in);
+		return NULL;
+	}
+	if(!S_ISREG(st.st_mode))
+	{
+		fclose(in);
+		return NULL;
+	}
 
 	cacheptr = rb_malloc(sizeof(struct cachefile));
 
@@ -141,6 +154,11 @@ cache_file(const char *filename, const char *shortname, int flags)
 			rb_dlinkAddTailAlloc(emptyline, &cacheptr->contents);
 	}
 
+	if(rb_dlink_list_length(&cacheptr->contents) == 0)
+	{
+		rb_free(cacheptr);
+		cacheptr = NULL;
+	}
 	fclose(in);
 	return cacheptr;
 }
@@ -222,6 +240,7 @@ load_help(void)
 	struct stat sb;
 #endif
 
+
 	/* opers must be done first */
 	helpfile_dir = opendir(HPATH);
 
@@ -232,7 +251,8 @@ load_help(void)
 	{
 		rb_snprintf(filename, sizeof(filename), "%s/%s", HPATH, ldirent->d_name);
 		cacheptr = cache_file(filename, ldirent->d_name, HELP_OPER);
-		add_to_help_hash(cacheptr->name, cacheptr);
+		if(cacheptr != NULL)
+			add_to_help_hash(cacheptr->name, cacheptr);
 	}
 
 	closedir(helpfile_dir);
@@ -265,7 +285,8 @@ load_help(void)
 #endif
 
 		cacheptr = cache_file(filename, ldirent->d_name, HELP_USER);
-		add_to_help_hash(cacheptr->name, cacheptr);
+		if(cacheptr != NULL)
+			add_to_help_hash(cacheptr->name, cacheptr);
 	}
 
 	closedir(helpfile_dir);

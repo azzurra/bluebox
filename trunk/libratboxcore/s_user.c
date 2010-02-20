@@ -515,6 +515,8 @@ register_local_user(struct Client *client_p, struct Client *source_p, const char
 		Count.max_tot = Count.total;
 	source_p->localClient->allow_read = MAX_FLOOD_BURST;
 
+	source_p->localClient->firsttime = rb_current_time();
+
 	Count.totalrestartcount++;
 
 	s_assert(source_p->localClient != NULL);

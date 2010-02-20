@@ -26,10 +26,6 @@
 
 #include "stdinc.h"
 
-#ifdef USE_CHALLENGE
-#include <openssl/rsa.h>
-#endif
-
 #include "struct.h"
 #include "s_serv.h"
 #include "class.h"

@@ -328,6 +328,22 @@ remove_dline(struct ConfItem *aconf)
 }
 
 void
+remove_perm_dlines(void)
+{
+	rb_patricia_node_t *pnode;
+	struct ConfItem *aconf;
+	RB_PATRICIA_WALK(dline_tree->head, pnode)
+	{
+		aconf = pnode->data;
+		if(!(aconf->flags & CONF_FLAGS_TEMPORARY))
+		{
+			remove_dline(aconf);
+		}
+	}
+	RB_PATRICIA_WALK_END;
+}
+
+void
 report_dlines(struct Client *source_p)
 {
 	rb_patricia_node_t *pnode;
