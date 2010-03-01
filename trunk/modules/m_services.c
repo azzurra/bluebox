@@ -225,7 +225,8 @@ me_rsfnc(struct Client *client_p, struct Client *source_p, int parc, const char 
 static int
 me_login(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	if(!IsClient(source_p) || !ServerInfo.hub)
+	/* Make leafs accept this as well */
+	if(!IsClient(source_p))
 		return 0;
 
 	/* this command is *only* accepted from bursting servers */
