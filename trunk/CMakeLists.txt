@@ -78,8 +78,12 @@ TARGET_LINK_LIBRARIES(ircd ratbox ratboxcore)
 ADD_CUSTOM_TARGET(bluebox ALL)
 ADD_DEPENDENCIES(bluebox libratbox libratboxcore resolver modules contrib ssld bandb)
 
+# Workaround for ircd.motd
+CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/cmake/InstallMotd.cmake.in ${PROJECT_BINARY_DIR}/InstallMotd.cmake @ONLY)
+
 INSTALL(TARGETS ircd DESTINATION bin)
 INSTALL(FILES ${PROJECT_BINARY_DIR}/doc/example.conf DESTINATION ${CMAKE_INSTALL_PREFIX}/etc/bluebox)
-INSTALL(FILES doc/ircd.motd DESTINATION ${CMAKE_INSTALL_PREFIX}/etc/bluebox)
+#INSTALL(FILES doc/ircd.motd DESTINATION ${CMAKE_INSTALL_PREFIX}/etc/bluebox)
+INSTALL(SCRIPT ${PROJECT_BINARY_DIR}/InstallMotd.cmake)
 INSTALL(DIRECTORY help DESTINATION ${CMAKE_INSTALL_PREFIX}/etc/bluebox)
 INSTALL(CODE "FILE(MAKE_DIRECTORY \${ENV}\${CMAKE_INSTALL_PREFIX}/var/log/bluebox)")

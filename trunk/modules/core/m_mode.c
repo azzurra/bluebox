@@ -41,10 +41,16 @@
 #include "modules.h"
 #include "s_newconf.h"
 
+static int m_umode(struct Client *, struct Client *, int, const char **);
 static int m_mode(struct Client *, struct Client *, int, const char **);
 static int ms_mode(struct Client *, struct Client *, int, const char **);
 static int ms_tmode(struct Client *, struct Client *, int, const char **);
 static int ms_bmask(struct Client *, struct Client *, int, const char **);
+
+struct Message umode_msgtab = {
+	"UMODE", 0, 0, 0, MFLG_SLOW,
+	{mg_unreg, {m_umode, 1}, mg_ignore, mg_ignore, mg_ignore, {m_umode, 1}}
+};
 
 struct Message mode_msgtab = {
 	"MODE", 0, 0, 0, MFLG_SLOW,
@@ -61,7 +67,7 @@ struct Message bmask_msgtab = {
 	{mg_ignore, mg_ignore, mg_ignore, {ms_bmask, 5}, mg_ignore, mg_ignore}
 };
 
-mapi_clist_av1 mode_clist[] = { &mode_msgtab, &tmode_msgtab, &bmask_msgtab, NULL };
+mapi_clist_av1 mode_clist[] = { &umode_msgtab, &mode_msgtab, &tmode_msgtab, &bmask_msgtab, NULL };
 
 DECLARE_MODULE_AV1(mode, NULL, NULL, mode_clist, NULL, NULL, "$Revision: 26094 $");
 
@@ -86,6 +92,25 @@ static struct ChModeChange mode_changes[BUFSIZE];
 static int mode_count;
 static int mode_limit;
 static int mask_pos;
+
+/*
+ * m_umode - Shortcut for MODE nick
+ * parv[0] - sender
+ * parv[1] - modes (optional)
+ */
+static int
+m_umode(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
+{
+	const char *myparv[4];
+	
+	/* parv[1] is either new modes or NULL */
+	myparv[0] = myparv[1] = parv[0];
+	myparv[2] = parv[1];
+	myparv[3] = NULL;
+	
+	user_mode(client_p, source_p, parc + 1, myparv);
+	return 0;
+}
 
 /*
  * m_mode - MODE command handler
