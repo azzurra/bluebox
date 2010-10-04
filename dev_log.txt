@@ -15,3 +15,6 @@ Nel conf di default mancava cconnext in general{oper_only_umodes}.
    mtnv e cambiare il topic se e' settato il mode +n.
 2009/02/20:
  * Rebase con ircd-ratbox-3.0.6
+2010/10/05 (morph):
+ * Hooks per m_message.c e m_cmessage.c (SHUN, spamfilter, DCCALLOW e soci)
+ * 4 spazi per tab, TAB EXPANSION. A breve riformatto tutto il codice.

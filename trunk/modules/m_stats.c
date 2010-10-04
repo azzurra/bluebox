@@ -1466,6 +1466,9 @@ stats_servlinks(struct Client *source_p)
 		"%7.2f %s (%4.1f K/s)", _GMKv(me.localClient->sendB / 1024),
 		_GMKs((me.localClient->sendB / 1024)),
 		(float)((float)(me.localClient->sendB / 1024) / (float)uptime));
+#if 0
+    ) /* Make VIM happy... */
+#endif
 
 	sendto_one_numeric(source_p, RPL_STATSDEBUG, "? :Server send: %s", buf);
 
@@ -1478,6 +1481,9 @@ stats_servlinks(struct Client *source_p)
 		_GMKs((me.localClient->receiveB / 1024)),
 		(float)((float)(me.localClient->receiveB / 1024) / (float)uptime));
 	sendto_one_numeric(source_p, RPL_STATSDEBUG, "? :Server recv: %s", buf);
+#if 0
+    ) /* Ditto */
+#endif
 }
 
 static void

@@ -38,6 +38,7 @@
 #include "channel.h"
 #include "numeric.h"
 #include "parse.h"
+#include "hook.h"
 #include "modules.h"
 #include "hash.h"
 #include "send.h"
@@ -58,9 +59,20 @@ struct Message cnotice_msgtab = {
 	{mg_ignore, {m_cnotice, 4}, mg_ignore, mg_ignore, mg_ignore, {m_cnotice, 4}}
 };
 
+/* We also fire client_message hook like core/m_message.c (albeit with a different variable name) */
+int client_cmessage_hook;
+
 mapi_clist_av1 cmessage_clist[] = { &cprivmsg_msgtab, &cnotice_msgtab, NULL };
 
+mapi_hlist_av1 cmessage_hlist[] = {
+    {"client_message", &client_cmessage_hook},
+    {NULL, NULL}
+};
+
 DECLARE_MODULE_AV1(cmessage, NULL, NULL, cmessage_clist, NULL, NULL, "$Revision: 26094 $");
+
+static int run_cmessage_hook(int p_or_n, const char *command,
+        struct Client *source_p, struct Client *target, const char *text);
 
 #define PRIVMSG 0
 #define NOTICE 1
@@ -84,6 +96,7 @@ m_cmessage(int p_or_n, const char *command,
 	struct Client *target_p;
 	struct Channel *chptr;
 	struct membership *msptr;
+    int block;
 
 	if(!IsFloodDone(source_p))
 		flood_endgrace(source_p);
@@ -129,6 +142,8 @@ m_cmessage(int p_or_n, const char *command,
 		return 0;
 	}
 
+    block = run_cmessage_hook(p_or_n, command, source_p, target_p, parv[3]);
+
 	if(MyClient(target_p) && IsSetCallerId(target_p) &&
 	   !accept_message(source_p, target_p) && !IsOper(source_p))
 	{
@@ -143,9 +158,10 @@ m_cmessage(int p_or_n, const char *command,
 				sendto_one_numeric(source_p, RPL_TARGNOTIFY,
 						   form_str(RPL_TARGNOTIFY), target_p->name);
 
-			sendto_one(target_p, form_str(RPL_UMODEGMSG),
-				   me.name, target_p->name, source_p->name,
-				   source_p->username, source_p->host);
+            if(!block)
+                sendto_one(target_p, form_str(RPL_UMODEGMSG),
+                       me.name, target_p->name, source_p->name,
+                       source_p->username, source_p->host);
 
 			target_p->localClient->last_caller_id_time = rb_current_time();
 		}
@@ -156,6 +172,24 @@ m_cmessage(int p_or_n, const char *command,
 	if(p_or_n != NOTICE)
 		source_p->localClient->last = rb_current_time();
 
-	sendto_anywhere(target_p, source_p, command, ":%s", parv[3]);
+    if(!block)
+        sendto_anywhere(target_p, source_p, command, ":%s", parv[3]);
 	return 0;
+}
+
+static int
+run_cmessage_hook(int p_or_n, const char *command,
+        struct Client *source_p, struct Client *target, const char *text)
+{
+    hook_data_message data;
+
+    data.client = source_p;
+    data.p_or_n = p_or_n;
+    data.command = command;
+    data.text = text;
+    data.target = (void *)target;
+    data.block = FALSE;
+
+    call_hook(client_cmessage_hook, &data);
+    return data.block;
 }

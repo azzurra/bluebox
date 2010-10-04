@@ -56,4 +56,14 @@ typedef struct
 	struct Channel *chptr;
 } hook_data_channel;
 
+typedef struct
+{
+    struct Client *client;
+    void *target;
+    int p_or_n;
+    const char *command;
+    const char *text;
+    int block;
+} hook_data_message;
+
 #endif
