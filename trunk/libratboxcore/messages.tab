@@ -248,7 +248,7 @@ static  const char *  replies[] = {
 /* 225 RPL_STATSDLINE*/         "%c %s :%s%s%s",
 /* 226 */	NULL,
 /* 227 */       NULL,
-/* 228 */       NULL,
+/* 228 RPL_STATSSPAM */         "S %s :%s -> %s",
 /* 229 */       NULL,
 /* 230 */       NULL,
 /* 231 */       NULL,

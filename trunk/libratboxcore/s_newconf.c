@@ -62,6 +62,8 @@ rb_dlink_list glines;
 static rb_dlink_list nd_list;   /* nick delay */
 rb_dlink_list tgchange_list;
 
+rb_dlink_list sline_conf_list;  /* spam lines */
+
 rb_patricia_tree_t *tgchange_tree;
 
 static rb_bh *nd_heap = NULL;
@@ -84,6 +86,7 @@ void
 clear_s_newconf(void)
 {
     struct server_conf *server_p;
+    struct ConfItem *aconf;
     rb_dlink_node *ptr;
     rb_dlink_node *next_ptr;
 
@@ -123,6 +126,13 @@ clear_s_newconf(void)
         }
         else
             server_p->flags |= SERVER_ILLEGAL;
+    }
+    
+    RB_DLINK_FOREACH_SAFE(ptr, next_ptr, sline_conf_list.head)
+    {
+        aconf = ptr->data;
+        free_conf(aconf);
+        rb_dlinkDestroy(ptr, &sline_conf_list);
     }
 }
 
@@ -840,6 +850,44 @@ find_tgchange(const char *host)
 
     if ((pnode = rb_match_exact_string(tgchange_tree, host)))
         return pnode->data;
+
+    return NULL;
+}
+
+struct ConfItem *
+find_sline(const char *msg)
+{
+    struct ConfItem *aconf;
+    rb_dlink_node *ptr;
+    
+    RB_DLINK_FOREACH(ptr, sline_conf_list.head)
+    {
+        aconf = ptr->data;
+        
+        if (match_esc(aconf->host, msg))
+        {
+            return aconf;
+        }
+    }
+
+    return NULL;
+}
+
+struct ConfItem *
+find_sline_mask(const char *msg)
+{
+    struct ConfItem *aconf;
+    rb_dlink_node *ptr;
+
+    RB_DLINK_FOREACH(ptr, sline_conf_list.head)
+    {
+        aconf = ptr->data;
+
+        if (!irccmp(aconf->host, msg))
+        {
+            return aconf;
+        }
+    }
 
     return NULL;
 }

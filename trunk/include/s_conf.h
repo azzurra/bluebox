@@ -68,6 +68,7 @@ struct ConfItem
 #define CONF_GLINE             0x10000
 #define CONF_DLINE             0x20000
 #define CONF_EXEMPTDLINE      0x100000
+#define CONF_SLINE            0x200000
 
 #define IsIllegal(x)    ((x)->status & CONF_ILLEGAL)
 
@@ -98,7 +99,7 @@ struct ConfItem
 
 /* Macros for struct ConfItem */
 #define IsConfBan(x)            ((x)->status & (CONF_KILL|CONF_XLINE|CONF_DLINE|\
-                                 CONF_RESV_CHANNEL|CONF_RESV_NICK))
+                                 CONF_RESV_CHANNEL|CONF_RESV_NICK|CONF_SLINE))
 
 #define IsNoTilde(x)            ((x)->flags & CONF_FLAGS_NO_TILDE)
 #define IsNeedIdentd(x)         ((x)->flags & CONF_FLAGS_NEED_IDENTD)

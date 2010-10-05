@@ -49,6 +49,7 @@ extern rb_dlink_list server_conf_list;
 extern rb_dlink_list xline_conf_list;
 extern rb_dlink_list resv_conf_list;
 extern rb_dlink_list tgchange_list;
+extern rb_dlink_list sline_conf_list;
 
 extern rb_patricia_tree_t *tgchange_tree;
 
@@ -236,6 +237,9 @@ struct ConfItem *find_xline(const char *, int);
 struct ConfItem *find_nick_resv(const char *name);
 struct ConfItem *find_xline_mask(const char *);
 struct ConfItem *find_nick_resv_mask(const char *name);
+
+struct ConfItem *find_sline(const char *);
+struct ConfItem *find_sline_mask(const char *);
 
 int valid_wild_card_simple(const char *);
 int clean_resv_nick(const char *);

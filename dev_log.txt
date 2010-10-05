@@ -20,3 +20,5 @@ Nel conf di default mancava cconnext in general{oper_only_umodes}.
  * 4 spazi per tab, TAB EXPANSION. A breve riformatto tutto il codice.
  * Chi usa i tab al posto degli spazi verra` debitamente bruciato vivo
    (ancora da riformattare: bandb, tools, ssld, resolver).
+ * Spamfilter preliminare (da testare). Prossima mossa: aggiungere le priorita` agli hook,
+   quindi version bump dell'API per i moduli (argh!).

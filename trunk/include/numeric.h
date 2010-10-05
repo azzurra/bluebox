@@ -84,6 +84,8 @@ const char *form_str(int);
 #define RPL_STATSFLINE       224
 #define RPL_STATSDLINE       225
 
+#define RPL_STATSSPAM        228
+
 #define RPL_SERVLIST         234
 #define RPL_SERVLISTEND      235
 
