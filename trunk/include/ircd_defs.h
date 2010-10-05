@@ -26,13 +26,13 @@
 
 /*
  * NOTE: NICKLEN and TOPICLEN do not live here anymore. Set it with configure
- * Otherwise there are no user servicable part here. 
+ * Otherwise there are no user servicable part here.
  *
  */
- /* ircd_defs.h - Global size definitions for record entries used
-  * througout ircd. Please think 3 times before adding anything to this
-  * file.
-  */
+/* ircd_defs.h - Global size definitions for record entries used
+ * througout ircd. Please think 3 times before adding anything to this
+ * file.
+ */
 #ifndef INCLUDED_ircd_defs_h
 #define INCLUDED_ircd_defs_h
 
@@ -47,83 +47,81 @@
 
 
 #ifdef __GNUC__
-#define ss_assert(expr)	do								\
-			if(!(expr)) {							\
-				ilog(L_MAIN, 						\
-				"file: %s line: %d (%s): Assertion failed: (%s)",	\
-				__FILE__, __LINE__, __PRETTY_FUNCTION__, #expr); 	\
-				sendto_realops_flags(UMODE_ALL, L_ALL, 			\
-				"file: %s line: %d (%s): Assertion failed: (%s)",	\
-				__FILE__, __LINE__, __PRETTY_FUNCTION__, #expr);	\
-			}								\
-			while(0)
+#define ss_assert(expr) do                                          \
+            if(!(expr)) {                                           \
+                ilog(L_MAIN,                                        \
+                "file: %s line: %d (%s): Assertion failed: (%s)",   \
+                __FILE__, __LINE__, __PRETTY_FUNCTION__, #expr);    \
+                sendto_realops_flags(UMODE_ALL, L_ALL,              \
+                "file: %s line: %d (%s): Assertion failed: (%s)",   \
+                __FILE__, __LINE__, __PRETTY_FUNCTION__, #expr);    \
+            }                                                       \
+            while(0)
 #else
-#define ss_assert(expr)	do								\
-			if(!(expr)) {							\
-				ilog(L_MAIN, 						\
-				"file: %s line: %d: Assertion failed: (%s)",		\
-				__FILE__, __LINE__, #expr); 				\
-				sendto_realops_flags(UMODE_ALL, L_ALL,			\
-				"file: %s line: %d: Assertion failed: (%s)"		\
-				__FILE__, __LINE__, #expr);				\
-			}								\
-			while(0)
+#define ss_assert(expr) do                                          \
+            if(!(expr)) {                                           \
+                ilog(L_MAIN,                                        \
+                "file: %s line: %d: Assertion failed: (%s)",        \
+                __FILE__, __LINE__, #expr);                         \
+                sendto_realops_flags(UMODE_ALL, L_ALL,              \
+                "file: %s line: %d: Assertion failed: (%s)"         \
+                __FILE__, __LINE__, #expr);                         \
+            }                                                       \
+            while(0)
 #endif
 
 #ifdef SOFT_ASSERT
 #define s_assert(expr) ss_assert(expr)
 #else
-#define s_assert(expr)	do { ss_assert(expr); assert(expr); } while(0)
+#define s_assert(expr)  do { ss_assert(expr); assert(expr); } while(0)
 #endif
 
 #if !defined(CONFIG_RATBOX_LEVEL_3)
 #  error Incorrect config.h for this revision of ircd.
 #endif
 
-#define HOSTLEN         63	/* Length of hostname.  Updated to         */
-				/* comply with RFC1123                     */
+#define HOSTLEN         63  /* Length of hostname.  Updated to         */
+                            /* comply with RFC1123                     */
 
 #define USERLEN         10
 #define REALLEN         50
 #define KILLLEN         90
 #define CHANNELLEN      200
-#define LOC_CHANNELLEN	50
-#define IDLEN		10
+#define LOC_CHANNELLEN  50
+#define IDLEN           10
 
 /* always v6 sized, as we can have a v6 sockhost for a remote client */
-#define HOSTIPLEN	53	/* sizeof("ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255.ipv6") */
+#define HOSTIPLEN       53  /* sizeof("ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255.ipv6") */
 
 /* reason length of klines, parts, quits etc */
-#define REASONLEN	120
+#define REASONLEN       120
 
-#define AWAYLEN		90
+#define AWAYLEN         90
 
 /* 23+1 for \0 */
 #define KEYLEN          24
-#define BUFSIZE         512	/* WARNING: *DONT* CHANGE THIS!!!! */
+#define BUFSIZE         512 /* WARNING: *DONT* CHANGE THIS!!!! */
 #define MAXRECIPIENTS   20
 #define MAXBANLENGTH    1024
-#define OPERNICKLEN     NICKLEN*2	/* Length of OPERNICKs. */
+#define OPERNICKLEN     NICKLEN*2   /* Length of OPERNICKs. */
 
 #define USERHOST_REPLYLEN       (NICKLEN+HOSTLEN+USERLEN+5)
-#define MAX_DATE_STRING 32	/* maximum string length for a date string */
+#define MAX_DATE_STRING 32  /* maximum string length for a date string */
 
-#define HELPLEN         400
-#define DEFAULT_TOPICLEN	160	/* Default topiclen */
-#define MAX_TOPICLEN		390	/* Max topiclen */
-/* 
- * message return values 
+#define HELPLEN             400
+#define DEFAULT_TOPICLEN    160 /* Default topiclen */
+#define MAX_TOPICLEN        390 /* Max topiclen */
+/*
+ * message return values
  */
-#define CLIENT_EXITED    -2
-#define CLIENT_PARSE_ERROR -1
-#define CLIENT_OK	1
+#define CLIENT_EXITED       -2
+#define CLIENT_PARSE_ERROR  -1
+#define CLIENT_OK           1
 
 #ifdef RB_IPV6
-#define PATRICIA_BITS	128
+#define PATRICIA_BITS   128
 #else
-#define PATRICIA_BITS	32
+#define PATRICIA_BITS   32
 #endif
-
-
 
 #endif /* INCLUDED_ircd_defs_h */

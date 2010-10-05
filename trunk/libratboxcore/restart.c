@@ -40,57 +40,57 @@ extern char **myargv;
 void
 restart(const char *mesg)
 {
-	static int was_here = NO;	/* redundant due to restarting flag below */
+    static int was_here = NO;   /* redundant due to restarting flag below */
 
-	if(was_here)
-		abort();
-	was_here = YES;
+    if (was_here)
+        abort();
+    was_here = YES;
 
-	ilog(L_MAIN, "Restarting Server because: %s, memory data limit: %ld", mesg, get_maxrss());
+    ilog(L_MAIN, "Restarting Server because: %s, memory data limit: %ld", mesg, get_maxrss());
 
-	server_reboot();
+    server_reboot();
 }
 
 void
 server_reboot(void)
 {
-	char path[PATH_MAX + 1];
+    char path[PATH_MAX + 1];
 
-	sendto_realops_flags(UMODE_ALL, L_ALL, "Restarting server...");
+    sendto_realops_flags(UMODE_ALL, L_ALL, "Restarting server...");
 
-	ilog(L_MAIN, "Restarting server...");
+    ilog(L_MAIN, "Restarting server...");
 
-	/* set all the signal handlers to a dummy */
-	setup_reboot_signals();
-	/*
-	 * XXX we used to call flush_connections() here. But since this routine
-	 * doesn't exist anymore, we won't be flushing. This is ok, since 
-	 * when close handlers come into existance, rb_close() will be called
-	 * below, and the data flushing will be implicit.
-	 *    -- adrian
-	 *
-	 * bah, for now, the program ain't coming back to here, so forcibly
-	 * close everything the "wrong" way for now, and just LEAVE...
-	 */
+    /* set all the signal handlers to a dummy */
+    setup_reboot_signals();
+    /*
+     * XXX we used to call flush_connections() here. But since this routine
+     * doesn't exist anymore, we won't be flushing. This is ok, since
+     * when close handlers come into existance, rb_close() will be called
+     * below, and the data flushing will be implicit.
+     *    -- adrian
+     *
+     * bah, for now, the program ain't coming back to here, so forcibly
+     * close everything the "wrong" way for now, and just LEAVE...
+     */
 #ifndef _WIN32
-	int i;
-	for(i = 0; i < maxconnections; ++i)
-		close(i);
+    int i;
+    for (i = 0; i < maxconnections; ++i)
+        close(i);
 #endif
 
-	unlink(pidFileName);
+    unlink(pidFileName);
 #ifndef _WIN32
-	int fd = open("/dev/null", O_RDWR);
-	dup2(fd, 0);
-	dup2(fd, 1);
-	dup2(fd, 2);
+    int fd = open("/dev/null", O_RDWR);
+    dup2(fd, 0);
+    dup2(fd, 1);
+    dup2(fd, 2);
 #endif
 
-	execv(SPATH, (void *)myargv);
+    execv(SPATH, (void *)myargv);
 
-	/* use this if execv of SPATH fails */
-	rb_snprintf(path, sizeof(path), "%s/bin/ircd", ConfigFileEntry.dpath);
+    /* use this if execv of SPATH fails */
+    rb_snprintf(path, sizeof(path), "%s/bin/ircd", ConfigFileEntry.dpath);
 
-	execv(path, (void *)myargv);
-	exit(-1);
+    execv(path, (void *)myargv);
+    exit(-1);
 }

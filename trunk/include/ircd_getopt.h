@@ -29,12 +29,12 @@
 
 struct lgetopt
 {
-	const char *opt;	/* name of the argument */
-	void *argloc;		/* where we store the argument to it (-option argument) */
-	enum
-	{ INTEGER, YESNO, ISTRING, USAGE, ENDEBUG }
-	argtype;
-	const char *desc;	/* description of the argument, usage for printing help */
+    const char *opt;    /* name of the argument */
+    void *argloc;       /* where we store the argument to it (-option argument) */
+    enum
+    { INTEGER, YESNO, ISTRING, USAGE, ENDEBUG }
+    argtype;
+    const char *desc;   /* description of the argument, usage for printing help */
 };
 
 extern struct lgetopt myopts[];

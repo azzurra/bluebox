@@ -53,14 +53,14 @@
 
 struct AuthRequest
 {
-	rb_dlink_node node;
-	struct Client *client;	/* pointer to client struct for request */
-	uint16_t dns_query;	/* DNS Query */
-	rb_fde_t *authF;
-	unsigned int flags;	/* current state of request */
-	time_t timeout;		/* time when query expires */
-	int lport;
-	int rport;
+    rb_dlink_node node;
+    struct Client *client;  /* pointer to client struct for request */
+    uint16_t dns_query; /* DNS Query */
+    rb_fde_t *authF;
+    unsigned int flags; /* current state of request */
+    time_t timeout;     /* time when query expires */
+    int lport;
+    int rport;
 };
 
 /*
@@ -69,24 +69,24 @@ struct AuthRequest
  */
 
 static const char *HeaderMessages[] = {
-	"NOTICE AUTH :*** Looking up your hostname...",
-	"NOTICE AUTH :*** Found your hostname",
-	"NOTICE AUTH :*** Couldn't look up your hostname",
-	"NOTICE AUTH :*** Checking Ident",
-	"NOTICE AUTH :*** Got Ident response",
-	"NOTICE AUTH :*** No Ident response",
-	"NOTICE AUTH :*** Your hostname is too long, ignoring hostname"
+    "NOTICE AUTH :*** Looking up your hostname...",
+    "NOTICE AUTH :*** Found your hostname",
+    "NOTICE AUTH :*** Couldn't look up your hostname",
+    "NOTICE AUTH :*** Checking Ident",
+    "NOTICE AUTH :*** Got Ident response",
+    "NOTICE AUTH :*** No Ident response",
+    "NOTICE AUTH :*** Your hostname is too long, ignoring hostname"
 };
 
 typedef enum
 {
-	REPORT_DO_DNS,
-	REPORT_FIN_DNS,
-	REPORT_FAIL_DNS,
-	REPORT_DO_ID,
-	REPORT_FIN_ID,
-	REPORT_FAIL_ID,
-	REPORT_HOST_TOOLONG
+    REPORT_DO_DNS,
+    REPORT_FIN_DNS,
+    REPORT_FAIL_DNS,
+    REPORT_DO_ID,
+    REPORT_FIN_ID,
+    REPORT_FAIL_ID,
+    REPORT_HOST_TOOLONG
 }
 ReportType;
 
@@ -106,9 +106,9 @@ static void read_auth(rb_fde_t *F, void *data);
 void
 init_auth(void)
 {
-	memset(&auth_poll_list, 0, sizeof(auth_poll_list));
-	rb_event_addish("timeout_auth_queries_event", timeout_auth_queries_event, NULL, 3);
-	auth_heap = rb_bh_create(sizeof(struct AuthRequest), AUTH_HEAP_SIZE, "auth_heap");
+    memset(&auth_poll_list, 0, sizeof(auth_poll_list));
+    rb_event_addish("timeout_auth_queries_event", timeout_auth_queries_event, NULL, 3);
+    auth_heap = rb_bh_create(sizeof(struct AuthRequest), AUTH_HEAP_SIZE, "auth_heap");
 
 }
 
@@ -118,13 +118,13 @@ init_auth(void)
 static struct AuthRequest *
 make_auth_request(struct Client *client)
 {
-	struct AuthRequest *request = rb_bh_alloc(auth_heap);
-	client->localClient->auth_request = request;
-	request->client = client;
-	request->dns_query = 0;
-	request->authF = NULL;
-	request->timeout = rb_current_time() + ConfigFileEntry.connect_timeout;
-	return request;
+    struct AuthRequest *request = rb_bh_alloc(auth_heap);
+    client->localClient->auth_request = request;
+    request->client = client;
+    request->dns_query = 0;
+    request->authF = NULL;
+    request->timeout = rb_current_time() + ConfigFileEntry.connect_timeout;
+    return request;
 }
 
 /*
@@ -133,7 +133,7 @@ make_auth_request(struct Client *client)
 static void
 free_auth_request(struct AuthRequest *request)
 {
-	rb_bh_free(auth_heap, request);
+    rb_bh_free(auth_heap, request);
 }
 
 /*
@@ -144,23 +144,23 @@ free_auth_request(struct AuthRequest *request)
 static void
 release_auth_client(struct AuthRequest *auth)
 {
-	struct Client *client = auth->client;
+    struct Client *client = auth->client;
 
-	if(IsDNS(auth) || IsAuth(auth))
-		return;
+    if (IsDNS(auth) || IsAuth(auth))
+        return;
 
-	client->localClient->auth_request = NULL;
-	rb_dlinkDelete(&auth->node, &auth_poll_list);
-	free_auth_request(auth);
+    client->localClient->auth_request = NULL;
+    rb_dlinkDelete(&auth->node, &auth_poll_list);
+    free_auth_request(auth);
 
-	/*
-	 * When a client has auth'ed, we want to start reading what it sends
-	 * us. This is what read_packet() does.
-	 *     -- adrian
-	 */
-	client->localClient->allow_read = MAX_FLOOD;
-	rb_dlinkAddTail(client, &client->node, &global_client_list);
-	read_packet(client->localClient->F, client);
+    /*
+     * When a client has auth'ed, we want to start reading what it sends
+     * us. This is what read_packet() does.
+     *     -- adrian
+     */
+    client->localClient->allow_read = MAX_FLOOD;
+    rb_dlinkAddTail(client, &client->node, &global_client_list);
+    read_packet(client->localClient->F, client);
 }
 
 /*
@@ -173,24 +173,24 @@ release_auth_client(struct AuthRequest *auth)
 static void
 auth_dns_callback(const char *res, int status, int aftype, void *data)
 {
-	struct AuthRequest *auth = data;
-	ClearDNS(auth);
-	auth->dns_query = 0;
-	/* The resolver won't return us anything > HOSTLEN */
-	if(status == 1)
-	{
-		rb_strlcpy(auth->client->host, res, sizeof(auth->client->host));
-		sendheader(auth->client, REPORT_FIN_DNS);
-	}
-	else
-	{
-		if(!strcmp(res, "HOSTTOOLONG"))
-		{
-			sendheader(auth->client, REPORT_HOST_TOOLONG);
-		}
-		sendheader(auth->client, REPORT_FAIL_DNS);
-	}
-	release_auth_client(auth);
+    struct AuthRequest *auth = data;
+    ClearDNS(auth);
+    auth->dns_query = 0;
+    /* The resolver won't return us anything > HOSTLEN */
+    if (status == 1)
+    {
+        rb_strlcpy(auth->client->host, res, sizeof(auth->client->host));
+        sendheader(auth->client, REPORT_FIN_DNS);
+    }
+    else
+    {
+        if (!strcmp(res, "HOSTTOOLONG"))
+        {
+            sendheader(auth->client, REPORT_HOST_TOOLONG);
+        }
+        sendheader(auth->client, REPORT_FAIL_DNS);
+    }
+    release_auth_client(auth);
 
 }
 
@@ -200,14 +200,14 @@ auth_dns_callback(const char *res, int status, int aftype, void *data)
 static void
 auth_error(struct AuthRequest *auth)
 {
-	ServerStats.is_abad++;
+    ServerStats.is_abad++;
 
-	if(auth->authF != NULL)
-		rb_close(auth->authF);
-	auth->authF = NULL;
-	ClearAuth(auth);
-	sendheader(auth->client, REPORT_FAIL_ID);
-	release_auth_client(auth);
+    if (auth->authF != NULL)
+        rb_close(auth->authF);
+    auth->authF = NULL;
+    ClearAuth(auth);
+    sendheader(auth->client, REPORT_FAIL_ID);
+    release_auth_client(auth);
 }
 
 
@@ -215,30 +215,30 @@ auth_error(struct AuthRequest *auth)
 static void
 auth_connect_callback(rb_fde_t *F, int status, void *data)
 {
-	struct AuthRequest *auth = data;
-	char authbuf[32];
+    struct AuthRequest *auth = data;
+    char authbuf[32];
 
-	if(status != RB_OK)
-	{
-		auth_error(auth);
-		return;
-	}
+    if (status != RB_OK)
+    {
+        auth_error(auth);
+        return;
+    }
 
-	/* one shot at the send, socket buffers should be able to handle it
-	 * if not, oh well, you lose
-	 */
-	rb_snprintf(authbuf, sizeof(authbuf), "%d , %d\r\n", auth->rport, auth->lport);
-	if(rb_write(auth->authF, authbuf, strlen(authbuf)) <= 0)
-	{
-		auth_error(auth);
-		return;
-	}
-	read_auth(F, auth);
+    /* one shot at the send, socket buffers should be able to handle it
+     * if not, oh well, you lose
+     */
+    rb_snprintf(authbuf, sizeof(authbuf), "%d , %d\r\n", auth->rport, auth->lport);
+    if (rb_write(auth->authF, authbuf, strlen(authbuf)) <= 0)
+    {
+        auth_error(auth);
+        return;
+    }
+    read_auth(F, auth);
 }
 
 
 /*
- * start_auth_query - Flag the client to show that an attempt to 
+ * start_auth_query - Flag the client to show that an attempt to
  * contact the ident server on
  * the client's host.  The connect and subsequently the socket are all put
  * into 'non-blocking' mode.  Should the connect or any later phase of the
@@ -248,116 +248,116 @@ auth_connect_callback(rb_fde_t *F, int status, void *data)
 static void
 start_auth_query(struct AuthRequest *auth)
 {
-	struct rb_sockaddr_storage *localaddr;
-	struct rb_sockaddr_storage *remoteaddr;
-	struct rb_sockaddr_storage destaddr;
-	struct rb_sockaddr_storage bindaddr;
-	int family;
+    struct rb_sockaddr_storage *localaddr;
+    struct rb_sockaddr_storage *remoteaddr;
+    struct rb_sockaddr_storage destaddr;
+    struct rb_sockaddr_storage bindaddr;
+    int family;
 
-	if(IsAnyDead(auth->client))
-		return;
+    if (IsAnyDead(auth->client))
+        return;
 
-	sendheader(auth->client, REPORT_DO_ID);
+    sendheader(auth->client, REPORT_DO_ID);
 
-	localaddr = auth->client->localClient->lip;
-	remoteaddr = &auth->client->localClient->ip;
+    localaddr = auth->client->localClient->lip;
+    remoteaddr = &auth->client->localClient->ip;
 
-	family = GET_SS_FAMILY(remoteaddr);
+    family = GET_SS_FAMILY(remoteaddr);
 
-	if((auth->authF = rb_socket(family, SOCK_STREAM, 0, "ident")) == NULL)
-	{
-		sendto_realops_flags(UMODE_DEBUG, L_ALL, "Error creating auth stream socket: %s",
-				     strerror(errno));
-		ilog(L_IOERROR, "creating auth stream socket %s: %s", auth->client->sockhost,
-		     strerror(errno));
-		auth_error(auth);
-		return;
-	}
-	memcpy(&bindaddr, localaddr, sizeof(struct rb_sockaddr_storage));
-	memcpy(&destaddr, remoteaddr, sizeof(struct rb_sockaddr_storage));
-	
+    if ((auth->authF = rb_socket(family, SOCK_STREAM, 0, "ident")) == NULL)
+    {
+        sendto_realops_flags(UMODE_DEBUG, L_ALL, "Error creating auth stream socket: %s",
+                             strerror(errno));
+        ilog(L_IOERROR, "creating auth stream socket %s: %s", auth->client->sockhost,
+             strerror(errno));
+        auth_error(auth);
+        return;
+    }
+    memcpy(&bindaddr, localaddr, sizeof(struct rb_sockaddr_storage));
+    memcpy(&destaddr, remoteaddr, sizeof(struct rb_sockaddr_storage));
+
 #ifdef RB_IPV6
-	if(family == AF_INET6)
-	{
-		auth->lport = ntohs(((struct sockaddr_in6 *)localaddr)->sin6_port);
-		auth->rport = ntohs(((struct sockaddr_in6 *)remoteaddr)->sin6_port);
-		((struct sockaddr_in6 *)&bindaddr)->sin6_port = 0;
-		((struct sockaddr_in6 *)&destaddr)->sin6_port = htons(113);
+    if (family == AF_INET6)
+    {
+        auth->lport = ntohs(((struct sockaddr_in6 *)localaddr)->sin6_port);
+        auth->rport = ntohs(((struct sockaddr_in6 *)remoteaddr)->sin6_port);
+        ((struct sockaddr_in6 *)&bindaddr)->sin6_port = 0;
+        ((struct sockaddr_in6 *)&destaddr)->sin6_port = htons(113);
 
-	}
-	else
+    }
+    else
 #endif
-	{
-		auth->lport = ntohs(((struct sockaddr_in *)localaddr)->sin_port);
-		auth->rport = ntohs(((struct sockaddr_in *)remoteaddr)->sin_port);
-		((struct sockaddr_in *)&bindaddr)->sin_port = 0;
-		((struct sockaddr_in *)&destaddr)->sin_port = htons(113);
-	}
+    {
+        auth->lport = ntohs(((struct sockaddr_in *)localaddr)->sin_port);
+        auth->rport = ntohs(((struct sockaddr_in *)remoteaddr)->sin_port);
+        ((struct sockaddr_in *)&bindaddr)->sin_port = 0;
+        ((struct sockaddr_in *)&destaddr)->sin_port = htons(113);
+    }
 
-	/* allocated in listener.c - after we copy this..we can discard it */
-	rb_free(auth->client->localClient->lip);
-	auth->client->localClient->lip = NULL;
+    /* allocated in listener.c - after we copy this..we can discard it */
+    rb_free(auth->client->localClient->lip);
+    auth->client->localClient->lip = NULL;
 
-	rb_connect_tcp(auth->authF, (struct sockaddr *)&destaddr, (struct sockaddr *)&bindaddr,
-		       GET_SS_LEN(&destaddr), auth_connect_callback, auth,
-		       GlobalSetOptions.ident_timeout);
+    rb_connect_tcp(auth->authF, (struct sockaddr *)&destaddr, (struct sockaddr *)&bindaddr,
+                   GET_SS_LEN(&destaddr), auth_connect_callback, auth,
+                   GlobalSetOptions.ident_timeout);
 
-	return;
+    return;
 }
 
 static char *
 GetValidIdent(char *xbuf)
 {
-	int remp = 0;
-	int locp = 0;
-	char *colon1Ptr;
-	char *colon2Ptr;
-	char *colon3Ptr;
-	char *commaPtr;
-	char *remotePortString;
+    int remp = 0;
+    int locp = 0;
+    char *colon1Ptr;
+    char *colon2Ptr;
+    char *colon3Ptr;
+    char *commaPtr;
+    char *remotePortString;
 
-	/* All this to get rid of a sscanf() fun. */
-	remotePortString = xbuf;
+    /* All this to get rid of a sscanf() fun. */
+    remotePortString = xbuf;
 
-	colon1Ptr = strchr(remotePortString, ':');
-	if(!colon1Ptr)
-		return NULL;
+    colon1Ptr = strchr(remotePortString, ':');
+    if (!colon1Ptr)
+        return NULL;
 
-	*colon1Ptr = '\0';
-	colon1Ptr++;
-	colon2Ptr = strchr(colon1Ptr, ':');
-	if(!colon2Ptr)
-		return NULL;
+    *colon1Ptr = '\0';
+    colon1Ptr++;
+    colon2Ptr = strchr(colon1Ptr, ':');
+    if (!colon2Ptr)
+        return NULL;
 
-	*colon2Ptr = '\0';
-	colon2Ptr++;
-	commaPtr = strchr(remotePortString, ',');
+    *colon2Ptr = '\0';
+    colon2Ptr++;
+    commaPtr = strchr(remotePortString, ',');
 
-	if(!commaPtr)
-		return NULL;
+    if (!commaPtr)
+        return NULL;
 
-	*commaPtr = '\0';
-	commaPtr++;
+    *commaPtr = '\0';
+    commaPtr++;
 
-	remp = atoi(remotePortString);
-	if(!remp)
-		return NULL;
+    remp = atoi(remotePortString);
+    if (!remp)
+        return NULL;
 
-	locp = atoi(commaPtr);
-	if(!locp)
-		return NULL;
+    locp = atoi(commaPtr);
+    if (!locp)
+        return NULL;
 
-	/* look for USERID bordered by first pair of colons */
-	if(!strstr(colon1Ptr, "USERID"))
-		return NULL;
+    /* look for USERID bordered by first pair of colons */
+    if (!strstr(colon1Ptr, "USERID"))
+        return NULL;
 
-	colon3Ptr = strchr(colon2Ptr, ':');
-	if(!colon3Ptr)
-		return NULL;
+    colon3Ptr = strchr(colon2Ptr, ':');
+    if (!colon3Ptr)
+        return NULL;
 
-	*colon3Ptr = '\0';
-	colon3Ptr++;
-	return (colon3Ptr);
+    *colon3Ptr = '\0';
+    colon3Ptr++;
+    return (colon3Ptr);
 }
 
 /*
@@ -366,41 +366,41 @@ GetValidIdent(char *xbuf)
 void
 start_auth(struct Client *client)
 {
-	struct AuthRequest *auth = 0;
-	s_assert(0 != client);
-	if(client == NULL)
-		return;
+    struct AuthRequest *auth = 0;
+    s_assert(0 != client);
+    if (client == NULL)
+        return;
 
-	/* to aid bopm which needs something unique to match against */
-	sendto_one(client, "NOTICE AUTH :*** Processing connection to %s", me.name);
+    /* to aid bopm which needs something unique to match against */
+    sendto_one(client, "NOTICE AUTH :*** Processing connection to %s", me.name);
 
-	auth = make_auth_request(client);
+    auth = make_auth_request(client);
 
-	sendheader(client, REPORT_DO_DNS);
+    sendheader(client, REPORT_DO_DNS);
 
-	rb_dlinkAdd(auth, &auth->node, &auth_poll_list);
+    rb_dlinkAdd(auth, &auth->node, &auth_poll_list);
 
-	/* Note that the order of things here are done for a good reason
-	 * if you try to do start_auth_query before lookup_ip there is a 
-	 * good chance that you'll end up with a double free on the auth
-	 * and that is bad.  But you still must keep the SetDNSPending 
-	 * before the call to start_auth_query, otherwise you'll have
-	 * the same thing.  So think before you hack 
-	 */
-	SetDNS(auth);		/* set both at the same time to eliminate possible race conditions */
-	SetAuth(auth);
-	if(ConfigFileEntry.disable_auth == 0)
-	{
-		start_auth_query(auth);
-	}
-	else {
-		rb_free(client->localClient->lip);
-		client->localClient->lip = NULL;
-		ClearAuth(auth);
-	}
-	auth->dns_query =
-		lookup_ip(client->sockhost, GET_SS_FAMILY(&client->localClient->ip),
-			  auth_dns_callback, auth);
+    /* Note that the order of things here are done for a good reason
+     * if you try to do start_auth_query before lookup_ip there is a
+     * good chance that you'll end up with a double free on the auth
+     * and that is bad.  But you still must keep the SetDNSPending
+     * before the call to start_auth_query, otherwise you'll have
+     * the same thing.  So think before you hack
+     */
+    SetDNS(auth);       /* set both at the same time to eliminate possible race conditions */
+    SetAuth(auth);
+    if (ConfigFileEntry.disable_auth == 0)
+    {
+        start_auth_query(auth);
+    }
+    else {
+        rb_free(client->localClient->lip);
+        client->localClient->lip = NULL;
+        ClearAuth(auth);
+    }
+    auth->dns_query =
+        lookup_ip(client->sockhost, GET_SS_FAMILY(&client->localClient->ip),
+                  auth_dns_callback, auth);
 }
 
 /*
@@ -410,40 +410,40 @@ start_auth(struct Client *client)
 static void
 timeout_auth_queries_event(void *notused)
 {
-	rb_dlink_node *ptr;
-	rb_dlink_node *next_ptr;
-	struct AuthRequest *auth;
+    rb_dlink_node *ptr;
+    rb_dlink_node *next_ptr;
+    struct AuthRequest *auth;
 
-	RB_DLINK_FOREACH_SAFE(ptr, next_ptr, auth_poll_list.head)
-	{
-		auth = ptr->data;
+    RB_DLINK_FOREACH_SAFE(ptr, next_ptr, auth_poll_list.head)
+    {
+        auth = ptr->data;
 
-		if(auth->timeout < rb_current_time())
-		{
-			if(auth->authF != NULL)
-			{
-				rb_close(auth->authF);
-				auth->authF = NULL;
-			}
-			if(IsAuth(auth))
-			{
-				ClearAuth(auth);
-				ServerStats.is_abad++;
-				sendheader(auth->client, REPORT_FAIL_ID);
-			}
-			if(IsDNS(auth))
-			{
-				ClearDNS(auth);
-				cancel_lookup(auth->dns_query);
-				auth->dns_query = 0;
-				sendheader(auth->client, REPORT_FAIL_DNS);
-			}
+        if (auth->timeout < rb_current_time())
+        {
+            if (auth->authF != NULL)
+            {
+                rb_close(auth->authF);
+                auth->authF = NULL;
+            }
+            if (IsAuth(auth))
+            {
+                ClearAuth(auth);
+                ServerStats.is_abad++;
+                sendheader(auth->client, REPORT_FAIL_ID);
+            }
+            if (IsDNS(auth))
+            {
+                ClearDNS(auth);
+                cancel_lookup(auth->dns_query);
+                auth->dns_query = 0;
+                sendheader(auth->client, REPORT_FAIL_DNS);
+            }
 
-			auth->client->localClient->lasttime = rb_current_time();
-			release_auth_client(auth);
-		}
-	}
-	return;
+            auth->client->localClient->lasttime = rb_current_time();
+            release_auth_client(auth);
+        }
+    }
+    return;
 }
 
 
@@ -453,82 +453,82 @@ timeout_auth_queries_event(void *notused)
 static void
 read_auth(rb_fde_t *F, void *data)
 {
-	struct AuthRequest *auth = data;
-	char *s = NULL, *t;
-	char buf[AUTH_BUFSIZ + 1];
-	int len, count;
+    struct AuthRequest *auth = data;
+    char *s = NULL, *t;
+    char buf[AUTH_BUFSIZ + 1];
+    int len, count;
 
-	len = rb_read(auth->authF, buf, AUTH_BUFSIZ);
+    len = rb_read(auth->authF, buf, AUTH_BUFSIZ);
 
-	if(len < 0 && rb_ignore_errno(errno))
-	{
-		rb_setselect(F, RB_SELECT_READ, read_auth, auth);
-		return;
-	}
+    if (len < 0 && rb_ignore_errno(errno))
+    {
+        rb_setselect(F, RB_SELECT_READ, read_auth, auth);
+        return;
+    }
 
-	if(len > 0)
-	{
-		buf[len] = '\0';
-		if((s = GetValidIdent(buf)))
-		{
-			t = auth->client->username;
-			while(*s == '~' || *s == '^')
-				s++;
-			for(count = USERLEN; *s && count; s++)
-			{
-				if(*s == '@')
-					break;
-				if(!isspace(*s) && *s != ':' && *s != '[')
-				{
-					*t++ = *s;
-					count--;
-				}
-			}
-			*t = '\0';
-		}
-	}
+    if (len > 0)
+    {
+        buf[len] = '\0';
+        if ((s = GetValidIdent(buf)))
+        {
+            t = auth->client->username;
+            while (*s == '~' || *s == '^')
+                s++;
+            for (count = USERLEN; *s && count; s++)
+            {
+                if (*s == '@')
+                    break;
+                if (!isspace(*s) && *s != ':' && *s != '[')
+                {
+                    *t++ = *s;
+                    count--;
+                }
+            }
+            *t = '\0';
+        }
+    }
 
-	rb_close(auth->authF);
-	auth->authF = NULL;
-	ClearAuth(auth);
+    rb_close(auth->authF);
+    auth->authF = NULL;
+    ClearAuth(auth);
 
-	if(s == NULL)
-	{
-		++ServerStats.is_abad;
-		rb_strlcpy(auth->client->username, "unknown", sizeof(auth->client->username));
-		sendheader(auth->client, REPORT_FAIL_ID);
-	}
-	else
-	{
-		sendheader(auth->client, REPORT_FIN_ID);
-		++ServerStats.is_asuc;
-		SetGotId(auth->client);
-	}
+    if (s == NULL)
+    {
+        ++ServerStats.is_abad;
+        rb_strlcpy(auth->client->username, "unknown", sizeof(auth->client->username));
+        sendheader(auth->client, REPORT_FAIL_ID);
+    }
+    else
+    {
+        sendheader(auth->client, REPORT_FIN_ID);
+        ++ServerStats.is_asuc;
+        SetGotId(auth->client);
+    }
 
-	release_auth_client(auth);
+    release_auth_client(auth);
 }
 
 /* this assumes the client is closing */
 void
 delete_auth_queries(struct Client *target_p)
 {
-	struct AuthRequest *auth;
-	if(target_p == NULL || target_p->localClient == NULL
-	   || target_p->localClient->auth_request == NULL)
-		return;
-	auth = target_p->localClient->auth_request;
-	target_p->localClient->auth_request = NULL;
+    struct AuthRequest *auth;
+    if (target_p == NULL || target_p->localClient == NULL
+            || target_p->localClient->auth_request == NULL)
+        return;
+    auth = target_p->localClient->auth_request;
+    target_p->localClient->auth_request = NULL;
 
-	if(IsDNS(auth) && auth->dns_query > 0)
-	{
-		cancel_lookup(auth->dns_query);
-		auth->dns_query = 0;
-	}
+    if (IsDNS(auth) && auth->dns_query > 0)
+    {
+        cancel_lookup(auth->dns_query);
+        auth->dns_query = 0;
+    }
 
 
-	if(auth->authF != NULL)
-		rb_close(auth->authF);
+    if (auth->authF != NULL)
+        rb_close(auth->authF);
 
-	rb_dlinkDelete(&auth->node, &auth_poll_list);
-	free_auth_request(auth);
+    rb_dlinkDelete(&auth->node, &auth_poll_list);
+    free_auth_request(auth);
 }

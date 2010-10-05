@@ -42,15 +42,15 @@ extern rb_dlink_list ndTable[];
 
 /* Channel hash table size, hash.c/s_debug.c */
 #define CH_MAX_BITS 16
-#define CH_MAX (1<<CH_MAX_BITS)	/* 2^16 */
+#define CH_MAX (1<<CH_MAX_BITS) /* 2^16 */
 
 /* hostname hash table size */
 #define HOST_MAX_BITS 17
-#define HOST_MAX (1<<HOST_MAX_BITS)	/* 2^17 */
+#define HOST_MAX (1<<HOST_MAX_BITS) /* 2^17 */
 
 /* RESV/XLINE hash table size, used in hash.c */
 #define R_MAX_BITS 10
-#define R_MAX (1<<R_MAX_BITS)	/* 2^10 */
+#define R_MAX (1<<R_MAX_BITS)   /* 2^10 */
 
 
 #define HASH_WALK(i, max, ptr, table) for (i = 0; i < max; i++) { RB_DLINK_FOREACH(ptr, table[i].head)
@@ -59,11 +59,11 @@ extern rb_dlink_list ndTable[];
 
 typedef enum
 {
-	HASH_CLIENT,
-	HASH_ID,
-	HASH_CHANNEL,
-	HASH_HOSTNAME,
-	HASH_RESV
+    HASH_CLIENT,
+    HASH_ID,
+    HASH_CHANNEL,
+    HASH_HOSTNAME,
+    HASH_RESV
 } hash_type;
 
 struct Client;

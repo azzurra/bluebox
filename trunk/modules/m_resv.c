@@ -48,18 +48,18 @@ static int mo_unresv(struct Client *, struct Client *, int, const char **);
 static int me_unresv(struct Client *, struct Client *, int, const char **);
 
 struct Message resv_msgtab = {
-	"RESV", 0, 0, 0, MFLG_SLOW | MFLG_UNREG,
-	{mg_ignore, mg_not_oper, mg_ignore, mg_ignore, {me_resv, 5}, {mo_resv, 3}}
+    "RESV", 0, 0, 0, MFLG_SLOW | MFLG_UNREG,
+    {mg_ignore, mg_not_oper, mg_ignore, mg_ignore, {me_resv, 5}, {mo_resv, 3}}
 };
 
 struct Message adminresv_msgtab = {
-	"ADMINRESV", 0, 0, 0, MFLG_SLOW | MFLG_UNREG,
-	{mg_ignore, mg_not_oper, mg_ignore, mg_ignore, mg_ignore, {mo_adminresv, 3}}
+    "ADMINRESV", 0, 0, 0, MFLG_SLOW | MFLG_UNREG,
+    {mg_ignore, mg_not_oper, mg_ignore, mg_ignore, mg_ignore, {mo_adminresv, 3}}
 };
 
 struct Message unresv_msgtab = {
-	"UNRESV", 0, 0, 0, MFLG_SLOW | MFLG_UNREG,
-	{mg_ignore, mg_not_oper, mg_ignore, mg_ignore, {me_unresv, 2}, {mo_unresv, 2}}
+    "UNRESV", 0, 0, 0, MFLG_SLOW | MFLG_UNREG,
+    {mg_ignore, mg_not_oper, mg_ignore, mg_ignore, {me_unresv, 2}, {mo_unresv, 2}}
 };
 
 mapi_clist_av1 resv_clist[] = { &resv_msgtab, &adminresv_msgtab, &unresv_msgtab, NULL };
@@ -67,7 +67,7 @@ mapi_clist_av1 resv_clist[] = { &resv_msgtab, &adminresv_msgtab, &unresv_msgtab,
 DECLARE_MODULE_AV1(resv, NULL, NULL, resv_clist, NULL, NULL, "$Revision: 26094 $");
 
 static void parse_resv(struct Client *source_p, const char *name,
-		       const char *reason, int temp_time, int perm);
+                       const char *reason, int temp_time, int perm);
 
 static void remove_resv(struct Client *source_p, const char *name);
 
@@ -80,250 +80,250 @@ static void remove_resv(struct Client *source_p, const char *name);
 static int
 mo_resv(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	const char *name;
-	const char *reason;
-	const char *target_server = NULL;
-	int temp_time;
-	int loc = 1;
+    const char *name;
+    const char *reason;
+    const char *target_server = NULL;
+    int temp_time;
+    int loc = 1;
 
-	if(!IsOperResv(source_p))
-	{
-		sendto_one(source_p, form_str(ERR_NOPRIVS), me.name, source_p->name, "resv");
-		return 0;
-	}
+    if (!IsOperResv(source_p))
+    {
+        sendto_one(source_p, form_str(ERR_NOPRIVS), me.name, source_p->name, "resv");
+        return 0;
+    }
 
-	/* RESV [time] <name> [ON <server>] :<reason> */
+    /* RESV [time] <name> [ON <server>] :<reason> */
 
-	if((temp_time = valid_temp_time(parv[loc])) >= 0)
-		loc++;
-	/* we just set temp_time to -1! */
-	else
-		temp_time = 0;
+    if ((temp_time = valid_temp_time(parv[loc])) >= 0)
+        loc++;
+    /* we just set temp_time to -1! */
+    else
+        temp_time = 0;
 
-	name = parv[loc];
-	loc++;
+    name = parv[loc];
+    loc++;
 
-	if((parc >= loc + 2) && (irccmp(parv[loc], "ON") == 0))
-	{
-		if(!IsOperRemoteBan(source_p))
-		{
-			sendto_one(source_p, form_str(ERR_NOPRIVS),
-				   me.name, source_p->name, "remoteban");
-			return 0;
-		}
+    if ((parc >= loc + 2) && (irccmp(parv[loc], "ON") == 0))
+    {
+        if (!IsOperRemoteBan(source_p))
+        {
+            sendto_one(source_p, form_str(ERR_NOPRIVS),
+                       me.name, source_p->name, "remoteban");
+            return 0;
+        }
 
-		target_server = parv[loc + 1];
-		loc += 2;
-	}
+        target_server = parv[loc + 1];
+        loc += 2;
+    }
 
-	if(parc <= loc || EmptyString(parv[loc]))
-	{
-		sendto_one(source_p, form_str(ERR_NEEDMOREPARAMS), me.name, source_p->name, "RESV");
-		return 0;
-	}
+    if (parc <= loc || EmptyString(parv[loc]))
+    {
+        sendto_one(source_p, form_str(ERR_NEEDMOREPARAMS), me.name, source_p->name, "RESV");
+        return 0;
+    }
 
-	reason = parv[loc];
+    reason = parv[loc];
 
-	if(target_server)
-	{
-		sendto_match_servs(source_p, target_server, CAP_ENCAP, NOCAPS,
-				   "ENCAP %s RESV %d %s 0 :%s",
-				   target_server, temp_time, name, reason);
+    if (target_server)
+    {
+        sendto_match_servs(source_p, target_server, CAP_ENCAP, NOCAPS,
+                           "ENCAP %s RESV %d %s 0 :%s",
+                           target_server, temp_time, name, reason);
 
-		if(match(target_server, me.name) == 0)
-			return 0;
-	}
-	else if(rb_dlink_list_length(&cluster_conf_list) > 0)
-		cluster_generic(source_p, "RESV",
-				(temp_time > 0) ? SHARED_TRESV : SHARED_PRESV,
-				"%d %s 0 :%s", temp_time, name, reason);
+        if (match(target_server, me.name) == 0)
+            return 0;
+    }
+    else if (rb_dlink_list_length(&cluster_conf_list) > 0)
+        cluster_generic(source_p, "RESV",
+                        (temp_time > 0) ? SHARED_TRESV : SHARED_PRESV,
+                        "%d %s 0 :%s", temp_time, name, reason);
 
-	parse_resv(source_p, name, reason, temp_time, 0);
+    parse_resv(source_p, name, reason, temp_time, 0);
 
-	return 0;
+    return 0;
 }
 
 static int
 mo_adminresv(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	if(!IsOperResv(source_p))
-	{
-		sendto_one(source_p, form_str(ERR_NOPRIVS), me.name, source_p->name, "resv");
-		return 0;
-	}
+    if (!IsOperResv(source_p))
+    {
+        sendto_one(source_p, form_str(ERR_NOPRIVS), me.name, source_p->name, "resv");
+        return 0;
+    }
 
-	if(!IsOperAdmin(source_p))
-	{
-		sendto_one(source_p, form_str(ERR_NOPRIVS), me.name, source_p->name, "admin");
-		return 0;
-	}
+    if (!IsOperAdmin(source_p))
+    {
+        sendto_one(source_p, form_str(ERR_NOPRIVS), me.name, source_p->name, "admin");
+        return 0;
+    }
 
-	parse_resv(source_p, parv[1], parv[2], 0, 1);
+    parse_resv(source_p, parv[1], parv[2], 0, 1);
 
-	return 0;
+    return 0;
 }
 
 
 static int
 me_resv(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	/* time name 0 :reason */
-	if(!IsClient(source_p))
-		return 0;
+    /* time name 0 :reason */
+    if (!IsClient(source_p))
+        return 0;
 
-	parse_resv(source_p, parv[2], parv[4], atoi(parv[1]), 0);
-	return 0;
+    parse_resv(source_p, parv[2], parv[4], atoi(parv[1]), 0);
+    return 0;
 }
 
 static void
 notify_resv(struct Client *source_p, const char *name, const char *reason, int temp_time)
 {
-	if(temp_time)
-	{
-		sendto_realops_flags(UMODE_ALL, L_ALL,
-				     "%s added temporary %d min. RESV for [%s] [%s]",
-				     get_oper_name(source_p), temp_time / 60, name, reason);
-		ilog(L_KLINE, "R %s %d %s %s",
-		     get_oper_name(source_p), temp_time / 60, name, reason);
-		sendto_one_notice(source_p, ":Added temporary %d min. RESV [%s]",
-				  temp_time / 60, name);
-	}
-	else
-	{
-		sendto_realops_flags(UMODE_ALL, L_ALL,
-				     "%s added RESV for [%s] [%s]",
-				     get_oper_name(source_p), name, reason);
-		ilog(L_KLINE, "R %s 0 %s %s", get_oper_name(source_p), name, reason);
-		sendto_one_notice(source_p, ":Added RESV for [%s] [%s]", name, reason);
-	}
+    if (temp_time)
+    {
+        sendto_realops_flags(UMODE_ALL, L_ALL,
+                             "%s added temporary %d min. RESV for [%s] [%s]",
+                             get_oper_name(source_p), temp_time / 60, name, reason);
+        ilog(L_KLINE, "R %s %d %s %s",
+             get_oper_name(source_p), temp_time / 60, name, reason);
+        sendto_one_notice(source_p, ":Added temporary %d min. RESV [%s]",
+                          temp_time / 60, name);
+    }
+    else
+    {
+        sendto_realops_flags(UMODE_ALL, L_ALL,
+                             "%s added RESV for [%s] [%s]",
+                             get_oper_name(source_p), name, reason);
+        ilog(L_KLINE, "R %s 0 %s %s", get_oper_name(source_p), name, reason);
+        sendto_one_notice(source_p, ":Added RESV for [%s] [%s]", name, reason);
+    }
 }
 
 
 /* parse_resv()
  *
  * inputs       - source_p if error messages wanted
- * 		- thing to resv
- * 		- reason for resv
- * outputs	-
+ *      - thing to resv
+ *      - reason for resv
+ * outputs  -
  * side effects - will parse the resv and create it if valid
  */
 static void
 parse_resv(struct Client *source_p, const char *name, const char *reason, int temp_time, int locked)
 {
-	struct ConfItem *aconf;
-	const char *oper = get_oper_name(source_p);
+    struct ConfItem *aconf;
+    const char *oper = get_oper_name(source_p);
 
-	if(!MyClient(source_p) &&
-	   !find_shared_conf(source_p->username, source_p->host,
-			     source_p->servptr->name,
-			     (temp_time > 0) ? SHARED_TRESV : SHARED_PRESV))
-		return;
+    if (!MyClient(source_p) &&
+            !find_shared_conf(source_p->username, source_p->host,
+                              source_p->servptr->name,
+                              (temp_time > 0) ? SHARED_TRESV : SHARED_PRESV))
+        return;
 
-	if(IsChannelName(name))
-	{
-		const char *p;
+    if (IsChannelName(name))
+    {
+        const char *p;
 
-		if(hash_find_resv(name))
-		{
-			sendto_one_notice(source_p,
-					  ":A RESV has already been placed on channel: %s", name);
-			return;
-		}
+        if (hash_find_resv(name))
+        {
+            sendto_one_notice(source_p,
+                              ":A RESV has already been placed on channel: %s", name);
+            return;
+        }
 
-		if(strlen(name) > CHANNELLEN)
-		{
-			sendto_one_notice(source_p, ":Invalid RESV length: %s", name);
-			return;
-		}
+        if (strlen(name) > CHANNELLEN)
+        {
+            sendto_one_notice(source_p, ":Invalid RESV length: %s", name);
+            return;
+        }
 
-		for(p = name; *p; p++)
-		{
-			if(!IsChanChar(*p))
-			{
-				sendto_one_notice(source_p, ":Invalid character '%c' in resv", *p);
-				return;
-			}
-		}
+        for (p = name; *p; p++)
+        {
+            if (!IsChanChar(*p))
+            {
+                sendto_one_notice(source_p, ":Invalid character '%c' in resv", *p);
+                return;
+            }
+        }
 
-		aconf = make_conf();
-		aconf->status = CONF_RESV_CHANNEL;
-		aconf->port = 0;
-		aconf->host = rb_strdup(name);
-		aconf->passwd = rb_strdup(reason);
-		aconf->info.oper = operhash_add(oper);
-		if(locked)
-			aconf->flags |= CONF_FLAGS_LOCKED;
+        aconf = make_conf();
+        aconf->status = CONF_RESV_CHANNEL;
+        aconf->port = 0;
+        aconf->host = rb_strdup(name);
+        aconf->passwd = rb_strdup(reason);
+        aconf->info.oper = operhash_add(oper);
+        if (locked)
+            aconf->flags |= CONF_FLAGS_LOCKED;
 
-		add_to_hash(HASH_RESV, aconf->host, aconf);
+        add_to_hash(HASH_RESV, aconf->host, aconf);
 
-		notify_resv(source_p, aconf->host, aconf->passwd, temp_time);
+        notify_resv(source_p, aconf->host, aconf->passwd, temp_time);
 
-		if(temp_time > 0)
-		{
-			aconf->flags |= CONF_FLAGS_TEMPORARY;
-			aconf->hold = rb_current_time() + temp_time;
-		}
-		else
-		{
-			bandb_add(BANDB_RESV, source_p, aconf->host, NULL, aconf->passwd, NULL,
-				  locked);
-			aconf->hold = rb_current_time();
-		}
-	}
-	else if(clean_resv_nick(name))
-	{
-		if(strlen(name) > NICKLEN * 2)
-		{
-			sendto_one_notice(source_p, ":Invalid RESV length: %s", name);
-			return;
-		}
+        if (temp_time > 0)
+        {
+            aconf->flags |= CONF_FLAGS_TEMPORARY;
+            aconf->hold = rb_current_time() + temp_time;
+        }
+        else
+        {
+            bandb_add(BANDB_RESV, source_p, aconf->host, NULL, aconf->passwd, NULL,
+                      locked);
+            aconf->hold = rb_current_time();
+        }
+    }
+    else if (clean_resv_nick(name))
+    {
+        if (strlen(name) > NICKLEN * 2)
+        {
+            sendto_one_notice(source_p, ":Invalid RESV length: %s", name);
+            return;
+        }
 
-		if(!valid_wild_card_simple(name))
-		{
-			sendto_one_notice(source_p,
-					  ":Please include at least %d non-wildcard "
-					  "characters with the resv",
-					  ConfigFileEntry.min_nonwildcard_simple);
-			return;
-		}
+        if (!valid_wild_card_simple(name))
+        {
+            sendto_one_notice(source_p,
+                              ":Please include at least %d non-wildcard "
+                              "characters with the resv",
+                              ConfigFileEntry.min_nonwildcard_simple);
+            return;
+        }
 
-		if(find_nick_resv_mask(name))
-		{
-			sendto_one_notice(source_p,
-					  ":A RESV has already been placed on nick: %s", name);
-			return;
-		}
+        if (find_nick_resv_mask(name))
+        {
+            sendto_one_notice(source_p,
+                              ":A RESV has already been placed on nick: %s", name);
+            return;
+        }
 
-		aconf = make_conf();
-		aconf->status = CONF_RESV_NICK;
-		aconf->port = 0;
-		aconf->host = rb_strdup(name);
-		aconf->passwd = rb_strdup(reason);
-		aconf->info.oper = operhash_add(oper);
-		if(locked)
-			aconf->flags |= CONF_FLAGS_LOCKED;
+        aconf = make_conf();
+        aconf->status = CONF_RESV_NICK;
+        aconf->port = 0;
+        aconf->host = rb_strdup(name);
+        aconf->passwd = rb_strdup(reason);
+        aconf->info.oper = operhash_add(oper);
+        if (locked)
+            aconf->flags |= CONF_FLAGS_LOCKED;
 
-		rb_dlinkAddAlloc(aconf, &resv_conf_list);
+        rb_dlinkAddAlloc(aconf, &resv_conf_list);
 
-		/* Don't notify temporary RESV set by services */
-		if (temp_time == 0 || !IsService(source_p))
-			notify_resv(source_p, aconf->host, aconf->passwd, temp_time);
+        /* Don't notify temporary RESV set by services */
+        if (temp_time == 0 || !IsService(source_p))
+            notify_resv(source_p, aconf->host, aconf->passwd, temp_time);
 
-		if(temp_time > 0)
-		{
-			aconf->flags |= CONF_FLAGS_TEMPORARY;
-			aconf->hold = rb_current_time() + temp_time;
-		}
-		else
-		{
-			bandb_add(BANDB_RESV, source_p, aconf->host, NULL, aconf->passwd, NULL,
-				  locked);
-			aconf->hold = rb_current_time();
-		}
+        if (temp_time > 0)
+        {
+            aconf->flags |= CONF_FLAGS_TEMPORARY;
+            aconf->hold = rb_current_time() + temp_time;
+        }
+        else
+        {
+            bandb_add(BANDB_RESV, source_p, aconf->host, NULL, aconf->passwd, NULL,
+                      locked);
+            aconf->hold = rb_current_time();
+        }
 
-	}
-	else
-		sendto_one_notice(source_p, ":You have specified an invalid resv: [%s]", name);
+    }
+    else
+        sendto_one_notice(source_p, ":You have specified an invalid resv: [%s]", name);
 }
 
 /*
@@ -334,122 +334,122 @@ parse_resv(struct Client *source_p, const char *name, const char *reason, int te
 static int
 mo_unresv(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	if(!IsOperResv(source_p))
-	{
-		sendto_one(source_p, form_str(ERR_NOPRIVS), me.name, source_p->name, "resv");
-		return 0;
-	}
+    if (!IsOperResv(source_p))
+    {
+        sendto_one(source_p, form_str(ERR_NOPRIVS), me.name, source_p->name, "resv");
+        return 0;
+    }
 
-	if((parc == 4) && (irccmp(parv[2], "ON") == 0))
-	{
-		if(!IsOperRemoteBan(source_p))
-		{
-			sendto_one(source_p, form_str(ERR_NOPRIVS),
-				   me.name, source_p->name, "remoteban");
-			return 0;
-		}
+    if ((parc == 4) && (irccmp(parv[2], "ON") == 0))
+    {
+        if (!IsOperRemoteBan(source_p))
+        {
+            sendto_one(source_p, form_str(ERR_NOPRIVS),
+                       me.name, source_p->name, "remoteban");
+            return 0;
+        }
 
-		sendto_match_servs(source_p, parv[3], CAP_ENCAP, NOCAPS,
-				   "ENCAP %s UNRESV %s", parv[3], parv[1]);
+        sendto_match_servs(source_p, parv[3], CAP_ENCAP, NOCAPS,
+                           "ENCAP %s UNRESV %s", parv[3], parv[1]);
 
-		if(match(parv[3], me.name) == 0)
-			return 0;
-	}
-	else if(rb_dlink_list_length(&cluster_conf_list) > 0)
-		cluster_generic(source_p, "UNRESV", SHARED_UNRESV, "%s", parv[1]);
+        if (match(parv[3], me.name) == 0)
+            return 0;
+    }
+    else if (rb_dlink_list_length(&cluster_conf_list) > 0)
+        cluster_generic(source_p, "UNRESV", SHARED_UNRESV, "%s", parv[1]);
 
-	remove_resv(source_p, parv[1]);
-	return 0;
+    remove_resv(source_p, parv[1]);
+    return 0;
 }
 
 static int
 me_unresv(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	const char *name;
+    const char *name;
 
-	/* name */
-	if(!IsClient(source_p))
-		return 0;
+    /* name */
+    if (!IsClient(source_p))
+        return 0;
 
-	name = parv[1];
+    name = parv[1];
 
-	if(!find_shared_conf(source_p->username, source_p->host,
-			     source_p->servptr->name, SHARED_UNRESV))
-		return 0;
+    if (!find_shared_conf(source_p->username, source_p->host,
+                          source_p->servptr->name, SHARED_UNRESV))
+        return 0;
 
-	remove_resv(source_p, name);
-	return 0;
+    remove_resv(source_p, name);
+    return 0;
 }
 
 static void
 remove_resv(struct Client *source_p, const char *name)
 {
-	struct ConfItem *aconf = NULL;
-	int is_temp = FALSE;
+    struct ConfItem *aconf = NULL;
+    int is_temp = FALSE;
 
-	if(IsChannelName(name))
-	{
-		if((aconf = hash_find_resv(name)) == NULL)
-		{
-			sendto_one_notice(source_p, ":No RESV for %s", name);
-			return;
-		}
+    if (IsChannelName(name))
+    {
+        if ((aconf = hash_find_resv(name)) == NULL)
+        {
+            sendto_one_notice(source_p, ":No RESV for %s", name);
+            return;
+        }
 
-		if(IsConfLocked(aconf) && !IsOperAdmin(source_p))
-		{
-			sendto_one_notice(source_p, ":Cannot remove locked RESV %s", name);
-			return;
-		}
+        if (IsConfLocked(aconf) && !IsOperAdmin(source_p))
+        {
+            sendto_one_notice(source_p, ":Cannot remove locked RESV %s", name);
+            return;
+        }
 
-		/* schedule it to transaction log */
-		if((aconf->flags & CONF_FLAGS_TEMPORARY) == 0)
-			bandb_del(BANDB_RESV, aconf->host, NULL);
+        /* schedule it to transaction log */
+        if ((aconf->flags & CONF_FLAGS_TEMPORARY) == 0)
+            bandb_del(BANDB_RESV, aconf->host, NULL);
 
-		del_from_hash(HASH_RESV, name, aconf);
-		free_conf(aconf);
-	}
-	else
-	{
-		rb_dlink_node *ptr;
+        del_from_hash(HASH_RESV, name, aconf);
+        free_conf(aconf);
+    }
+    else
+    {
+        rb_dlink_node *ptr;
 
-		RB_DLINK_FOREACH(ptr, resv_conf_list.head)
-		{
-			aconf = ptr->data;
+        RB_DLINK_FOREACH(ptr, resv_conf_list.head)
+        {
+            aconf = ptr->data;
 
-			if(irccmp(aconf->host, name))
-				aconf = NULL;
-			else
-				break;
-		}
+            if (irccmp(aconf->host, name))
+                aconf = NULL;
+            else
+                break;
+        }
 
-		if(aconf == NULL)
-		{
-			sendto_one_notice(source_p, ":No RESV for %s", name);
-			return;
-		}
+        if (aconf == NULL)
+        {
+            sendto_one_notice(source_p, ":No RESV for %s", name);
+            return;
+        }
 
-		if(IsConfLocked(aconf) && !IsOperAdmin(source_p))
-		{
-			sendto_one_notice(source_p, ":Cannot remove locked RESV %s", name);
-			return;
-		}
+        if (IsConfLocked(aconf) && !IsOperAdmin(source_p))
+        {
+            sendto_one_notice(source_p, ":Cannot remove locked RESV %s", name);
+            return;
+        }
 
-		/* schedule it to transaction log */
-		if((aconf->flags & CONF_FLAGS_TEMPORARY) == 0)
-			bandb_del(BANDB_RESV, aconf->host, NULL);
-		else
-			is_temp = TRUE;
+        /* schedule it to transaction log */
+        if ((aconf->flags & CONF_FLAGS_TEMPORARY) == 0)
+            bandb_del(BANDB_RESV, aconf->host, NULL);
+        else
+            is_temp = TRUE;
 
-		/* already have ptr from the loop above.. */
-		rb_dlinkDestroy(ptr, &resv_conf_list);
-		free_conf(aconf);
-	}
+        /* already have ptr from the loop above.. */
+        rb_dlinkDestroy(ptr, &resv_conf_list);
+        free_conf(aconf);
+    }
 
-	sendto_one_notice(source_p, ":RESV for [%s] is removed", name);
-	if (!is_temp || !IsService(source_p))
-	{
-		sendto_realops_flags(UMODE_ALL, L_ALL,
-				     "%s has removed the RESV for: [%s]", get_oper_name(source_p), name);
-		ilog(L_KLINE, "UR %s %s", get_oper_name(source_p), name);
-	}
+    sendto_one_notice(source_p, ":RESV for [%s] is removed", name);
+    if (!is_temp || !IsService(source_p))
+    {
+        sendto_realops_flags(UMODE_ALL, L_ALL,
+                             "%s has removed the RESV for: [%s]", get_oper_name(source_p), name);
+        ilog(L_KLINE, "UR %s %s", get_oper_name(source_p), name);
+    }
 }

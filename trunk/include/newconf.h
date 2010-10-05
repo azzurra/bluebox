@@ -8,32 +8,32 @@
 
 extern FILE *conf_fbfile_in;
 
-#define CF_QSTRING	0x01
-#define CF_INT		0x02
-#define CF_STRING	0x03
-#define CF_TIME		0x04
-#define CF_YESNO	0x05
-#define CF_LIST		0x06
-#define CF_ONE		0x07
+#define CF_QSTRING  0x01
+#define CF_INT      0x02
+#define CF_STRING   0x03
+#define CF_TIME     0x04
+#define CF_YESNO    0x05
+#define CF_LIST     0x06
+#define CF_ONE      0x07
 
-#define CF_MTYPE	0xFF
+#define CF_MTYPE    0xFF
 
-#define CF_FLIST	0x1000
-#define CF_MFLAG	0xFF00
+#define CF_FLIST    0x1000
+#define CF_MFLAG    0xFF00
 
 
 
 typedef struct conf_parm_t_stru
 {
-	struct conf_parm_t_stru *next;
-	int type;
-	union
-	{
-		char *string;
-		int number;
-		struct conf_parm_t_stru *list;
-	}
-	v;
+    struct conf_parm_t_stru *next;
+    int type;
+    union
+    {
+        char *string;
+        int number;
+        struct conf_parm_t_stru *list;
+    }
+    v;
 }
 conf_parm_t;
 
@@ -47,24 +47,24 @@ extern int yyparse(void);
 
 typedef struct _confentry
 {
-	rb_dlink_node node;
-	char *entryname;
-	long number;
-	char *string;
-	rb_dlink_list flist;
-	unsigned int line;
-	char *filename;
-	int type;
+    rb_dlink_node node;
+    char *entryname;
+    long number;
+    char *string;
+    rb_dlink_list flist;
+    unsigned int line;
+    char *filename;
+    int type;
 } confentry_t;
 
 typedef struct _conf
 {
-	rb_dlink_node node;
-	char *confname;
-	char *subname;
-	rb_dlink_list entries;
-	char *filename;
-	unsigned int line;
+    rb_dlink_node node;
+    char *confname;
+    char *subname;
+    rb_dlink_list entries;
+    char *filename;
+    unsigned int line;
 } conf_t;
 
 struct conf_items;
@@ -73,11 +73,11 @@ typedef void CONF_CB(confentry_t *, conf_t *, struct conf_items *);
 
 struct conf_items
 {
-	const char *c_name;
-	int type;
-	CONF_CB *cb_func;
-	int len;
-	void *data;
+    const char *c_name;
+    int type;
+    CONF_CB *cb_func;
+    int len;
+    void *data;
 };
 
 

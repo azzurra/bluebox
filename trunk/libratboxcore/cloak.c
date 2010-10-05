@@ -46,183 +46,183 @@ static size_t cloak_key_len;
 
 void init_cloak(void)
 {
-	int fd;
+    int fd;
 
-	/* FIXME: should this change after a rehash? */
-	cloak_network = rb_strdup(ServerInfo.network_name);
-	cloak_network_len = strlen(cloak_network);
+    /* FIXME: should this change after a rehash? */
+    cloak_network = rb_strdup(ServerInfo.network_name);
+    cloak_network_len = strlen(cloak_network);
 
-	if ((fd = open(ETC_DIR "/ircd.cloak", O_RDONLY)) >= 0)
-	{
-		struct stat st;
-		if (fstat(fd, &st) == 0)
-		{
-			int sz = st.st_size;
-			if (sz > MIN_CLOAK_KEY_LEN)
-			{
-				int rv;
-				if (sz > MAX_CLOAK_KEY_LEN)
-					sz = MAX_CLOAK_KEY_LEN;		/* we aren't NASA */
-				cloak_key = rb_malloc(sz + 1);
-				if ((rv = read(fd, (void *)cloak_key, sz)) != sz)
-				{
-					/* Short read */
-					(void) close(fd);
-					ilog(L_MAIN,
-					     "Error while reading cloak key (expected %d bytes, got %d): terminating ircd",
-					     sz, rv);
-					exit(0);
-				}
-				(void) close(fd);
-				cloak_key[sz] = '\0';
-				cloak_key_len = strlen(cloak_key);
-			}
-			else
-			{
-				/* Wrong size */
-				ilog(L_MAIN,
-				     "Cloak key is too short (%d bytes): terminating ircd", sz);
-				(void) close(fd);
-				exit(0);
-			}
-		}
-		else
-		{
-			/* fstat failure */
-			ilog(L_MAIN,
-			     "Failed to stat cloak key file (%s): terminating ircd", strerror(errno));
-			(void) close(fd);
-			exit(0);
-		}
-	}
-	else
-	{
-		/* open failed */
-		ilog(L_MAIN,
-		     "Can't open cloak key file (%s): terminating ircd", strerror(errno));
-		exit(0);
-	}
-	/* phew! */
-	ilog(L_MAIN, "Host cloaking subsystem initialized: host %s, key length %d bits",
-	     cloak_network, cloak_key_len * 8);
+    if ((fd = open(ETC_DIR "/ircd.cloak", O_RDONLY)) >= 0)
+    {
+        struct stat st;
+        if (fstat(fd, &st) == 0)
+        {
+            int sz = st.st_size;
+            if (sz > MIN_CLOAK_KEY_LEN)
+            {
+                int rv;
+                if (sz > MAX_CLOAK_KEY_LEN)
+                    sz = MAX_CLOAK_KEY_LEN;     /* we aren't NASA */
+                cloak_key = rb_malloc(sz + 1);
+                if ((rv = read(fd, (void *)cloak_key, sz)) != sz)
+                {
+                    /* Short read */
+                    (void) close(fd);
+                    ilog(L_MAIN,
+                         "Error while reading cloak key (expected %d bytes, got %d): terminating ircd",
+                         sz, rv);
+                    exit(0);
+                }
+                (void) close(fd);
+                cloak_key[sz] = '\0';
+                cloak_key_len = strlen(cloak_key);
+            }
+            else
+            {
+                /* Wrong size */
+                ilog(L_MAIN,
+                     "Cloak key is too short (%d bytes): terminating ircd", sz);
+                (void) close(fd);
+                exit(0);
+            }
+        }
+        else
+        {
+            /* fstat failure */
+            ilog(L_MAIN,
+                 "Failed to stat cloak key file (%s): terminating ircd", strerror(errno));
+            (void) close(fd);
+            exit(0);
+        }
+    }
+    else
+    {
+        /* open failed */
+        ilog(L_MAIN,
+             "Can't open cloak key file (%s): terminating ircd", strerror(errno));
+        exit(0);
+    }
+    /* phew! */
+    ilog(L_MAIN, "Host cloaking subsystem initialized: host %s, key length %d bits",
+         cloak_network, cloak_key_len * 8);
 }
 
 void update_cloak_key(const unsigned char *newkey, size_t newkeylen)
 {
-	;
+    ;
 }
 
 #define FNV_PRIME 16777619UL
 
 static inline int32_t fnv_hash(const char *p, size_t s)
 {
-	int32_t h = 0;
-	int i = 0;
+    int32_t h = 0;
+    int i = 0;
 
-	for (; i < s; i++)
-	    h = (h * FNV_PRIME) ^ p[i];
+    for (; i < s; i++)
+        h = (h * FNV_PRIME) ^ p[i];
 
-	return h;
+    return h;
 }
 
 #define SHABUFLEN SHA1_DIGEST_LENGTH*2
 
 static char *sha1_hash(const char *s, size_t len)
 {
-	static char shabuf[SHABUFLEN + 1];
-	unsigned char digest[SHA1_DIGEST_LENGTH];
-	int i;
-	SHA1_CTX ctx;
+    static char shabuf[SHABUFLEN + 1];
+    unsigned char digest[SHA1_DIGEST_LENGTH];
+    int i;
+    SHA1_CTX ctx;
 
-	SHA1Init(&ctx);
-	SHA1Update(&ctx, s, len);
-	SHA1Update(&ctx, cloak_key, cloak_key_len);
-	SHA1Final(digest, &ctx);
+    SHA1Init(&ctx);
+    SHA1Update(&ctx, s, len);
+    SHA1Update(&ctx, cloak_key, cloak_key_len);
+    SHA1Final(digest, &ctx);
 
-	for (i = 0; i < SHA1_DIGEST_LENGTH; i++)
-		rb_snprintf(shabuf+2*i, sizeof(shabuf) - 2*i, "%02x", digest[i]);
-	shabuf[SHABUFLEN] = '\0';
+    for (i = 0; i < SHA1_DIGEST_LENGTH; i++)
+        rb_snprintf(shabuf+2*i, sizeof(shabuf) - 2*i, "%02x", digest[i]);
+    shabuf[SHABUFLEN] = '\0';
 
-	return shabuf;
+    return shabuf;
 }
 
 int cloak_host(struct Client *target_p)
 {
-	int isdns = NO, chlen = cloak_network_len + 10;
-	char *p, *shabuf;
-	unsigned short i;
-	int32_t csum;
+    int isdns = NO, chlen = cloak_network_len + 10;
+    char *p, *shabuf;
+    unsigned short i;
+    int32_t csum;
 
-	shabuf = sha1_hash(target_p->host, strlen(target_p->host));
-	csum = fnv_hash(shabuf, strlen(shabuf));
+    shabuf = sha1_hash(target_p->host, strlen(target_p->host));
+    csum = fnv_hash(shabuf, strlen(shabuf));
 
-	for (p = target_p->host, i = 0; *p; p++)
-	{
-		if (!isdns && isalpha(*p))
-			isdns = YES;
-		else if (*p == '.')
-			i++;
-	}
+    for (p = target_p->host, i = 0; *p; p++)
+    {
+        if (!isdns && isalpha(*p))
+            isdns = YES;
+        else if (*p == '.')
+            i++;
+    }
 
-	memset(target_p->virthost, 0, sizeof(target_p->virthost));
+    memset(target_p->virthost, 0, sizeof(target_p->virthost));
 
-	if (isdns)
-	{
-		switch (i)
-		{
-		case 0:
-			return 0;
-		case 1:
-			rb_snprintf(target_p->virthost, sizeof(target_p->virthost),
-				    "%s%c%X.%s",
-			    	    cloak_network,
-				    csum < 0 ? '=' : '-',
-				    csum < 0 ? -csum : csum,
-				    target_p->host);
-			return 1;
-		default:
-			p = strchr(target_p->host, '.');
-			while ((strlen(p) + chlen) > HOSTLEN)
-			{
-				if ((p = strchr(++p, '.')) == NULL)
-					return 0;
-			}
-			rb_snprintf(target_p->virthost, sizeof(target_p->virthost),
-				    "%s%c%X.%s",
-				    cloak_network,
-				    csum < 0 ? '=' : '-',
-				    csum < 0 ? -csum : csum,
-				    p + 1);
-			return 1;
-		}
-		/* NOT REACHED */
-		return 0;
-	}
-	else
-	{
-		char ipmask[16];
+    if (isdns)
+    {
+        switch (i)
+        {
+        case 0:
+            return 0;
+        case 1:
+            rb_snprintf(target_p->virthost, sizeof(target_p->virthost),
+                        "%s%c%X.%s",
+                        cloak_network,
+                        csum < 0 ? '=' : '-',
+                        csum < 0 ? -csum : csum,
+                        target_p->host);
+            return 1;
+        default:
+            p = strchr(target_p->host, '.');
+            while ((strlen(p) + chlen) > HOSTLEN)
+            {
+                if ((p = strchr(++p, '.')) == NULL)
+                    return 0;
+            }
+            rb_snprintf(target_p->virthost, sizeof(target_p->virthost),
+                        "%s%c%X.%s",
+                        cloak_network,
+                        csum < 0 ? '=' : '-',
+                        csum < 0 ? -csum : csum,
+                        p + 1);
+            return 1;
+        }
+        /* NOT REACHED */
+        return 0;
+    }
+    else
+    {
+        char ipmask[16];
 
-		rb_strlcpy(ipmask, target_p->host, sizeof(ipmask));
-		ipmask[sizeof(ipmask) - 1] = '\0';
+        rb_strlcpy(ipmask, target_p->host, sizeof(ipmask));
+        ipmask[sizeof(ipmask) - 1] = '\0';
 
-		if ((p = strchr(ipmask, '.')) != NULL)
-			if ((p = strchr(p + 1, '.')) != NULL)
-				*p = '\0';
+        if ((p = strchr(ipmask, '.')) != NULL)
+            if ((p = strchr(p + 1, '.')) != NULL)
+                *p = '\0';
 
-		if (p == NULL)
-			rb_snprintf(target_p->virthost, sizeof(target_p->virthost),
-				    "%s%c%X",
-				    cloak_network,
-				    csum < 0 ? '=' : '-',
-				    csum < 0 ? -csum : csum);
-		else
-			rb_snprintf(target_p->virthost, sizeof(target_p->virthost),
-				    "%s.%s%c%X",
-				    ipmask, cloak_network,
-				    csum < 0 ? '=' : '-',
-				    csum < 0 ? -csum : csum);
-		return 1;
-	}
-	/* NOT REACHED */
-	return 0;
+        if (p == NULL)
+            rb_snprintf(target_p->virthost, sizeof(target_p->virthost),
+                        "%s%c%X",
+                        cloak_network,
+                        csum < 0 ? '=' : '-',
+                        csum < 0 ? -csum : csum);
+        else
+            rb_snprintf(target_p->virthost, sizeof(target_p->virthost),
+                        "%s.%s%c%X",
+                        ipmask, cloak_network,
+                        csum < 0 ? '=' : '-',
+                        csum < 0 ? -csum : csum);
+        return 1;
+    }
+    /* NOT REACHED */
+    return 0;
 }

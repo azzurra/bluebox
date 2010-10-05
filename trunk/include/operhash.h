@@ -3,8 +3,8 @@
 
 struct operhash_entry
 {
-	char *name;
-	int refcount;
+    char *name;
+    int refcount;
 };
 
 void init_operhash(void);

@@ -28,8 +28,8 @@
 #include "struct.h"
 #include "ircd.h"
 #include "numeric.h"
-#include "s_serv.h"		/* hunt_server */
-#include "s_user.h"		/* show_lusers */
+#include "s_serv.h"     /* hunt_server */
+#include "s_user.h"     /* show_lusers */
 #include "send.h"
 #include "s_conf.h"
 #include "parse.h"
@@ -40,13 +40,13 @@ static int ms_lusers(struct Client *, struct Client *, int, const char **);
 static int m_users(struct Client *, struct Client *, int, const char **);
 
 struct Message lusers_msgtab = {
-	"LUSERS", 0, 0, 0, MFLG_SLOW,
-	{mg_unreg, {m_lusers, 0}, {ms_lusers, 0}, mg_ignore, mg_ignore, {ms_lusers, 0}}
+    "LUSERS", 0, 0, 0, MFLG_SLOW,
+    {mg_unreg, {m_lusers, 0}, {ms_lusers, 0}, mg_ignore, mg_ignore, {ms_lusers, 0}}
 };
 
 struct Message users_msgtab = {
-	"USERS", 0, 0, 0, MFLG_SLOW,
-	{mg_unreg, {m_users, 0}, {m_users, 0}, mg_ignore, mg_ignore, {m_users, 0}}
+    "USERS", 0, 0, 0, MFLG_SLOW,
+    {mg_unreg, {m_users, 0}, {m_users, 0}, mg_ignore, mg_ignore, {m_users, 0}}
 };
 
 mapi_clist_av1 lusers_clist[] = { &lusers_msgtab, &users_msgtab, NULL };
@@ -58,35 +58,35 @@ DECLARE_MODULE_AV1(lusers, NULL, NULL, lusers_clist, NULL, NULL, "$Revision: 260
  * parv[0] = sender
  * parv[1] = host/server mask.
  * parv[2] = server to query
- * 
+ *
  * 199970918 JRL hacked to ignore parv[1] completely and require parc > 3
  * to cause a force
  */
 static int
 m_lusers(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	static time_t last_used = 0;
+    static time_t last_used = 0;
 
-	if(parc > 2)
-	{
-		if((last_used + ConfigFileEntry.pace_wait) > rb_current_time())
-		{
-			/* safe enough to give this on a local connect only */
-			sendto_one(source_p, form_str(RPL_LOAD2HI),
-				   me.name, source_p->name, "LUSERS");
-			return 0;
-		}
-		else
-			last_used = rb_current_time();
+    if (parc > 2)
+    {
+        if ((last_used + ConfigFileEntry.pace_wait) > rb_current_time())
+        {
+            /* safe enough to give this on a local connect only */
+            sendto_one(source_p, form_str(RPL_LOAD2HI),
+                       me.name, source_p->name, "LUSERS");
+            return 0;
+        }
+        else
+            last_used = rb_current_time();
 
-		if(hunt_server(client_p, source_p, ":%s LUSERS %s :%s", 2, parc, parv) !=
-		   HUNTED_ISME)
-			return 0;
-	}
+        if (hunt_server(client_p, source_p, ":%s LUSERS %s :%s", 2, parc, parv) !=
+                HUNTED_ISME)
+            return 0;
+    }
 
-	show_lusers(source_p);
+    show_lusers(source_p);
 
-	return 0;
+    return 0;
 }
 
 /*
@@ -94,23 +94,23 @@ m_lusers(struct Client *client_p, struct Client *source_p, int parc, const char 
  * parv[0] = sender
  * parv[1] = host/server mask.
  * parv[2] = server to query
- * 
+ *
  * 199970918 JRL hacked to ignore parv[1] completely and require parc > 3
  * to cause a force
  */
 static int
 ms_lusers(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	if(parc > 2)
-	{
-		if(hunt_server(client_p, source_p, ":%s LUSERS %s :%s", 2, parc, parv)
-		   != HUNTED_ISME)
-			return 0;
-	}
+    if (parc > 2)
+    {
+        if (hunt_server(client_p, source_p, ":%s LUSERS %s :%s", 2, parc, parv)
+                != HUNTED_ISME)
+            return 0;
+    }
 
-	show_lusers(source_p);
+    show_lusers(source_p);
 
-	return 0;
+    return 0;
 }
 
 
@@ -122,18 +122,18 @@ ms_lusers(struct Client *client_p, struct Client *source_p, int parc, const char
 static int
 m_users(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	if(hunt_server(client_p, source_p, ":%s USERS :%s", 1, parc, parv) == HUNTED_ISME)
-	{
-		sendto_one_numeric(source_p, RPL_LOCALUSERS,
-				   form_str(RPL_LOCALUSERS),
-				   rb_dlink_list_length(&lclient_list),
-				   Count.max_loc,
-				   rb_dlink_list_length(&lclient_list), Count.max_loc);
+    if (hunt_server(client_p, source_p, ":%s USERS :%s", 1, parc, parv) == HUNTED_ISME)
+    {
+        sendto_one_numeric(source_p, RPL_LOCALUSERS,
+                           form_str(RPL_LOCALUSERS),
+                           rb_dlink_list_length(&lclient_list),
+                           Count.max_loc,
+                           rb_dlink_list_length(&lclient_list), Count.max_loc);
 
-		sendto_one_numeric(source_p, RPL_GLOBALUSERS,
-				   form_str(RPL_GLOBALUSERS),
-				   Count.total, Count.max_tot, Count.total, Count.max_tot);
-	}
+        sendto_one_numeric(source_p, RPL_GLOBALUSERS,
+                           form_str(RPL_GLOBALUSERS),
+                           Count.total, Count.max_tot, Count.total, Count.max_tot);
+    }
 
-	return 0;
+    return 0;
 }

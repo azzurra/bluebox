@@ -18,3 +18,5 @@ Nel conf di default mancava cconnext in general{oper_only_umodes}.
 2010/10/05 (morph):
  * Hooks per m_message.c e m_cmessage.c (SHUN, spamfilter, DCCALLOW e soci)
  * 4 spazi per tab, TAB EXPANSION. A breve riformatto tutto il codice.
+ * Chi usa i tab al posto degli spazi verra` debitamente bruciato vivo
+   (ancora da riformattare: bandb, tools, ssld, resolver).

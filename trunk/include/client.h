@@ -50,7 +50,7 @@ struct LocalUser;
 #define STAT_HANDSHAKE          0x02
 #define STAT_ME                 0x04
 #define STAT_UNKNOWN            0x08
-#define STAT_REJECT		0x10
+#define STAT_REJECT             0x10
 #define STAT_SERVER             0x20
 #define STAT_CLIENT             0x40
 
@@ -63,39 +63,39 @@ struct LocalUser;
 #define IsUnknown(x)            ((x)->status == STAT_UNKNOWN)
 #define IsServer(x)             ((x)->status == STAT_SERVER)
 #define IsClient(x)             ((x)->status == STAT_CLIENT)
-#define IsReject(x)		((x)->status == STAT_REJECT)
+#define IsReject(x)             ((x)->status == STAT_REJECT)
 
 #define IsAnyServer(x)          (IsServer(x) || IsHandshake(x) || IsConnecting(x))
 
-#define IsOper(x)		((x)->umodes & UMODE_OPER)
-#define IsAdmin(x)		((x)->umodes & UMODE_ADMIN)
-#define IsSAdmin(x)		((x)->umodes & UMODE_SADMIN)
-#define IsHelpOp(x)		((x)->umodes & UMODE_HELPOP)
-#define IsHiddenIdle(x)		((x)->umodes & UMODE_NOIDLE)
+#define IsOper(x)               ((x)->umodes & UMODE_OPER)
+#define IsAdmin(x)              ((x)->umodes & UMODE_ADMIN)
+#define IsSAdmin(x)             ((x)->umodes & UMODE_SADMIN)
+#define IsHelpOp(x)             ((x)->umodes & UMODE_HELPOP)
+#define IsHiddenIdle(x)         ((x)->umodes & UMODE_NOIDLE)
 
-#define SetReject(x)		{(x)->status = STAT_REJECT; \
-				 (x)->handler = UNREGISTERED_HANDLER; }
+#define SetReject(x)            {(x)->status = STAT_REJECT; \
+                 (x)->handler = UNREGISTERED_HANDLER; }
 
 #define SetConnecting(x)        {(x)->status = STAT_CONNECTING; \
-				 (x)->handler = UNREGISTERED_HANDLER; }
+                 (x)->handler = UNREGISTERED_HANDLER; }
 
 #define SetHandshake(x)         {(x)->status = STAT_HANDSHAKE; \
-				 (x)->handler = UNREGISTERED_HANDLER; }
+                 (x)->handler = UNREGISTERED_HANDLER; }
 
 #define SetMe(x)                {(x)->status = STAT_ME; \
-				 (x)->handler = UNREGISTERED_HANDLER; }
+                 (x)->handler = UNREGISTERED_HANDLER; }
 
 #define SetUnknown(x)           {(x)->status = STAT_UNKNOWN; \
-				 (x)->handler = UNREGISTERED_HANDLER; }
+                 (x)->handler = UNREGISTERED_HANDLER; }
 
 #define SetServer(x)            {(x)->status = STAT_SERVER; \
-				 (x)->handler = SERVER_HANDLER; }
+                 (x)->handler = SERVER_HANDLER; }
 
 #define SetClient(x)            {(x)->status = STAT_CLIENT; \
-				 (x)->handler = IsOper((x)) ? \
-					OPER_HANDLER : CLIENT_HANDLER; }
-#define SetRemoteClient(x)	{(x)->status = STAT_CLIENT; \
-				 (x)->handler = RCLIENT_HANDLER; }
+                 (x)->handler = IsOper((x)) ? \
+                    OPER_HANDLER : CLIENT_HANDLER; }
+#define SetRemoteClient(x)  {(x)->status = STAT_CLIENT; \
+                 (x)->handler = RCLIENT_HANDLER; }
 
 #define STAT_CLIENT_PARSE (STAT_UNKNOWN | STAT_CLIENT)
 #define STAT_SERVER_PARSE (STAT_CONNECTING | STAT_HANDSHAKE | STAT_SERVER)
@@ -107,160 +107,160 @@ struct LocalUser;
 /*
  * ts stuff
  */
-#define TS_CURRENT	6
+#define TS_CURRENT      6
 #define TS_MIN          5
 
 #define TS_DOESTS       0x10000000
 #define DoesTS(x)       ((x)->tsinfo & TS_DOESTS)
 
-#define has_id(source)	((source)->id[0] != '\0')
-#define use_id(source)	((source)->id[0] != '\0' ? (source)->id : (source)->name)
+#define has_id(source)  ((source)->id[0] != '\0')
+#define use_id(source)  ((source)->id[0] != '\0' ? (source)->id : (source)->name)
 
 /* if target is TS6, use id if it has one, else name */
 #define get_id(source, target) ((IsServer(target->from) && has_id(target->from)) ? \
-				use_id(source) : (source)->name)
+                use_id(source) : (source)->name)
 
 /* housekeeping flags */
 
-#define FLAGS_PINGSENT		0x00000001	/* Unreplied ping sent */
-#define FLAGS_DEAD		0x00000002	/* Local socket is dead--Exiting soon */
-#define FLAGS_KILLED		0x00000004	/* Prevents "QUIT" from being sent for this */
-#define FLAGS_CLOSING		0x00000008	/* set when closing to suppress errors */
-#define FLAGS_GOTID		0x00000010	/* successful ident lookup achieved */
-#define FLAGS_NEEDID		0x00000020	/* I-lines say must use ident return */
-#define FLAGS_NORMALEX		0x00000040	/* Client exited normally */
-#define FLAGS_MARK		0x00000080	/* marked client */
-#define FLAGS_HIDDEN		0x00000100	/* hidden server */
-#define FLAGS_EOB		0x00000200	/* EOB */
-#define FLAGS_MYCONNECT		0x00000400	/* MyConnect */
-#define FLAGS_IOERROR      	0x00000800	/* IO error */
-#define FLAGS_SERVICE	   	0x00001000
-#define FLAGS_TGCHANGE     	0x00002000	/* we're allowed to clear something */
-#define FLAGS_EXEMPTRESV	0x00004000
+#define FLAGS_PINGSENT          0x00000001  /* Unreplied ping sent */
+#define FLAGS_DEAD              0x00000002  /* Local socket is dead--Exiting soon */
+#define FLAGS_KILLED            0x00000004  /* Prevents "QUIT" from being sent for this */
+#define FLAGS_CLOSING           0x00000008  /* set when closing to suppress errors */
+#define FLAGS_GOTID             0x00000010  /* successful ident lookup achieved */
+#define FLAGS_NEEDID            0x00000020  /* I-lines say must use ident return */
+#define FLAGS_NORMALEX          0x00000040  /* Client exited normally */
+#define FLAGS_MARK              0x00000080  /* marked client */
+#define FLAGS_HIDDEN            0x00000100  /* hidden server */
+#define FLAGS_EOB               0x00000200  /* EOB */
+#define FLAGS_MYCONNECT         0x00000400  /* MyConnect */
+#define FLAGS_IOERROR           0x00000800  /* IO error */
+#define FLAGS_SERVICE           0x00001000
+#define FLAGS_TGCHANGE          0x00002000  /* we're allowed to clear something */
+#define FLAGS_EXEMPTRESV        0x00004000
 #define FLAGS_EXEMPTGLINE       0x00008000
 #define FLAGS_EXEMPTKLINE       0x00010000
 #define FLAGS_EXEMPTFLOOD       0x00020000
 #define FLAGS_NOLIMIT           0x00040000
 #define FLAGS_IDLE_LINED        0x00080000
-#define FLAGS_CLICAP		0x00100000
+#define FLAGS_CLICAP            0x00100000
 #define FLAGS_PING_COOKIE       0x00200000
 #define FLAGS_IP_SPOOFING       0x00400000
 #define FLAGS_FLOODDONE         0x00800000
-#define FLAGS_EXEMPTSPAMBOT	0x01000000
-#define FLAGS_EXEMPTSHIDE	0x02000000
-#define FLAGS_EXEMPTJUPE	0x04000000
+#define FLAGS_EXEMPTSPAMBOT     0x01000000
+#define FLAGS_EXEMPTSHIDE       0x02000000
+#define FLAGS_EXEMPTJUPE        0x04000000
 
 /* flags for local clients, this needs stuff moved from above to here at some point */
-#define LFLAGS_SSL		0x00000001
-#define LFLAGS_FLUSH		0x00000002
-#define LFLAGS_CORK		0x00000004
-#define LFLAGS_SENTUSER		0x00000008
+#define LFLAGS_SSL              0x00000001
+#define LFLAGS_FLUSH            0x00000002
+#define LFLAGS_CORK             0x00000004
+#define LFLAGS_SENTUSER         0x00000008
 
 /* umodes, settable flags */
 
-#define UMODE_SERVNOTICE   0x0001	/* server notices such as kill */
-#define UMODE_CCONN        0x0002	/* Client Connections */
-#define UMODE_REJ          0x0004	/* Bot Rejections */
-#define UMODE_SKILL        0x0008	/* Server Killed */
-#define UMODE_FULL         0x0010	/* Full messages */
-#define UMODE_SPY          0x0020	/* see STATS / LINKS */
-#define UMODE_DEBUG        0x0040	/* 'debugging' info */
-#define UMODE_NCHANGE      0x0080	/* Nick change notice */
-#define UMODE_WALLOP       0x0100	/* send wallops to them */
-#define UMODE_OPERWALL     0x0200	/* Operwalls */
-#define UMODE_INVISIBLE    0x0400	/* makes user invisible */
-#define UMODE_BOTS         0x0800	/* shows bots */
-#define UMODE_EXTERNAL     0x1000	/* show servers introduced and splitting */
-#define UMODE_CALLERID     0x2000	/* block unless caller id's */
-#define UMODE_UNAUTH       0x4000	/* show unauth connects here */
-#define UMODE_LOCOPS       0x8000	/* show locops */
-#define UMODE_OPERSPY	   0x10000
-#define UMODE_CCONNEXT     0x20000	/* extended client connections */
+#define UMODE_SERVNOTICE   0x0001   /* server notices such as kill */
+#define UMODE_CCONN        0x0002   /* Client Connections */
+#define UMODE_REJ          0x0004   /* Bot Rejections */
+#define UMODE_SKILL        0x0008   /* Server Killed */
+#define UMODE_FULL         0x0010   /* Full messages */
+#define UMODE_SPY          0x0020   /* see STATS / LINKS */
+#define UMODE_DEBUG        0x0040   /* 'debugging' info */
+#define UMODE_NCHANGE      0x0080   /* Nick change notice */
+#define UMODE_WALLOP       0x0100   /* send wallops to them */
+#define UMODE_OPERWALL     0x0200   /* Operwalls */
+#define UMODE_INVISIBLE    0x0400   /* makes user invisible */
+#define UMODE_BOTS         0x0800   /* shows bots */
+#define UMODE_EXTERNAL     0x1000   /* show servers introduced and splitting */
+#define UMODE_CALLERID     0x2000   /* block unless caller id's */
+#define UMODE_UNAUTH       0x4000   /* show unauth connects here */
+#define UMODE_LOCOPS       0x8000   /* show locops */
+#define UMODE_OPERSPY      0x10000
+#define UMODE_CCONNEXT     0x20000  /* extended client connections */
 #define UMODE_SERVICE      0x40000
-#define UMODE_DEAF	   0x80000
+#define UMODE_DEAF         0x80000
 
 /* user information flags, only settable by remote mode or local oper */
-#define UMODE_OPER         0x100000	/* Operator */
-#define UMODE_ADMIN        0x200000	/* Admin on server */
-#define UMODE_NOIDLE       0x400000	/* Don't show idle time in WHOIS */
-#define UMODE_REGONLY      0x800000	/* User doesn't wish to receive PRIVMSG/NOTICES from unidentified users */
-#define UMODE_CRYPTHOST    0x1000000	/* User is masking their hostname */
-#define UMODE_HELPOP       0x2000000	/* User is a help operator */
-#define UMODE_SPAMNOTICE   0x4000000	/* Operator can receive spam notices */
+#define UMODE_OPER         0x100000     /* Operator */
+#define UMODE_ADMIN        0x200000     /* Admin on server */
+#define UMODE_NOIDLE       0x400000     /* Don't show idle time in WHOIS */
+#define UMODE_REGONLY      0x800000     /* User doesn't wish to receive PRIVMSG/NOTICES from unidentified users */
+#define UMODE_CRYPTHOST    0x1000000    /* User is masking their hostname */
+#define UMODE_HELPOP       0x2000000    /* User is a help operator */
+#define UMODE_SPAMNOTICE   0x4000000    /* Operator can receive spam notices */
 
-#define UMODE_ALL	   UMODE_SERVNOTICE
+#define UMODE_ALL          UMODE_SERVNOTICE
 
 /* overflow flags */
 /* EARLIER FLAGS ARE IN s_newconf.h */
 
 #define SEND_UMODES  (UMODE_INVISIBLE | UMODE_OPER | UMODE_WALLOP | \
-		      UMODE_ADMIN | UMODE_SERVICE | UMODE_DEAF | \
-		      UMODE_NOIDLE | UMODE_REGONLY | UMODE_CRYPTHOST | \
-		      UMODE_SPY | UMODE_HELPOP)
+              UMODE_ADMIN | UMODE_SERVICE | UMODE_DEAF | \
+              UMODE_NOIDLE | UMODE_REGONLY | UMODE_CRYPTHOST | \
+              UMODE_SPY | UMODE_HELPOP)
 #define DEFAULT_OPER_UMODES (UMODE_SERVNOTICE | UMODE_OPERWALL | \
-			     UMODE_WALLOP | UMODE_LOCOPS)
+                 UMODE_WALLOP | UMODE_LOCOPS)
 #define ALL_UMODES   (SEND_UMODES | UMODE_SERVNOTICE | UMODE_CCONN | \
-		      UMODE_REJ | UMODE_SKILL | UMODE_FULL | \
-		      UMODE_NCHANGE | UMODE_OPERWALL | UMODE_DEBUG | \
-		      UMODE_BOTS | UMODE_EXTERNAL | UMODE_LOCOPS | \
-		      UMODE_UNAUTH | UMODE_CALLERID | UMODE_SPAMNOTICE | \
-		      UMODE_OPERSPY | UMODE_CCONNEXT | UMODE_DEAF)
+              UMODE_REJ | UMODE_SKILL | UMODE_FULL | \
+              UMODE_NCHANGE | UMODE_OPERWALL | UMODE_DEBUG | \
+              UMODE_BOTS | UMODE_EXTERNAL | UMODE_LOCOPS | \
+              UMODE_UNAUTH | UMODE_CALLERID | UMODE_SPAMNOTICE | \
+              UMODE_OPERSPY | UMODE_CCONNEXT | UMODE_DEAF)
 
-#define CLICAP_MULTI_PREFIX	0x0001
+#define CLICAP_MULTI_PREFIX 0x0001
 
 /*
  * flags macros.
  */
-#define MyConnect(x)		((x)->flags & FLAGS_MYCONNECT)
-#define SetMyConnect(x)		((x)->flags |= FLAGS_MYCONNECT)
-#define ClearMyConnect(x)	((x)->flags &= ~FLAGS_MYCONNECT)
+#define MyConnect(x)        ((x)->flags & FLAGS_MYCONNECT)
+#define SetMyConnect(x)     ((x)->flags |= FLAGS_MYCONNECT)
+#define ClearMyConnect(x)   ((x)->flags &= ~FLAGS_MYCONNECT)
 
-#define MyClient(x)             (MyConnect(x) && IsClient(x))
-#define SetMark(x)		((x)->flags |= FLAGS_MARK)
-#define ClearMark(x)		((x)->flags &= ~FLAGS_MARK)
-#define IsMarked(x)		((x)->flags & FLAGS_MARK)
-#define SetHidden(x)		((x)->flags |= FLAGS_HIDDEN)
-#define ClearHidden(x)		((x)->flags &= ~FLAGS_HIDDEN)
-#define IsHidden(x)		((x)->flags & FLAGS_HIDDEN)
-#define ClearEob(x)		((x)->flags &= ~FLAGS_EOB)
-#define SetEob(x)		((x)->flags |= FLAGS_EOB)
-#define HasSentEob(x)		((x)->flags & FLAGS_EOB)
-#define IsDead(x)          	((x)->flags &  FLAGS_DEAD)
-#define SetDead(x)         	((x)->flags |= FLAGS_DEAD)
-#define IsClosing(x)		((x)->flags & FLAGS_CLOSING)
-#define SetClosing(x)		((x)->flags |= FLAGS_CLOSING)
-#define IsIOError(x)		((x)->flags & FLAGS_IOERROR)
-#define SetIOError(x)		((x)->flags |= FLAGS_IOERROR)
-#define IsAnyDead(x)		(IsIOError(x) || IsDead(x) || IsClosing(x))
-#define IsTGChange(x)		((x)->flags & FLAGS_TGCHANGE)
-#define SetTGChange(x)		((x)->flags |= FLAGS_TGCHANGE)
-#define ClearTGChange(x)	((x)->flags &= ~FLAGS_TGCHANGE)
+#define MyClient(x)         (MyConnect(x) && IsClient(x))
+#define SetMark(x)          ((x)->flags |= FLAGS_MARK)
+#define ClearMark(x)        ((x)->flags &= ~FLAGS_MARK)
+#define IsMarked(x)         ((x)->flags & FLAGS_MARK)
+#define SetHidden(x)        ((x)->flags |= FLAGS_HIDDEN)
+#define ClearHidden(x)      ((x)->flags &= ~FLAGS_HIDDEN)
+#define IsHidden(x)         ((x)->flags & FLAGS_HIDDEN)
+#define ClearEob(x)         ((x)->flags &= ~FLAGS_EOB)
+#define SetEob(x)           ((x)->flags |= FLAGS_EOB)
+#define HasSentEob(x)       ((x)->flags & FLAGS_EOB)
+#define IsDead(x)           ((x)->flags &  FLAGS_DEAD)
+#define SetDead(x)          ((x)->flags |= FLAGS_DEAD)
+#define IsClosing(x)        ((x)->flags & FLAGS_CLOSING)
+#define SetClosing(x)       ((x)->flags |= FLAGS_CLOSING)
+#define IsIOError(x)        ((x)->flags & FLAGS_IOERROR)
+#define SetIOError(x)       ((x)->flags |= FLAGS_IOERROR)
+#define IsAnyDead(x)        (IsIOError(x) || IsDead(x) || IsClosing(x))
+#define IsTGChange(x)       ((x)->flags & FLAGS_TGCHANGE)
+#define SetTGChange(x)      ((x)->flags |= FLAGS_TGCHANGE)
+#define ClearTGChange(x)    ((x)->flags &= ~FLAGS_TGCHANGE)
 
 /* local flags */
 
-#define IsSSL(x)		((x)->localClient->localflags & LFLAGS_SSL)
-#define SetSSL(x)		((x)->localClient->localflags |= LFLAGS_SSL)
-#define ClearSSL(x)		((x)->localClient->localflags &= ~LFLAGS_SSL)
+#define IsSSL(x)            ((x)->localClient->localflags & LFLAGS_SSL)
+#define SetSSL(x)           ((x)->localClient->localflags |= LFLAGS_SSL)
+#define ClearSSL(x)         ((x)->localClient->localflags &= ~LFLAGS_SSL)
 
-#define IsFlush(x)		((x)->localClient->localflags & LFLAGS_FLUSH)
-#define SetFlush(x)		((x)->localClient->localflags |= LFLAGS_FLUSH)
-#define ClearFlush(x)		((x)->localClient->localflags &= ~LFLAGS_FLUSH)
+#define IsFlush(x)          ((x)->localClient->localflags & LFLAGS_FLUSH)
+#define SetFlush(x)         ((x)->localClient->localflags |= LFLAGS_FLUSH)
+#define ClearFlush(x)       ((x)->localClient->localflags &= ~LFLAGS_FLUSH)
 
-#define HasSentUser(x)		((x)->localClient->localflags & LFLAGS_SENTUSER)
-#define SetSentUser(x)		((x)->localClient->localflags |= LFLAGS_SENTUSER)
+#define HasSentUser(x)      ((x)->localClient->localflags & LFLAGS_SENTUSER)
+#define SetSentUser(x)      ((x)->localClient->localflags |= LFLAGS_SENTUSER)
 
 
 /* oper flags */
-#define MyOper(x)               (MyConnect(x) && IsOper(x))
+#define MyOper(x)           (MyConnect(x) && IsOper(x))
 
-#define SetOper(x)              {(x)->umodes |= UMODE_OPER; \
-				 if (MyClient((x))) (x)->handler = OPER_HANDLER;}
+#define SetOper(x)          {(x)->umodes |= UMODE_OPER; \
+                 if (MyClient((x))) (x)->handler = OPER_HANDLER;}
 
-#define ClearOper(x)            {(x)->umodes &= ~(UMODE_OPER|UMODE_ADMIN); \
-				 if (MyClient((x)) && !IsOper((x)) && !IsServer((x))) \
-				  (x)->handler = CLIENT_HANDLER; }
+#define ClearOper(x)        {(x)->umodes &= ~(UMODE_OPER|UMODE_ADMIN); \
+                 if (MyClient((x)) && !IsOper((x)) && !IsServer((x))) \
+                  (x)->handler = CLIENT_HANDLER; }
 
-#define IsPrivileged(x)         (IsOper(x) || IsServer(x))
+#define IsPrivileged(x)     (IsOper(x) || IsServer(x))
 
 /* umode flags */
 #define IsInvisible(x)          ((x)->umodes & UMODE_INVISIBLE)
@@ -279,11 +279,11 @@ struct LocalUser;
 #define SendDebugNotice(x)      ((x)->umodes & UMODE_DEBUG)
 #define SendNickChange(x)       ((x)->umodes & UMODE_NCHANGE)
 #define SetWallops(x)           ((x)->umodes |= UMODE_WALLOP)
-#define SetCallerId(x)		((x)->umodes |= UMODE_CALLERID)
-#define IsSetCallerId(x)	((x)->umodes & UMODE_CALLERID)
-#define IsService(x)		((x)->umodes & UMODE_SERVICE)
-#define IsDeaf(x)		((x)->umodes & UMODE_DEAF)
-#define IsCloaked(x)		((x)->umodes & UMODE_CRYPTHOST)
+#define SetCallerId(x)          ((x)->umodes |= UMODE_CALLERID)
+#define IsSetCallerId(x)        ((x)->umodes & UMODE_CALLERID)
+#define IsService(x)            ((x)->umodes & UMODE_SERVICE)
+#define IsDeaf(x)               ((x)->umodes & UMODE_DEAF)
+#define IsCloaked(x)            ((x)->umodes & UMODE_CRYPTHOST)
 
 #define SetNeedId(x)            ((x)->flags |= FLAGS_NEEDID)
 #define IsNeedId(x)             (((x)->flags & FLAGS_NEEDID) != 0)
@@ -299,14 +299,14 @@ struct LocalUser;
 #define SetExemptGline(x)       ((x)->flags |= FLAGS_EXEMPTGLINE)
 #define IsExemptFlood(x)        ((x)->flags & FLAGS_EXEMPTFLOOD)
 #define SetExemptFlood(x)       ((x)->flags |= FLAGS_EXEMPTFLOOD)
-#define IsExemptSpambot(x)	((x)->flags & FLAGS_EXEMPTSPAMBOT)
-#define SetExemptSpambot(x)	((x)->flags |= FLAGS_EXEMPTSPAMBOT)
-#define IsExemptShide(x)	((x)->flags & FLAGS_EXEMPTSHIDE)
-#define SetExemptShide(x)	((x)->flags |= FLAGS_EXEMPTSHIDE)
-#define IsExemptJupe(x)		((x)->flags & FLAGS_EXEMPTJUPE)
-#define SetExemptJupe(x)	((x)->flags |= FLAGS_EXEMPTJUPE)
-#define IsExemptResv(x)		((x)->flags & FLAGS_EXEMPTRESV)
-#define SetExemptResv(x)	((x)->flags |= FLAGS_EXEMPTRESV)
+#define IsExemptSpambot(x)      ((x)->flags & FLAGS_EXEMPTSPAMBOT)
+#define SetExemptSpambot(x)     ((x)->flags |= FLAGS_EXEMPTSPAMBOT)
+#define IsExemptShide(x)        ((x)->flags & FLAGS_EXEMPTSHIDE)
+#define SetExemptShide(x)       ((x)->flags |= FLAGS_EXEMPTSHIDE)
+#define IsExemptJupe(x)         ((x)->flags & FLAGS_EXEMPTJUPE)
+#define SetExemptJupe(x)        ((x)->flags |= FLAGS_EXEMPTJUPE)
+#define IsExemptResv(x)         ((x)->flags & FLAGS_EXEMPTRESV)
+#define SetExemptResv(x)        ((x)->flags |= FLAGS_EXEMPTRESV)
 #define IsIPSpoof(x)            ((x)->flags & FLAGS_IP_SPOOFING)
 #define SetIPSpoof(x)           ((x)->flags |= FLAGS_IP_SPOOFING)
 
@@ -318,9 +318,9 @@ struct LocalUser;
 
 
 /* These also operate on the uplink from which it came */
-#define IsCork(x)		(MyConnect(x) ? (x)->localClient->cork_count : (x)->from->localClient->cork_count)
-#define SetCork(x)		(MyConnect(x) ? (x)->localClient->cork_count++ : (x)->from->localClient->cork_count++ )
-#define ClearCork(x)		(MyConnect(x) ? (x)->localClient->cork_count-- : (x)->from->localClient->cork_count--)
+#define IsCork(x)       (MyConnect(x) ? (x)->localClient->cork_count : (x)->from->localClient->cork_count)
+#define SetCork(x)      (MyConnect(x) ? (x)->localClient->cork_count++ : (x)->from->localClient->cork_count++ )
+#define ClearCork(x)    (MyConnect(x) ? (x)->localClient->cork_count-- : (x)->from->localClient->cork_count--)
 
 
 /*
@@ -328,17 +328,17 @@ struct LocalUser;
  */
 enum
 {
-	HIDE_IP,
-	SHOW_IP,
-	MASK_IP
+    HIDE_IP,
+    SHOW_IP,
+    MASK_IP
 };
 
 
 enum
 {
-	D_LINED,
-	K_LINED,
-	G_LINED
+    D_LINED,
+    K_LINED,
+    G_LINED
 };
 
 void check_banned_lines(void);

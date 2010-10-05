@@ -45,10 +45,10 @@ const char *form_str(int);
 #define RPL_ISUPPORT         005
 
 #define RPL_REDIR            10
-#define RPL_MAP		     15	/* Undernet extension */
-#define RPL_MAPMORE	     16	/* Undernet extension */
-#define RPL_MAPEND	     17	/* Undernet extension */
-#define RPL_SAVENICK         43	/* From ircnet */
+#define RPL_MAP              15 /* Undernet extension */
+#define RPL_MAPMORE          16 /* Undernet extension */
+#define RPL_MAPEND           17 /* Undernet extension */
+#define RPL_SAVENICK         43 /* From ircnet */
 
 /*
  * Numeric replies from server commands.
@@ -74,7 +74,7 @@ const char *form_str(int);
 #define RPL_STATSYLINE       218
 #define RPL_ENDOFSTATS       219
 /* note ircu uses 217 for STATSPLINE frip. conflict
- * as RPL_STATSQLINE was used in old 2.8 for Q line 
+ * as RPL_STATSQLINE was used in old 2.8 for Q line
  * I'm going to steal 220 for now *sigh*
  * -Dianora
  */
@@ -114,7 +114,7 @@ const char *form_str(int);
 #define RPL_LOCALUSERS       265
 #define RPL_GLOBALUSERS      266
 
-#define RPL_ACCEPTLIST	     281
+#define RPL_ACCEPTLIST       281
 #define RPL_ENDOFACCEPT      282
 
 /* numeric_replies */
@@ -138,7 +138,7 @@ const char *form_str(int);
 /* rpl_endofwho below (315) */
 #define RPL_ENDOFWHOWAS      369
 
-#define RPL_WHOISCHANOP      316	/* redundant and not needed but reserved */
+#define RPL_WHOISCHANOP      316    /* redundant and not needed but reserved */
 #define RPL_WHOISIDLE        317
 
 #define RPL_ENDOFWHOIS       318
@@ -233,7 +233,7 @@ const char *form_str(int);
 #define ERR_NICKNAMEINUSE    433
 #define ERR_NICKCOLLISION    436
 #define ERR_UNAVAILRESOURCE  437
-#define ERR_NICKTOOFAST	     438	/* We did it first Undernet! ;) db */
+#define ERR_NICKTOOFAST      438    /* We did it first Undernet! ;) db */
 
 #define ERR_USERNOTINCHANNEL 441
 #define ERR_NOTONCHANNEL     442
@@ -263,17 +263,17 @@ const char *form_str(int);
 #define ERR_BADCHANNELKEY    475
 #define ERR_BADCHANMASK      476
 #define ERR_NEEDREGGEDNICK   477
-#define ERR_BANLISTFULL      478	/* I stole the numeric from ircu -db */
+#define ERR_BANLISTFULL      478    /* I stole the numeric from ircu -db */
 #define ERR_BADCHANNAME      479
-#define ERR_SSLONLYCHAN	     480
+#define ERR_SSLONLYCHAN      480
 #define ERR_NOPRIVILEGES     481
 #define ERR_CHANOPRIVSNEEDED 482
 #define ERR_CANTKILLSERVER   483
 #define ERR_ISCHANSERVICE    484
-/* #define ERR_RESTRICTED       484 	- hyb derived, no longer here */
+/* #define ERR_RESTRICTED       484     - hyb derived, no longer here */
 #define ERR_BANNEDNICK       485
 
-#define ERR_VOICENEEDED		489
+#define ERR_VOICENEEDED      489
 
 #define ERR_NOOPERHOST       491
 
@@ -284,10 +284,10 @@ const char *form_str(int);
 
 #define ERR_USERNOTONSERV    504
 
-/* #define ERR_LAST_ERR_MSG 505 
+/* #define ERR_LAST_ERR_MSG 505
  * moved to 999
  */
-#define ERR_WRONGPONG	     513
+#define ERR_WRONGPONG        513
 
 #define ERR_HELPNOTFOUND     524
 
@@ -300,13 +300,13 @@ const char *form_str(int);
 #define RPL_HELPTXT          705
 #define RPL_ENDOFHELP        706
 
-#define ERR_TARGCHANGE		707
+#define ERR_TARGCHANGE       707
 
-#define RPL_ETRACEFULL	     708
-#define RPL_ETRACE	     709
+#define RPL_ETRACEFULL       708
+#define RPL_ETRACE           709
 
-#define RPL_KNOCK	     710
-#define RPL_KNOCKDLVR	     711
+#define RPL_KNOCK            710
+#define RPL_KNOCKDLVR        711
 
 #define ERR_TOOMANYKNOCK     712
 #define ERR_CHANOPEN         713
@@ -317,25 +317,25 @@ const char *form_str(int);
 #define RPL_TARGNOTIFY       717
 #define RPL_UMODEGMSG        718
 
-#define RPL_OMOTDSTART	     720
-#define RPL_OMOTD	     721
+#define RPL_OMOTDSTART       720
+#define RPL_OMOTD            721
 #define RPL_ENDOFOMOTD       722
 
-#define ERR_NOPRIVS		723
+#define ERR_NOPRIVS          723
 
-#define RPL_TESTMASK		724
-#define RPL_TESTLINE		725
-#define RPL_NOTESTLINE		726
-#define RPL_TESTMASKGECOS       727
+#define RPL_TESTMASK         724
+#define RPL_TESTLINE         725
+#define RPL_NOTESTLINE       726
+#define RPL_TESTMASKGECOS    727
 
-#define RPL_MONONLINE		730
-#define RPL_MONOFFLINE		731
-#define RPL_MONLIST		732
-#define RPL_ENDOFMONLIST	733
-#define ERR_MONLISTFULL		734
+#define RPL_MONONLINE        730
+#define RPL_MONOFFLINE       731
+#define RPL_MONLIST          732
+#define RPL_ENDOFMONLIST     733
+#define ERR_MONLISTFULL      734
 
-#define RPL_RSACHALLENGE2	740
-#define RPL_ENDOFRSACHALLENGE2	741
+#define RPL_RSACHALLENGE2    740
+#define RPL_ENDOFRSACHALLENGE2  741
 
 #define ERR_LAST_ERR_MSG     999
 

@@ -39,8 +39,8 @@
 static int m_away(struct Client *, struct Client *, int, const char **);
 
 struct Message away_msgtab = {
-	"AWAY", 0, 0, 0, MFLG_SLOW,
-	{mg_unreg, {m_away, 0}, {m_away, 0}, mg_ignore, mg_ignore, {m_away, 0}}
+    "AWAY", 0, 0, 0, MFLG_SLOW,
+    {mg_unreg, {m_away, 0}, {m_away, 0}, mg_ignore, mg_ignore, {m_away, 0}}
 };
 
 mapi_clist_av1 away_clist[] = { &away_msgtab, NULL };
@@ -48,7 +48,7 @@ mapi_clist_av1 away_clist[] = { &away_msgtab, NULL };
 DECLARE_MODULE_AV1(away, NULL, NULL, away_clist, NULL, NULL, "$Revision: 26094 $");
 
 /***********************************************************************
- * m_away() - Added 14 Dec 1988 by jto. 
+ * m_away() - Added 14 Dec 1988 by jto.
  *            Not currently really working, I don't like this
  *            call at all...
  *
@@ -56,7 +56,7 @@ DECLARE_MODULE_AV1(away, NULL, NULL, away_clist, NULL, NULL, "$Revision: 26094 $
  *            but perhaps it's worth the load it causes to net.
  *            This requires flooding of the whole net like NICK,
  *            USER, MODE, etc messages...  --msa
- *		
+ *
  *            The above comments have long since irrelvant, but
  *            are kept for historical purposes now ;)
  ***********************************************************************/
@@ -69,46 +69,46 @@ DECLARE_MODULE_AV1(away, NULL, NULL, away_clist, NULL, NULL, "$Revision: 26094 $
 static int
 m_away(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	if(MyClient(source_p) && !IsFloodDone(source_p))
-		flood_endgrace(source_p);
+    if (MyClient(source_p) && !IsFloodDone(source_p))
+        flood_endgrace(source_p);
 
-	if(!IsClient(source_p))
-		return 0;
+    if (!IsClient(source_p))
+        return 0;
 
-	if(parc < 2 || EmptyString(parv[1]))
-	{
-		/* Marking as not away */
-		if(source_p->user->away != NULL)
-		{
-			/* we now send this only if they were away before --is */
-			sendto_server(client_p, NULL, CAP_TS6, NOCAPS,
-				      ":%s AWAY", use_id(source_p));
-			sendto_server(client_p, NULL, NOCAPS, CAP_TS6, ":%s AWAY", source_p->name);
-			free_away(source_p);
-		}
-		if(MyConnect(source_p))
-			sendto_one(source_p, form_str(RPL_UNAWAY), me.name, source_p->name);
-		return 0;
-	}
+    if (parc < 2 || EmptyString(parv[1]))
+    {
+        /* Marking as not away */
+        if (source_p->user->away != NULL)
+        {
+            /* we now send this only if they were away before --is */
+            sendto_server(client_p, NULL, CAP_TS6, NOCAPS,
+                          ":%s AWAY", use_id(source_p));
+            sendto_server(client_p, NULL, NOCAPS, CAP_TS6, ":%s AWAY", source_p->name);
+            free_away(source_p);
+        }
+        if (MyConnect(source_p))
+            sendto_one(source_p, form_str(RPL_UNAWAY), me.name, source_p->name);
+        return 0;
+    }
 
 
-	if(source_p->user->away == NULL)
-	{
-		allocate_away(source_p);
-		rb_strlcpy(source_p->user->away, parv[1], AWAYLEN);
-		sendto_server(client_p, NULL, CAP_TS6, NOCAPS,
-			      ":%s AWAY :%s", use_id(source_p), source_p->user->away);
-		sendto_server(client_p, NULL, NOCAPS, CAP_TS6,
-			      ":%s AWAY :%s", source_p->name, source_p->user->away);
+    if (source_p->user->away == NULL)
+    {
+        allocate_away(source_p);
+        rb_strlcpy(source_p->user->away, parv[1], AWAYLEN);
+        sendto_server(client_p, NULL, CAP_TS6, NOCAPS,
+                      ":%s AWAY :%s", use_id(source_p), source_p->user->away);
+        sendto_server(client_p, NULL, NOCAPS, CAP_TS6,
+                      ":%s AWAY :%s", source_p->name, source_p->user->away);
 
-	}
-	else
-	{
-		rb_strlcpy(source_p->user->away, parv[1], AWAYLEN);
-	}
+    }
+    else
+    {
+        rb_strlcpy(source_p->user->away, parv[1], AWAYLEN);
+    }
 
-	if(MyConnect(source_p))
-		sendto_one(source_p, form_str(RPL_NOWAWAY), me.name, source_p->name);
+    if (MyConnect(source_p))
+        sendto_one(source_p, form_str(RPL_NOWAWAY), me.name, source_p->name);
 
-	return 0;
+    return 0;
 }

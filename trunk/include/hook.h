@@ -9,8 +9,8 @@
 
 typedef struct
 {
-	char *name;
-	rb_dlink_list hooks;
+    char *name;
+    rb_dlink_list hooks;
 } hook;
 
 typedef void (*hookfn) (void *data);
@@ -32,28 +32,28 @@ void call_hook(int id, void *arg);
 
 typedef struct
 {
-	struct Client *client;
-	const void *arg1;
-	const void *arg2;
+    struct Client *client;
+    const void *arg1;
+    const void *arg2;
 } hook_data;
 
 typedef struct
 {
-	struct Client *client;
-	const void *arg1;
-	int arg2;
+    struct Client *client;
+    const void *arg1;
+    int arg2;
 } hook_data_int;
 
 typedef struct
 {
-	struct Client *client;
-	struct Client *target;
+    struct Client *client;
+    struct Client *target;
 } hook_data_client;
 
 typedef struct
 {
-	struct Client *client;
-	struct Channel *chptr;
+    struct Client *client;
+    struct Channel *chptr;
 } hook_data_channel;
 
 typedef struct

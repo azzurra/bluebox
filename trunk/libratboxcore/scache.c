@@ -42,57 +42,57 @@
 #define SCACHE_MAX_BITS 8
 #define SCACHE_MAX (1<<SCACHE_MAX_BITS)
 
-#define hash_server(x)	fnv_hash_upper_len((const unsigned char *)(x), SCACHE_MAX_BITS, 30)
+#define hash_server(x)  fnv_hash_upper_len((const unsigned char *)(x), SCACHE_MAX_BITS, 30)
 
 static rb_dlink_list scache_hash[SCACHE_MAX];
 
 struct scache_entry
 {
-	rb_dlink_node node;
-	char *server_name;
+    rb_dlink_node node;
+    char *server_name;
 };
 
 
 const char *
 scache_add(const char *name)
 {
-	struct scache_entry *sc;
-	unsigned int hashv;
-	rb_dlink_node *ptr;
+    struct scache_entry *sc;
+    unsigned int hashv;
+    rb_dlink_node *ptr;
 
-	if(EmptyString(name))
-		return NULL;
+    if (EmptyString(name))
+        return NULL;
 
-	hashv = hash_server(name);
+    hashv = hash_server(name);
 
-	RB_DLINK_FOREACH(ptr, scache_hash[hashv].head)
-	{
-		sc = ptr->data;
-		if(!irccmp(sc->server_name, name))
-			return sc->server_name;
-	}
+    RB_DLINK_FOREACH(ptr, scache_hash[hashv].head)
+    {
+        sc = ptr->data;
+        if (!irccmp(sc->server_name, name))
+            return sc->server_name;
+    }
 
-	sc = rb_malloc(sizeof(struct scache_entry));
-	sc->server_name = rb_strdup(name);
-	rb_dlinkAdd(sc, &sc->node, &scache_hash[hashv]);
-	return sc->server_name;
+    sc = rb_malloc(sizeof(struct scache_entry));
+    sc->server_name = rb_strdup(name);
+    rb_dlinkAdd(sc, &sc->node, &scache_hash[hashv]);
+    return sc->server_name;
 }
 
 void
 count_scache(size_t *number, size_t *mem)
 {
-	int i;
-	rb_dlink_node *ptr;
-	struct scache_entry *sc;
+    int i;
+    rb_dlink_node *ptr;
+    struct scache_entry *sc;
 
-	*number = 0;
-	*mem = 0;
+    *number = 0;
+    *mem = 0;
 
-	HASH_WALK(i, SCACHE_MAX, ptr, scache_hash)
-	{
-		sc = ptr->data;
-		(*number)++;
-		*mem += strlen(sc->server_name) + sizeof(struct scache_entry);
-	}
-	HASH_WALK_END;
+    HASH_WALK(i, SCACHE_MAX, ptr, scache_hash)
+    {
+        sc = ptr->data;
+        (*number)++;
+        *mem += strlen(sc->server_name) + sizeof(struct scache_entry);
+    }
+    HASH_WALK_END;
 }

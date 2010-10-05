@@ -40,8 +40,8 @@
 static int mo_die(struct Client *, struct Client *, int, const char **);
 
 static struct Message die_msgtab = {
-	"DIE", 0, 0, 0, MFLG_SLOW,
-	{mg_unreg, mg_not_oper, mg_ignore, mg_ignore, mg_ignore, {mo_die, 0}}
+    "DIE", 0, 0, 0, MFLG_SLOW,
+    {mg_unreg, mg_not_oper, mg_ignore, mg_ignore, mg_ignore, {mo_die, 0}}
 };
 
 mapi_clist_av1 die_clist[] = { &die_msgtab, NULL };
@@ -54,25 +54,25 @@ DECLARE_MODULE_AV1(die, NULL, NULL, die_clist, NULL, NULL, "$Revision: 26094 $")
 static int
 mo_die(struct Client *client_p __unused, struct Client *source_p, int parc, const char *parv[])
 {
-	if(!IsOperDie(source_p))
-	{
-		sendto_one(source_p, form_str(ERR_NOPRIVS), me.name, source_p->name, "die");
-		return 0;
-	}
+    if (!IsOperDie(source_p))
+    {
+        sendto_one(source_p, form_str(ERR_NOPRIVS), me.name, source_p->name, "die");
+        return 0;
+    }
 
-	if(parc < 2 || EmptyString(parv[1]))
-	{
-		sendto_one_notice(source_p, ":Need server name /die %s", me.name);
-		return 0;
-	}
-	else if(irccmp(parv[1], me.name))
-	{
-		sendto_one(source_p, ":Mismatch on /die %s", me.name);
-		return 0;
-	}
+    if (parc < 2 || EmptyString(parv[1]))
+    {
+        sendto_one_notice(source_p, ":Need server name /die %s", me.name);
+        return 0;
+    }
+    else if (irccmp(parv[1], me.name))
+    {
+        sendto_one(source_p, ":Mismatch on /die %s", me.name);
+        return 0;
+    }
 
-	ircd_shutdown(get_client_name(source_p, HIDE_IP));
+    ircd_shutdown(get_client_name(source_p, HIDE_IP));
 
-	/* NOT REACHED */
-	return 0;
+    /* NOT REACHED */
+    return 0;
 }

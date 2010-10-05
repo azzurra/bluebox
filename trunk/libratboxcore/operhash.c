@@ -47,85 +47,85 @@ static rb_dlink_list operhash_table[OPERHASH_MAX];
 const char *
 operhash_add(const char *name)
 {
-	struct operhash_entry *ohash;
-	unsigned int hashv;
-	rb_dlink_node *ptr;
+    struct operhash_entry *ohash;
+    unsigned int hashv;
+    rb_dlink_node *ptr;
 
-	if(EmptyString(name))
-		return NULL;
+    if (EmptyString(name))
+        return NULL;
 
-	hashv = hash_opername(name);
+    hashv = hash_opername(name);
 
-	RB_DLINK_FOREACH(ptr, operhash_table[hashv].head)
-	{
-		ohash = ptr->data;
+    RB_DLINK_FOREACH(ptr, operhash_table[hashv].head)
+    {
+        ohash = ptr->data;
 
-		if(!irccmp(ohash->name, name))
-		{
-			ohash->refcount++;
-			return ohash->name;
-		}
-	}
+        if (!irccmp(ohash->name, name))
+        {
+            ohash->refcount++;
+            return ohash->name;
+        }
+    }
 
-	ohash = rb_malloc(sizeof(struct operhash_entry));
-	ohash->refcount = 1;
-	ohash->name = rb_strdup(name);
+    ohash = rb_malloc(sizeof(struct operhash_entry));
+    ohash->refcount = 1;
+    ohash->name = rb_strdup(name);
 
-	rb_dlinkAddAlloc(ohash, &operhash_table[hashv]);
+    rb_dlinkAddAlloc(ohash, &operhash_table[hashv]);
 
-	return ohash->name;
+    return ohash->name;
 }
 
 const char *
 operhash_find(const char *name)
 {
-	struct operhash_entry *ohash;
-	unsigned int hashv;
-	rb_dlink_node *ptr;
+    struct operhash_entry *ohash;
+    unsigned int hashv;
+    rb_dlink_node *ptr;
 
-	if(EmptyString(name))
-		return NULL;
+    if (EmptyString(name))
+        return NULL;
 
-	hashv = hash_opername(name);
+    hashv = hash_opername(name);
 
-	RB_DLINK_FOREACH(ptr, operhash_table[hashv].head)
-	{
-		ohash = ptr->data;
+    RB_DLINK_FOREACH(ptr, operhash_table[hashv].head)
+    {
+        ohash = ptr->data;
 
-		if(!irccmp(ohash->name, name))
-			return ohash->name;
-	}
+        if (!irccmp(ohash->name, name))
+            return ohash->name;
+    }
 
-	return NULL;
+    return NULL;
 }
 
 void
 operhash_delete(const char *name)
 {
-	struct operhash_entry *ohash;
-	unsigned int hashv;
-	rb_dlink_node *ptr;
+    struct operhash_entry *ohash;
+    unsigned int hashv;
+    rb_dlink_node *ptr;
 
-	if(EmptyString(name))
-		return;
+    if (EmptyString(name))
+        return;
 
-	hashv = hash_opername(name);
+    hashv = hash_opername(name);
 
-	RB_DLINK_FOREACH(ptr, operhash_table[hashv].head)
-	{
-		ohash = ptr->data;
+    RB_DLINK_FOREACH(ptr, operhash_table[hashv].head)
+    {
+        ohash = ptr->data;
 
-		if(irccmp(ohash->name, name))
-			continue;
+        if (irccmp(ohash->name, name))
+            continue;
 
-		ohash->refcount--;
+        ohash->refcount--;
 
-		if(ohash->refcount == 0)
-		{
-			rb_free(ohash->name);
-			rb_free(ohash);
-			rb_dlinkDestroy(ptr, &operhash_table[hashv]);
-			return;
-		}
-	}
+        if (ohash->refcount == 0)
+        {
+            rb_free(ohash->name);
+            rb_free(ohash);
+            rb_dlinkDestroy(ptr, &operhash_table[hashv]);
+            return;
+        }
+    }
 }

@@ -36,18 +36,18 @@
 
 typedef enum ilogfile
 {
-	L_MAIN,
-	L_USER,
-	L_FUSER,
-	L_OPERED,
-	L_FOPER,
-	L_SERVER,
-	L_KILL,
-	L_KLINE,
-	L_GLINE,
-	L_OPERSPY,
-	L_IOERROR,
-	LAST_LOGFILE
+    L_MAIN,
+    L_USER,
+    L_FUSER,
+    L_OPERED,
+    L_FOPER,
+    L_SERVER,
+    L_KILL,
+    L_KLINE,
+    L_GLINE,
+    L_OPERSPY,
+    L_IOERROR,
+    LAST_LOGFILE
 } ilogfile;
 
 struct Client;
@@ -58,8 +58,8 @@ void close_logfiles(void);
 void
 ilog(ilogfile dest, const char *fmt, ...)
 AFP(2, 3);
-     void report_operspy(struct Client *, const char *, const char *);
-     const char *smalldate(time_t);
-     void report_error(const char *, const char *, const char *, int);
+void report_operspy(struct Client *, const char *, const char *);
+const char *smalldate(time_t);
+void report_error(const char *, const char *, const char *, int);
 
 #endif

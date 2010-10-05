@@ -27,7 +27,7 @@
 #ifndef INCLUDED_config_h
 #define INCLUDED_config_h
 
-/* 
+/*
  * Directory paths and filenames for UNIX systems.
  * IRCD_PREFIX is set using ./configure --prefix, see INSTALL.
  * The other defaults should be fine.
@@ -56,13 +56,13 @@
 #define HPATH  HELP_DIR "/opers"
 
 /* files */
-#define SPATH    BINPATH "/ircd"	/* ircd executable */
-#define CPATH    ETCPATH "/ircd.conf"	/* ircd.conf file */
+#define SPATH    BINPATH "/ircd"        /* ircd executable */
+#define CPATH    ETCPATH "/ircd.conf"   /* ircd.conf file */
 #define DBPATH   ETCPATH "/ban.db"
-#define MPATH    ETCPATH "/ircd.motd"	/* MOTD file */
-#define LPATH    LOGPATH "/ircd.log"	/* ircd logfile */
-#define PPATH    ETCPATH "/ircd.pid"	/* pid file */
-#define OPATH    ETCPATH "/opers.motd"	/* oper MOTD file */
+#define MPATH    ETCPATH "/ircd.motd"   /* MOTD file */
+#define LPATH    LOGPATH "/ircd.log"    /* ircd logfile */
+#define PPATH    ETCPATH "/ircd.pid"    /* pid file */
+#define OPATH    ETCPATH "/opers.motd"  /* oper MOTD file */
 
 /* HANGONGOODLINK and HANGONGOODLINK
  * Often net breaks for a short time and it's useful to try to
@@ -74,17 +74,17 @@
  * other end of the connection has time to notice it broke too.
  * 1997/09/18 recommended values by ThemBones for modern EFnet
  */
-#define HANGONRETRYDELAY 60	/* Recommended value: 30-60 seconds */
-#define HANGONGOODLINK 3600	/* Recommended value: 30-60 minutes */
+#define HANGONRETRYDELAY 60     /* Recommended value: 30-60 seconds */
+#define HANGONGOODLINK 3600     /* Recommended value: 30-60 minutes */
 
 /* KILLCHASETIMELIMIT -
  * Max time from the nickname change that still causes KILL
  * automatically to switch for the current nick of that user. (seconds)
  */
-#define KILLCHASETIMELIMIT 90	/* Recommended value: 90 */
+#define KILLCHASETIMELIMIT 90   /* Recommended value: 90 */
 
 /* RATBOX_SOMAXCONN
- * Use SOMAXCONN if OS has it, otherwise use this value for the 
+ * Use SOMAXCONN if OS has it, otherwise use this value for the
  * listen(); backlog.  5 for AIX/SUNOS, 25 for other OSs.
  */
 #define RATBOX_SOMAXCONN 25

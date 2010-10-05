@@ -43,15 +43,15 @@
 #include "s_newconf.h"
 
 static void do_whois(struct Client *client_p, struct Client *source_p, int parc,
-		     const char *parv[]);
+                     const char *parv[]);
 static void single_whois(struct Client *source_p, struct Client *target_p, int operspy);
 
 static int m_whois(struct Client *, struct Client *, int, const char **);
 static int ms_whois(struct Client *, struct Client *, int, const char **);
 
 struct Message whois_msgtab = {
-	"WHOIS", 0, 0, 0, MFLG_SLOW,
-	{mg_unreg, {m_whois, 2}, {ms_whois, 2}, mg_ignore, mg_ignore, {m_whois, 2}}
+    "WHOIS", 0, 0, 0, MFLG_SLOW,
+    {mg_unreg, {m_whois, 2}, {ms_whois, 2}, mg_ignore, mg_ignore, {m_whois, 2}}
 };
 
 int doing_whois_hook;
@@ -60,9 +60,9 @@ int doing_whois_global_hook;
 mapi_clist_av1 whois_clist[] = { &whois_msgtab, NULL };
 
 mapi_hlist_av1 whois_hlist[] = {
-	{"doing_whois", &doing_whois_hook},
-	{"doing_whois_global", &doing_whois_global_hook},
-	{NULL, NULL}
+    {"doing_whois", &doing_whois_hook},
+    {"doing_whois_global", &doing_whois_global_hook},
+    {NULL, NULL}
 };
 
 DECLARE_MODULE_AV1(whois, NULL, NULL, whois_clist, whois_hlist, NULL, "$Revision: 26094 $");
@@ -75,42 +75,42 @@ DECLARE_MODULE_AV1(whois, NULL, NULL, whois_clist, whois_hlist, NULL, "$Revision
 static int
 m_whois(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	static time_t last_used = 0;
+    static time_t last_used = 0;
 
-	if(parc > 2)
-	{
-		if(EmptyString(parv[2]))
-		{
-			sendto_one(source_p, form_str(ERR_NONICKNAMEGIVEN),
-				   me.name, source_p->name);
-			return 0;
-		}
+    if (parc > 2)
+    {
+        if (EmptyString(parv[2]))
+        {
+            sendto_one(source_p, form_str(ERR_NONICKNAMEGIVEN),
+                       me.name, source_p->name);
+            return 0;
+        }
 
-		if(!IsOper(source_p))
-		{
-			/* seeing as this is going across servers, we should limit it */
-			if((last_used + ConfigFileEntry.pace_wait_simple) > rb_current_time())
-			{
-				sendto_one(source_p, form_str(RPL_LOAD2HI),
-					   me.name, source_p->name, "WHOIS");
-				sendto_one_numeric(source_p, RPL_ENDOFWHOIS,
-						   form_str(RPL_ENDOFWHOIS), parv[1]);
-				return 0;
-			}
-			else
-				last_used = rb_current_time();
-		}
+        if (!IsOper(source_p))
+        {
+            /* seeing as this is going across servers, we should limit it */
+            if ((last_used + ConfigFileEntry.pace_wait_simple) > rb_current_time())
+            {
+                sendto_one(source_p, form_str(RPL_LOAD2HI),
+                           me.name, source_p->name, "WHOIS");
+                sendto_one_numeric(source_p, RPL_ENDOFWHOIS,
+                                   form_str(RPL_ENDOFWHOIS), parv[1]);
+                return 0;
+            }
+            else
+                last_used = rb_current_time();
+        }
 
-		if(hunt_server(client_p, source_p, ":%s WHOIS %s :%s", 1, parc, parv) !=
-		   HUNTED_ISME)
-			return 0;
+        if (hunt_server(client_p, source_p, ":%s WHOIS %s :%s", 1, parc, parv) !=
+                HUNTED_ISME)
+            return 0;
 
-		parv[1] = parv[2];
+        parv[1] = parv[2];
 
-	}
-	do_whois(client_p, source_p, parc, parv);
+    }
+    do_whois(client_p, source_p, parc, parv);
 
-	return 0;
+    return 0;
 }
 
 /*
@@ -122,247 +122,247 @@ m_whois(struct Client *client_p, struct Client *source_p, int parc, const char *
 static int
 ms_whois(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	struct Client *target_p;
+    struct Client *target_p;
 
-	/* note: early versions of ratbox allowed users to issue a remote
-	 * whois with a blank parv[2], so we cannot treat it as a protocol
-	 * violation. --anfl
-	 */
-	if(parc < 3 || EmptyString(parv[2]))
-	{
-		sendto_one(source_p, form_str(ERR_NONICKNAMEGIVEN), me.name, source_p->name);
-		return 0;
-	}
+    /* note: early versions of ratbox allowed users to issue a remote
+     * whois with a blank parv[2], so we cannot treat it as a protocol
+     * violation. --anfl
+     */
+    if (parc < 3 || EmptyString(parv[2]))
+    {
+        sendto_one(source_p, form_str(ERR_NONICKNAMEGIVEN), me.name, source_p->name);
+        return 0;
+    }
 
 
-	/* check if parv[1] exists */
-	if((target_p = find_client(parv[1])) == NULL)
-	{
-		sendto_one_numeric(source_p, ERR_NOSUCHSERVER,
-				   form_str(ERR_NOSUCHSERVER), IsDigit(parv[1][0]) ? "*" : parv[1]);
-		return 0;
-	}
+    /* check if parv[1] exists */
+    if ((target_p = find_client(parv[1])) == NULL)
+    {
+        sendto_one_numeric(source_p, ERR_NOSUCHSERVER,
+                           form_str(ERR_NOSUCHSERVER), IsDigit(parv[1][0]) ? "*" : parv[1]);
+        return 0;
+    }
 
-	/* if parv[1] isnt my client, or me, someone else is supposed
-	 * to be handling the request.. so send it to them 
-	 */
-	if(!MyClient(target_p) && !IsMe(target_p))
-	{
-		sendto_one(target_p, ":%s WHOIS %s :%s",
-			   get_id(source_p, target_p), get_id(target_p, target_p), parv[2]);
-		return 0;
-	}
+    /* if parv[1] isnt my client, or me, someone else is supposed
+     * to be handling the request.. so send it to them
+     */
+    if (!MyClient(target_p) && !IsMe(target_p))
+    {
+        sendto_one(target_p, ":%s WHOIS %s :%s",
+                   get_id(source_p, target_p), get_id(target_p, target_p), parv[2]);
+        return 0;
+    }
 
-	/* ok, the target is either us, or a client on our server, so perform the whois
-	 * but first, parv[1] == server to perform the whois on, parv[2] == person
-	 * to whois, so make parv[1] = parv[2] so do_whois is ok -- fl_
-	 */
-	parv[1] = parv[2];
-	do_whois(client_p, source_p, parc, parv);
+    /* ok, the target is either us, or a client on our server, so perform the whois
+     * but first, parv[1] == server to perform the whois on, parv[2] == person
+     * to whois, so make parv[1] = parv[2] so do_whois is ok -- fl_
+     */
+    parv[1] = parv[2];
+    do_whois(client_p, source_p, parc, parv);
 
-	return 0;
+    return 0;
 }
 
 /* do_whois
  *
- * inputs	- pointer to 
- * output	- 
+ * inputs   - pointer to
+ * output   -
  * side effects -
  */
 static void
 do_whois(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	struct Client *target_p;
-	char *nick;
-	char *p = NULL;
-	int operspy = 0;
+    struct Client *target_p;
+    char *nick;
+    char *p = NULL;
+    int operspy = 0;
 
-	nick = LOCAL_COPY(parv[1]);
-	if((p = strchr(parv[1], ',')))
-		*p = '\0';
+    nick = LOCAL_COPY(parv[1]);
+    if ((p = strchr(parv[1], ',')))
+        *p = '\0';
 
-	if(IsOperSpy(source_p) && *nick == '!')
-	{
-		operspy = 1;
-		nick++;
-	}
+    if (IsOperSpy(source_p) && *nick == '!')
+    {
+        operspy = 1;
+        nick++;
+    }
 
-	if(MyClient(source_p))
-		target_p = find_named_person(nick);
-	else
-		target_p = find_person(nick);
-	SetCork(source_p);
-	if(target_p != NULL)
-	{
-		if(operspy)
-		{
-			char buffer[BUFSIZE];
+    if (MyClient(source_p))
+        target_p = find_named_person(nick);
+    else
+        target_p = find_person(nick);
+    SetCork(source_p);
+    if (target_p != NULL)
+    {
+        if (operspy)
+        {
+            char buffer[BUFSIZE];
 
-			rb_snprintf(buffer, sizeof(buffer), "%s!%s@%s %s",
-				    target_p->name, target_p->username,
-				    target_p->host, target_p->servptr->name);
-			report_operspy(source_p, "WHOIS", buffer);
-		}
+            rb_snprintf(buffer, sizeof(buffer), "%s!%s@%s %s",
+                        target_p->name, target_p->username,
+                        target_p->host, target_p->servptr->name);
+            report_operspy(source_p, "WHOIS", buffer);
+        }
 
-		single_whois(source_p, target_p, operspy);
-	}
-	else
-		sendto_one_numeric(source_p, ERR_NOSUCHNICK,
-				   form_str(ERR_NOSUCHNICK), IsDigit(*nick) ? "*" : parv[1]);
-	ClearCork(source_p);
-	sendto_one_numeric(source_p, RPL_ENDOFWHOIS, form_str(RPL_ENDOFWHOIS), parv[1]);
-	return;
+        single_whois(source_p, target_p, operspy);
+    }
+    else
+        sendto_one_numeric(source_p, ERR_NOSUCHNICK,
+                           form_str(ERR_NOSUCHNICK), IsDigit(*nick) ? "*" : parv[1]);
+    ClearCork(source_p);
+    sendto_one_numeric(source_p, RPL_ENDOFWHOIS, form_str(RPL_ENDOFWHOIS), parv[1]);
+    return;
 }
 
 /*
  * single_whois()
  *
- * Inputs	- source_p client to report to
- *		- target_p client to report on
- * Output	- if found return 1
- * Side Effects	- do a single whois on given client
- * 		  writing results to source_p
+ * Inputs   - source_p client to report to
+ *      - target_p client to report on
+ * Output   - if found return 1
+ * Side Effects - do a single whois on given client
+ *        writing results to source_p
  */
 static void
 single_whois(struct Client *source_p, struct Client *target_p, int operspy)
 {
-	char buf[BUFSIZE];
-	rb_dlink_node *ptr;
-	struct Client *a2client_p;
-	struct membership *msptr;
-	struct Channel *chptr;
-	int cur_len = 0;
-	int mlen;
-	char *t;
-	int tlen;
-	hook_data_client hdata;
-	const char *name;
-	char quest[] = "?";
-	int visible;
-	int extra_space = 0;
+    char buf[BUFSIZE];
+    rb_dlink_node *ptr;
+    struct Client *a2client_p;
+    struct membership *msptr;
+    struct Channel *chptr;
+    int cur_len = 0;
+    int mlen;
+    char *t;
+    int tlen;
+    hook_data_client hdata;
+    const char *name;
+    char quest[] = "?";
+    int visible;
+    int extra_space = 0;
 
-	if(target_p->name)
-		name = quest;
-	else
-		name = target_p->name;
+    if (target_p->name)
+        name = quest;
+    else
+        name = target_p->name;
 
-	if(target_p->user == NULL)
-	{
-		s_assert(0);
-		return;
-	}
+    if (target_p->user == NULL)
+    {
+        s_assert(0);
+        return;
+    }
 
-	a2client_p = target_p->servptr;
+    a2client_p = target_p->servptr;
 
-	sendto_one_numeric(source_p, RPL_WHOISUSER, form_str(RPL_WHOISUSER),
-			   target_p->name, target_p->username,
-			   IsCloaked(target_p) ? target_p->virthost : target_p->host,
-			   target_p->info);
+    sendto_one_numeric(source_p, RPL_WHOISUSER, form_str(RPL_WHOISUSER),
+                       target_p->name, target_p->username,
+                       IsCloaked(target_p) ? target_p->virthost : target_p->host,
+                       target_p->info);
 
-	if(IsOper(source_p) && show_ip(source_p, target_p) &&
-	   (MyClient(target_p) ||
-	   (!EmptyString(target_p->sockhost) && strcmp(target_p->sockhost, "0.0.0.0"))))
-	{
-		sendto_one_numeric(source_p, RPL_WHOISACTUALLY,
-				   form_str(RPL_WHOISACTUALLY),
-				   target_p->name, target_p->host, target_p->sockhost);
-	}
-
-
-	cur_len = mlen = rb_sprintf(buf, form_str(RPL_WHOISCHANNELS),
-				    get_id(&me, source_p), get_id(source_p, source_p),
-				    target_p->name);
-	/* Make sure it won't overflow when sending it to the client
-	 * in full names; note that serverhiding may require more space
-	 * for a different server name (not done here) -- jilles */
-	if(!MyConnect(source_p))
-	{
-		extra_space = strlen(source_p->name) - 9;
-		if(extra_space < 0)
-			extra_space = 0;
-		extra_space += strlen(me.name) - 2;	/* make sure >= 0 */
-		cur_len += extra_space;
-	}
-
-	t = buf + mlen;
-
-	if(!IsService(target_p) || IsOper(source_p))
-	{
-		RB_DLINK_FOREACH(ptr, target_p->user->channel.head)
-		{
-			msptr = ptr->data;
-			chptr = msptr->chptr;
-
-			visible = ShowChannel(source_p, chptr);
-
-			if(visible || operspy)
-			{
-				if((cur_len + strlen(chptr->chname) + 3) > (BUFSIZE - 5))
-				{
-					sendto_one_buffer(source_p, buf);
-					cur_len = mlen + extra_space;
-					t = buf + mlen;
-				}
-
-				tlen = rb_sprintf(t, "%s%s%s ",
-						  visible ? "" : "!",
-						  find_channel_status(msptr, 1), chptr->chname);
-				t += tlen;
-				cur_len += tlen;
-			}
-		}
-	}
-
-	if(cur_len > mlen + extra_space)
-		sendto_one_buffer(source_p, buf);
-
-	sendto_one_numeric(source_p, RPL_WHOISSERVER, form_str(RPL_WHOISSERVER),
-			   target_p->name, target_p->servptr->name,
-			   a2client_p ? a2client_p->info : "*Not On This Net*");
-
-	if(target_p->user->away)
-		sendto_one_numeric(source_p, RPL_AWAY, form_str(RPL_AWAY),
-				   target_p->name, target_p->user->away);
-
-	if(IsOper(target_p))
-	{
-		sendto_one_numeric(source_p, RPL_WHOISOPERATOR, form_str(RPL_WHOISOPERATOR),
-				   target_p->name,
-				   IsAdmin(target_p) ? GlobalSetOptions.adminstring :
-				   GlobalSetOptions.operstring);
-	}
-
-	if(IsHelpOp(target_p))
-		sendto_one_numeric(source_p, RPL_WHOISHELPER, form_str(RPL_WHOISHELPER), target_p->name);
-
-	if(MyClient(target_p))
-	{
-		if(IsSSL(target_p))
-			sendto_one_numeric(source_p, RPL_WHOISSECURE,
-					   form_str(RPL_WHOISSECURE), target_p->name);
+    if (IsOper(source_p) && show_ip(source_p, target_p) &&
+            (MyClient(target_p) ||
+             (!EmptyString(target_p->sockhost) && strcmp(target_p->sockhost, "0.0.0.0"))))
+    {
+        sendto_one_numeric(source_p, RPL_WHOISACTUALLY,
+                           form_str(RPL_WHOISACTUALLY),
+                           target_p->name, target_p->host, target_p->sockhost);
+    }
 
 
-		if(IsOper(source_p) || !IsHiddenIdle(target_p) || source_p == target_p)
-			sendto_one_numeric(source_p, RPL_WHOISIDLE, form_str(RPL_WHOISIDLE),
-					   target_p->name,
-					   rb_current_time() - target_p->localClient->last,
-					   target_p->localClient->firsttime);
-	}
+    cur_len = mlen = rb_sprintf(buf, form_str(RPL_WHOISCHANNELS),
+                                get_id(&me, source_p), get_id(source_p, source_p),
+                                target_p->name);
+    /* Make sure it won't overflow when sending it to the client
+     * in full names; note that serverhiding may require more space
+     * for a different server name (not done here) -- jilles */
+    if (!MyConnect(source_p))
+    {
+        extra_space = strlen(source_p->name) - 9;
+        if (extra_space < 0)
+            extra_space = 0;
+        extra_space += strlen(me.name) - 2; /* make sure >= 0 */
+        cur_len += extra_space;
+    }
 
-	send_pop_queue(source_p);
-	hdata.client = source_p;
-	hdata.target = target_p;
+    t = buf + mlen;
 
-	/* doing_whois_hook must only be called for local clients,
-	 * doing_whois_global_hook must only be called for local targets
-	 */
-	/* it is important that these are called *before* RPL_ENDOFWHOIS is
-	 * sent, services compatibility code depends on it. --anfl
-	 */
-	if(MyClient(source_p))
-		call_hook(doing_whois_hook, &hdata);
-	else
-		call_hook(doing_whois_global_hook, &hdata);
+    if (!IsService(target_p) || IsOper(source_p))
+    {
+        RB_DLINK_FOREACH(ptr, target_p->user->channel.head)
+        {
+            msptr = ptr->data;
+            chptr = msptr->chptr;
 
-	return;
+            visible = ShowChannel(source_p, chptr);
+
+            if (visible || operspy)
+            {
+                if ((cur_len + strlen(chptr->chname) + 3) > (BUFSIZE - 5))
+                {
+                    sendto_one_buffer(source_p, buf);
+                    cur_len = mlen + extra_space;
+                    t = buf + mlen;
+                }
+
+                tlen = rb_sprintf(t, "%s%s%s ",
+                                  visible ? "" : "!",
+                                  find_channel_status(msptr, 1), chptr->chname);
+                t += tlen;
+                cur_len += tlen;
+            }
+        }
+    }
+
+    if (cur_len > mlen + extra_space)
+        sendto_one_buffer(source_p, buf);
+
+    sendto_one_numeric(source_p, RPL_WHOISSERVER, form_str(RPL_WHOISSERVER),
+                       target_p->name, target_p->servptr->name,
+                       a2client_p ? a2client_p->info : "*Not On This Net*");
+
+    if (target_p->user->away)
+        sendto_one_numeric(source_p, RPL_AWAY, form_str(RPL_AWAY),
+                           target_p->name, target_p->user->away);
+
+    if (IsOper(target_p))
+    {
+        sendto_one_numeric(source_p, RPL_WHOISOPERATOR, form_str(RPL_WHOISOPERATOR),
+                           target_p->name,
+                           IsAdmin(target_p) ? GlobalSetOptions.adminstring :
+                           GlobalSetOptions.operstring);
+    }
+
+    if (IsHelpOp(target_p))
+        sendto_one_numeric(source_p, RPL_WHOISHELPER, form_str(RPL_WHOISHELPER), target_p->name);
+
+    if (MyClient(target_p))
+    {
+        if (IsSSL(target_p))
+            sendto_one_numeric(source_p, RPL_WHOISSECURE,
+                               form_str(RPL_WHOISSECURE), target_p->name);
+
+
+        if (IsOper(source_p) || !IsHiddenIdle(target_p) || source_p == target_p)
+            sendto_one_numeric(source_p, RPL_WHOISIDLE, form_str(RPL_WHOISIDLE),
+                               target_p->name,
+                               rb_current_time() - target_p->localClient->last,
+                               target_p->localClient->firsttime);
+    }
+
+    send_pop_queue(source_p);
+    hdata.client = source_p;
+    hdata.target = target_p;
+
+    /* doing_whois_hook must only be called for local clients,
+     * doing_whois_global_hook must only be called for local targets
+     */
+    /* it is important that these are called *before* RPL_ENDOFWHOIS is
+     * sent, services compatibility code depends on it. --anfl
+     */
+    if (MyClient(source_p))
+        call_hook(doing_whois_hook, &hdata);
+    else
+        call_hook(doing_whois_global_hook, &hdata);
+
+    return;
 }

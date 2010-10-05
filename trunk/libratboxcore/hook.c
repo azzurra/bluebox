@@ -43,8 +43,8 @@
 
 struct hook_info
 {
-	rb_dlink_node node;
-	hookfn fn;	
+    rb_dlink_node node;
+    hookfn fn;
 };
 
 hook *hooks;
@@ -68,18 +68,18 @@ int h_server_introduced;
 void
 init_hook(void)
 {
-	hooks = rb_malloc(sizeof(hook) * HOOK_INCREMENT);
+    hooks = rb_malloc(sizeof(hook) * HOOK_INCREMENT);
 
 #ifdef USE_IODEBUG_HOOKS
-	h_iosend_id = register_hook("iosend");
-	h_iorecv_id = register_hook("iorecv");
-	h_iorecvctrl_id = register_hook("iorecvctrl");
+    h_iosend_id = register_hook("iosend");
+    h_iorecv_id = register_hook("iorecv");
+    h_iorecvctrl_id = register_hook("iorecvctrl");
 #endif
 
-	h_burst_client = register_hook("burst_client");
-	h_burst_channel = register_hook("burst_channel");
-	h_burst_finished = register_hook("burst_finished");
-	h_server_introduced = register_hook("server_introduced");
+    h_burst_client = register_hook("burst_client");
+    h_burst_channel = register_hook("burst_channel");
+    h_burst_finished = register_hook("burst_finished");
+    h_server_introduced = register_hook("server_introduced");
 }
 
 /* grow_hooktable()
@@ -88,14 +88,14 @@ init_hook(void)
 static void
 grow_hooktable(void)
 {
-	hook *newhooks;
+    hook *newhooks;
 
-	newhooks = rb_malloc(sizeof(hook) * (max_hooks + HOOK_INCREMENT));
-	memcpy(newhooks, hooks, sizeof(hook) * num_hooks);
+    newhooks = rb_malloc(sizeof(hook) * (max_hooks + HOOK_INCREMENT));
+    memcpy(newhooks, hooks, sizeof(hook) * num_hooks);
 
-	rb_free(hooks);
-	hooks = newhooks;
-	max_hooks += HOOK_INCREMENT;
+    rb_free(hooks);
+    hooks = newhooks;
+    max_hooks += HOOK_INCREMENT;
 }
 
 /* find_freehookslot()
@@ -105,19 +105,19 @@ grow_hooktable(void)
 static int
 find_freehookslot(void)
 {
-	int i;
+    int i;
 
-	if((num_hooks + 1) > max_hooks)
-		grow_hooktable();
+    if ((num_hooks + 1) > max_hooks)
+        grow_hooktable();
 
-	for(i = 0; i < max_hooks; i++)
-	{
-		if(!hooks[i].name)
-			return i;
-	}
+    for (i = 0; i < max_hooks; i++)
+    {
+        if (!hooks[i].name)
+            return i;
+    }
 
-	/* shouldnt ever get here */
-	return (max_hooks - 1);
+    /* shouldnt ever get here */
+    return (max_hooks - 1);
 }
 
 /* find_hook()
@@ -126,18 +126,18 @@ find_freehookslot(void)
 static int
 find_hook(const char *name)
 {
-	int i;
+    int i;
 
-	for(i = 0; i < max_hooks; i++)
-	{
-		if(!hooks[i].name)
-			continue;
+    for (i = 0; i < max_hooks; i++)
+    {
+        if (!hooks[i].name)
+            continue;
 
-		if(!irccmp(hooks[i].name, name))
-			return i;
-	}
+        if (!irccmp(hooks[i].name, name))
+            return i;
+    }
 
-	return -1;
+    return -1;
 }
 
 /* register_hook()
@@ -147,16 +147,16 @@ find_hook(const char *name)
 int
 register_hook(const char *name)
 {
-	int i;
+    int i;
 
-	if((i = find_hook(name)) < 0)
-	{
-		i = find_freehookslot();
-		hooks[i].name = rb_strdup(name);
-		num_hooks++;
-	}
+    if ((i = find_hook(name)) < 0)
+    {
+        i = find_freehookslot();
+        hooks[i].name = rb_strdup(name);
+        num_hooks++;
+    }
 
-	return i;
+    return i;
 }
 
 
@@ -167,13 +167,13 @@ register_hook(const char *name)
 void
 add_hook(const char *name, hookfn fn)
 {
-	struct hook_info *info;
-	int i;
+    struct hook_info *info;
+    int i;
 
-	i = register_hook(name);
-	info = rb_malloc(sizeof(struct hook_info));
-	info->fn = fn;
-	rb_dlinkAdd(info, &info->node, &hooks[i].hooks);
+    i = register_hook(name);
+    info = rb_malloc(sizeof(struct hook_info));
+    info->fn = fn;
+    rb_dlinkAdd(info, &info->node, &hooks[i].hooks);
 }
 
 /* remove_hook()
@@ -182,22 +182,22 @@ add_hook(const char *name, hookfn fn)
 void
 remove_hook(const char *name, hookfn fn)
 {
-	int i;
-	struct hook_info *info;
-	rb_dlink_node *ptr, *next;
-	if((i = find_hook(name)) < 0)
-		return;
+    int i;
+    struct hook_info *info;
+    rb_dlink_node *ptr, *next;
+    if ((i = find_hook(name)) < 0)
+        return;
 
-	RB_DLINK_FOREACH_SAFE(ptr, next, hooks[i].hooks.head)
-	{
-		info = ptr->data;
-		if(info->fn == fn)
-		{
-			rb_dlinkDelete(&info->node, &hooks[i].hooks);
-			rb_free(info);
-			return;		
-		}				
-	}
+    RB_DLINK_FOREACH_SAFE(ptr, next, hooks[i].hooks.head)
+    {
+        info = ptr->data;
+        if (info->fn == fn)
+        {
+            rb_dlinkDelete(&info->node, &hooks[i].hooks);
+            rb_free(info);
+            return;
+        }
+    }
 }
 
 /* call_hook()
@@ -206,13 +206,13 @@ remove_hook(const char *name, hookfn fn)
 void
 call_hook(int id, void *arg)
 {
-	rb_dlink_node *ptr;
+    rb_dlink_node *ptr;
 
-	/* The ID we were passed is the position in the hook table of this
-	 * hook
-	 */
-	RB_DLINK_FOREACH(ptr, hooks[id].hooks.head)
-	{
-		((struct hook_info *)ptr->data)->fn(arg);
-	}
+    /* The ID we were passed is the position in the hook table of this
+     * hook
+     */
+    RB_DLINK_FOREACH(ptr, hooks[id].hooks.head)
+    {
+        ((struct hook_info *)ptr->data)->fn(arg);
+    }
 }

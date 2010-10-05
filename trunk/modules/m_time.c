@@ -37,8 +37,8 @@
 static int m_time(struct Client *, struct Client *, int, const char **);
 
 struct Message time_msgtab = {
-	"TIME", 0, 0, 0, MFLG_SLOW,
-	{mg_unreg, {m_time, 0}, {m_time, 2}, mg_ignore, mg_ignore, {m_time, 0}}
+    "TIME", 0, 0, 0, MFLG_SLOW,
+    {mg_unreg, {m_time, 0}, {m_time, 2}, mg_ignore, mg_ignore, {m_time, 0}}
 };
 
 mapi_clist_av1 time_clist[] = { &time_msgtab, NULL };
@@ -53,16 +53,16 @@ DECLARE_MODULE_AV1(time, NULL, NULL, time_clist, NULL, NULL, "$Revision: 26094 $
 static int
 m_time(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	/* this is not rate limited, so end the grace period */
-	char buf[80];
-	if(MyClient(source_p) && !IsFloodDone(source_p))
-		flood_endgrace(source_p);
+    /* this is not rate limited, so end the grace period */
+    char buf[80];
+    if (MyClient(source_p) && !IsFloodDone(source_p))
+        flood_endgrace(source_p);
 
 
-	if(hunt_server(client_p, source_p, ":%s TIME :%s", 1, parc, parv) == HUNTED_ISME)
-	{
-		sendto_one_numeric(source_p, RPL_TIME, form_str(RPL_TIME),
-				   me.name, rb_date(rb_current_time(), buf, sizeof(buf)));
-	}
-	return 0;
+    if (hunt_server(client_p, source_p, ":%s TIME :%s", 1, parc, parv) == HUNTED_ISME)
+    {
+        sendto_one_numeric(source_p, RPL_TIME, form_str(RPL_TIME),
+                           me.name, rb_date(rb_current_time(), buf, sizeof(buf)));
+    }
+    return 0;
 }

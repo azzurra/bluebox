@@ -28,18 +28,18 @@
 #define INCLUDE_hostmask_h 1
 enum
 {
-	HM_HOST,
-	HM_IPV4
+    HM_HOST,
+    HM_IPV4
 #ifdef RB_IPV6
-		, HM_IPV6
+    , HM_IPV6
 #endif
 };
 
 int parse_netmask(const char *, struct sockaddr *, int *);
 struct ConfItem *find_conf_by_address(const char *host, const char *sockhost,
-				      struct sockaddr *, int, int, const char *);
+                                      struct sockaddr *, int, int, const char *);
 struct ConfItem *find_auth(const char *host, const char *sockhost,
-			   struct sockaddr *, int, const char *);
+                           struct sockaddr *, int, const char *);
 void add_conf_by_address(const char *, int, const char *, struct ConfItem *);
 void delete_one_address_conf(const char *, struct ConfItem *);
 void clear_out_address_conf(void);
@@ -48,14 +48,14 @@ void init_host_hash(void);
 const char *show_iline_prefix(struct Client *, struct ConfItem *, const char *);
 
 struct ConfItem *find_address_conf(const char *host, const char *sockhost,
-				   const char *, struct sockaddr *, int);
+                                   const char *, struct sockaddr *, int);
 
-#define find_kline(x)	(find_conf_by_address((x)->host, (x)->sockhost,\
-			 (struct sockaddr *)&(x)->localClient->ip, CONF_KILL,\
-			 GET_SS_FAMILY(&(x)->localClient->ip), (x)->username))
-#define find_gline(x)	(find_conf_by_address((x)->host, (x)->sockhost,\
-			 (struct sockaddr *)&(x)->localClient->ip, CONF_GLINE,\
-			 GET_SS_FAMILY(&(x)->localClient->ip), (x)->username))
+#define find_kline(x)   (find_conf_by_address((x)->host, (x)->sockhost,\
+             (struct sockaddr *)&(x)->localClient->ip, CONF_KILL,\
+             GET_SS_FAMILY(&(x)->localClient->ip), (x)->username))
+#define find_gline(x)   (find_conf_by_address((x)->host, (x)->sockhost,\
+             (struct sockaddr *)&(x)->localClient->ip, CONF_GLINE,\
+             GET_SS_FAMILY(&(x)->localClient->ip), (x)->username))
 
 #ifdef RB_IPV6
 int match_ipv6(struct sockaddr *, struct sockaddr *, int);
@@ -70,43 +70,43 @@ extern struct AddressRec *atable[ATABLE_SIZE];
 
 #define HOSTHASH_WALK(i, arec) for (i = 0; i < ATABLE_SIZE; i++) { for(arec = atable[i]; arec; arec = arec->next)
 #define HOSTHASH_WALK_SAFE(i, arec, arecn) \
-	for(i = 0; i < ATABLE_SIZE; i++) { \
-		for(arec = atable[i], arecn = arec ? arec->next : NULL; arec; \
-			arec = arecn, arecn = arecn ? arecn->next : NULL)
+    for(i = 0; i < ATABLE_SIZE; i++) { \
+        for(arec = atable[i], arecn = arec ? arec->next : NULL; arec; \
+            arec = arecn, arecn = arecn ? arecn->next : NULL)
 #define HOSTHASH_WALK_END }
 
 struct AddressRec
 {
-	/* masktype: HM_HOST, HM_IPV4, HM_IPV6 -A1kmm */
-	int masktype;
+    /* masktype: HM_HOST, HM_IPV4, HM_IPV6 -A1kmm */
+    int masktype;
 
-	union
-	{
-		struct
-		{
-			/* Pointer into ConfItem... -A1kmm */
-			struct rb_sockaddr_storage addr;
-			int bits;
-		}
-		ipa;
+    union
+    {
+        struct
+        {
+            /* Pointer into ConfItem... -A1kmm */
+            struct rb_sockaddr_storage addr;
+            int bits;
+        }
+        ipa;
 
-		/* Pointer into ConfItem... -A1kmm */
-		const char *hostname;
-	}
-	Mask;
+        /* Pointer into ConfItem... -A1kmm */
+        const char *hostname;
+    }
+    Mask;
 
-	/* type: CONF_CLIENT, CONF_DLINE, CONF_KILL etc... -A1kmm */
-	int type;
+    /* type: CONF_CLIENT, CONF_DLINE, CONF_KILL etc... -A1kmm */
+    int type;
 
-	/* Higher precedences overrule lower ones... */
-	uint32_t precedence;
+    /* Higher precedences overrule lower ones... */
+    uint32_t precedence;
 
-	/* Only checked if !(type & 1)... */
-	const char *username;
-	struct ConfItem *aconf;
+    /* Only checked if !(type & 1)... */
+    const char *username;
+    struct ConfItem *aconf;
 
-	/* The next record in this hash bucket. */
-	struct AddressRec *next;
+    /* The next record in this hash bucket. */
+    struct AddressRec *next;
 };
 
 

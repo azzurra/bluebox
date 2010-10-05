@@ -35,23 +35,23 @@
 static int mr_dumb_proxy(struct Client *, struct Client *, int, const char **);
 
 struct Message post_msgtab = {
-	"POST", 0, 0, 0, MFLG_SLOW | MFLG_UNREG,
-	{{mr_dumb_proxy, 0}, mg_ignore, mg_ignore, mg_ignore, mg_ignore, mg_ignore}
+    "POST", 0, 0, 0, MFLG_SLOW | MFLG_UNREG,
+    {{mr_dumb_proxy, 0}, mg_ignore, mg_ignore, mg_ignore, mg_ignore, mg_ignore}
 };
 
 struct Message get_msgtab = {
-	"GET", 0, 0, 0, MFLG_SLOW | MFLG_UNREG,
-	{{mr_dumb_proxy, 0}, mg_ignore, mg_ignore, mg_ignore, mg_ignore, mg_ignore}
+    "GET", 0, 0, 0, MFLG_SLOW | MFLG_UNREG,
+    {{mr_dumb_proxy, 0}, mg_ignore, mg_ignore, mg_ignore, mg_ignore, mg_ignore}
 };
 
 struct Message put_msgtab = {
-	"PUT", 0, 0, 0, MFLG_SLOW | MFLG_UNREG,
-	{{mr_dumb_proxy, 0}, mg_ignore, mg_ignore, mg_ignore, mg_ignore, mg_ignore}
+    "PUT", 0, 0, 0, MFLG_SLOW | MFLG_UNREG,
+    {{mr_dumb_proxy, 0}, mg_ignore, mg_ignore, mg_ignore, mg_ignore, mg_ignore}
 };
 
 
 mapi_clist_av1 post_clist[] = {
-	&post_msgtab, &get_msgtab, &put_msgtab, NULL
+    &post_msgtab, &get_msgtab, &put_msgtab, NULL
 };
 
 DECLARE_MODULE_AV1(post, NULL, NULL, post_clist, NULL, NULL, "$Revision: 26094 $");
@@ -65,10 +65,10 @@ DECLARE_MODULE_AV1(post, NULL, NULL, post_clist, NULL, NULL, "$Revision: 26094 $
 static int
 mr_dumb_proxy(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	sendto_realops_flags(UMODE_REJ, L_ALL,
-			     "HTTP Proxy disconnected: [%s@%s]",
-			     client_p->username, client_p->host);
-	exit_client(client_p, source_p, source_p, "Client Exit");
+    sendto_realops_flags(UMODE_REJ, L_ALL,
+                         "HTTP Proxy disconnected: [%s@%s]",
+                         client_p->username, client_p->host);
+    exit_client(client_p, source_p, source_p, "Client Exit");
 
-	return 0;
+    return 0;
 }

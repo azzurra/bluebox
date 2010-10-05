@@ -39,8 +39,8 @@
 static int m_ison(struct Client *, struct Client *, int, const char **);
 
 struct Message ison_msgtab = {
-	"ISON", 0, 0, 0, MFLG_SLOW,
-	{mg_unreg, {m_ison, 2}, mg_ignore, mg_ignore, mg_ignore, {m_ison, 2}}
+    "ISON", 0, 0, 0, MFLG_SLOW,
+    {mg_unreg, {m_ison, 2}, mg_ignore, mg_ignore, mg_ignore, {m_ison, 2}}
 };
 
 mapi_clist_av1 ison_clist[] = { &ison_msgtab, NULL };
@@ -63,59 +63,59 @@ static char buf2[BUFSIZE];
 static int
 m_ison(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	struct Client *target_p;
-	char *nick;
-	char *p;
-	char *current_insert_point, *current_insert_point2;
-	int len;
-	int i;
-	int done = 0;
+    struct Client *target_p;
+    char *nick;
+    char *p;
+    char *current_insert_point, *current_insert_point2;
+    int len;
+    int i;
+    int done = 0;
 
-	current_insert_point2 = buf2;
-	*buf2 = '\0';
+    current_insert_point2 = buf2;
+    *buf2 = '\0';
 
-	rb_sprintf(buf, form_str(RPL_ISON), me.name, source_p->name);
-	len = strlen(buf);
-	current_insert_point = buf + len;
+    rb_sprintf(buf, form_str(RPL_ISON), me.name, source_p->name);
+    len = strlen(buf);
+    current_insert_point = buf + len;
 
-	/* rfc1489 is ambigious about how to handle ISON
-	 * this should handle both interpretations.
-	 */
-	for(i = 1; i < parc; i++)
-	{
-		char *cs = LOCAL_COPY(parv[i]);
-		for(nick = rb_strtok_r(cs, " ", &p); nick; nick = rb_strtok_r(NULL, " ", &p))
-		{
-			target_p = find_named_client(nick);
+    /* rfc1489 is ambigious about how to handle ISON
+     * this should handle both interpretations.
+     */
+    for (i = 1; i < parc; i++)
+    {
+        char *cs = LOCAL_COPY(parv[i]);
+        for (nick = rb_strtok_r(cs, " ", &p); nick; nick = rb_strtok_r(NULL, " ", &p))
+        {
+            target_p = find_named_client(nick);
 
-			if(target_p != NULL)
-			{
-				len = strlen(target_p->name);
-				if((current_insert_point + (len + 5)) < (buf + sizeof(buf)))
-				{
-					memcpy(current_insert_point, target_p->name, len);
-					current_insert_point += len;
-					*current_insert_point++ = ' ';
-				}
-				else
-				{
-					done = 1;
-					break;
-				}
-			}
-		}
-		if(done)
-			break;
-	}
+            if (target_p != NULL)
+            {
+                len = strlen(target_p->name);
+                if ((current_insert_point + (len + 5)) < (buf + sizeof(buf)))
+                {
+                    memcpy(current_insert_point, target_p->name, len);
+                    current_insert_point += len;
+                    *current_insert_point++ = ' ';
+                }
+                else
+                {
+                    done = 1;
+                    break;
+                }
+            }
+        }
+        if (done)
+            break;
+    }
 
-	/*  current_insert_point--;
-	 *  Do NOT take out the trailing space, it breaks ircII
-	 *  --Rodder */
+    /*  current_insert_point--;
+     *  Do NOT take out the trailing space, it breaks ircII
+     *  --Rodder */
 
-	*current_insert_point = '\0';
-	*current_insert_point2 = '\0';
+    *current_insert_point = '\0';
+    *current_insert_point2 = '\0';
 
-	sendto_one_buffer(source_p, buf);
+    sendto_one_buffer(source_p, buf);
 
-	return 0;
+    return 0;
 }

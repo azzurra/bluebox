@@ -42,8 +42,8 @@
 static int ms_encap(struct Client *client_p, struct Client *source_p, int parc, const char *parv[]);
 
 struct Message encap_msgtab = {
-	"ENCAP", 0, 0, 0, MFLG_SLOW,
-	{mg_ignore, mg_ignore, {ms_encap, 3}, {ms_encap, 3}, mg_ignore, mg_ignore}
+    "ENCAP", 0, 0, 0, MFLG_SLOW,
+    {mg_ignore, mg_ignore, {ms_encap, 3}, {ms_encap, 3}, mg_ignore, mg_ignore}
 };
 
 mapi_clist_av1 encap_clist[] = { &encap_msgtab, NULL };
@@ -59,44 +59,44 @@ DECLARE_MODULE_AV1(encap, NULL, NULL, encap_clist, NULL, NULL, "$Revision: 26094
 static int
 ms_encap(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	char buffer[BUFSIZE];
-	char *ptr;
-	int cur_len = 0;
-	int len;
-	int i;
+    char buffer[BUFSIZE];
+    char *ptr;
+    int cur_len = 0;
+    int len;
+    int i;
 
-	ptr = buffer;
+    ptr = buffer;
 
-	for(i = 1; i < parc - 1; i++)
-	{
-		len = strlen(parv[i]) + 1;
+    for (i = 1; i < parc - 1; i++)
+    {
+        len = strlen(parv[i]) + 1;
 
-		/* ugh, not even at the last parameter, just bail --fl */
-		if((size_t)(cur_len + len) >= sizeof(buffer))
-			return 0;
+        /* ugh, not even at the last parameter, just bail --fl */
+        if ((size_t)(cur_len + len) >= sizeof(buffer))
+            return 0;
 
-		rb_snprintf(ptr, sizeof(buffer) - cur_len, "%s ", parv[i]);
-		cur_len += len;
-		ptr += len;
-	}
+        rb_snprintf(ptr, sizeof(buffer) - cur_len, "%s ", parv[i]);
+        cur_len += len;
+        ptr += len;
+    }
 
-	len = strlen(parv[i]);
+    len = strlen(parv[i]);
 
-	/* if its a command without parameters, dont prepend a ':' */
-	if(parc == 3)
-		rb_snprintf(ptr, sizeof(buffer) - cur_len, "%s", parv[2]);
-	else
-		rb_snprintf(ptr, sizeof(buffer) - cur_len, ":%s", parv[parc - 1]);
+    /* if its a command without parameters, dont prepend a ':' */
+    if (parc == 3)
+        rb_snprintf(ptr, sizeof(buffer) - cur_len, "%s", parv[2]);
+    else
+        rb_snprintf(ptr, sizeof(buffer) - cur_len, ":%s", parv[parc - 1]);
 
-	/* add a trailing \0 if it was too long */
-	if((cur_len + len) >= BUFSIZE)
-		buffer[BUFSIZE - 1] = '\0';
+    /* add a trailing \0 if it was too long */
+    if ((cur_len + len) >= BUFSIZE)
+        buffer[BUFSIZE - 1] = '\0';
 
-	sendto_match_servs(source_p, parv[1], CAP_ENCAP, NOCAPS, "ENCAP %s", buffer);
+    sendto_match_servs(source_p, parv[1], CAP_ENCAP, NOCAPS, "ENCAP %s", buffer);
 
-	/* if it matches us, find a matching handler and call it */
-	if(match(parv[1], me.name))
-		handle_encap(client_p, source_p, parv[2], parc - 2, parv + 2);
+    /* if it matches us, find a matching handler and call it */
+    if (match(parv[1], me.name))
+        handle_encap(client_p, source_p, parv[2], parc - 2, parv + 2);
 
-	return 0;
+    return 0;
 }

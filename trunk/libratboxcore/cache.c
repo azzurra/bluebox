@@ -52,25 +52,25 @@ char user_motd_changed[MAX_DATE_STRING];
 
 /* init_cache()
  *
- * inputs	-
- * outputs	-
+ * inputs   -
+ * outputs  -
  * side effects - inits the file/line cache blockheaps, loads motds
  */
 void
 init_cache(void)
 {
-	/* allocate the emptyline */
-	emptyline = rb_malloc(sizeof(struct cacheline));
-	emptyline->data[0] = ' ';
-	emptyline->data[1] = '\0';
-	user_motd_changed[0] = '\0';
+    /* allocate the emptyline */
+    emptyline = rb_malloc(sizeof(struct cacheline));
+    emptyline->data[0] = ' ';
+    emptyline->data[1] = '\0';
+    user_motd_changed[0] = '\0';
 
-	user_motd = cache_file(MPATH, "ircd.motd", 0);
-	oper_motd = cache_file(OPATH, "opers.motd", 0);
-	memset(&links_cache_list, 0, sizeof(links_cache_list));
+    user_motd = cache_file(MPATH, "ircd.motd", 0);
+    oper_motd = cache_file(OPATH, "opers.motd", 0);
+    memset(&links_cache_list, 0, sizeof(links_cache_list));
 }
 
-/* 
+/*
  * removes tabs from src, replaces with 8 spaces, and returns the length
  * of the new string.  if the new string would be greater than destlen,
  * it is truncated to destlen - 1
@@ -78,268 +78,268 @@ init_cache(void)
 static size_t
 untabify(char *dest, const char *src, size_t destlen)
 {
-	size_t x = 0, i;
-	const char *s = src;
-	char *d = dest;
+    size_t x = 0, i;
+    const char *s = src;
+    char *d = dest;
 
-	while(*s != '\0' && x < destlen - 1)
-	{
-		if(*s == '\t')
-		{
-			for(i = 0; i < 8 && x < destlen - 1; i++, x++, d++)
-				*d = ' ';
-			s++;
-		}
-		else
-		{
-			*d++ = *s++;
-			x++;
-		}
-	}
-	*d = '\0';
-	return x;
+    while (*s != '\0' && x < destlen - 1)
+    {
+        if (*s == '\t')
+        {
+            for (i = 0; i < 8 && x < destlen - 1; i++, x++, d++)
+                *d = ' ';
+            s++;
+        }
+        else
+        {
+            *d++ = *s++;
+            x++;
+        }
+    }
+    *d = '\0';
+    return x;
 }
 
 
 /* cache_file()
  *
- * inputs	- file to cache, files "shortname", flags to set
- * outputs	- pointer to file cached, else NULL
+ * inputs   - file to cache, files "shortname", flags to set
+ * outputs  - pointer to file cached, else NULL
  * side effects -
  */
 struct cachefile *
 cache_file(const char *filename, const char *shortname, int flags)
 {
-	FILE *in;
-	struct cachefile *cacheptr;
-	struct cacheline *lineptr;
-	char line[BUFSIZE];
-	struct stat st;
+    FILE *in;
+    struct cachefile *cacheptr;
+    struct cacheline *lineptr;
+    char line[BUFSIZE];
+    struct stat st;
 
-	char *p;
+    char *p;
 
-	if((in = fopen(filename, "r")) == NULL)
-		return NULL;
+    if ((in = fopen(filename, "r")) == NULL)
+        return NULL;
 
-	/* check and make sure we have something that is a file... */
-	if(fstat(fileno(in), &st) == -1)
-	{
-		fclose(in);
-		return NULL;
-	}
-	if(!S_ISREG(st.st_mode))
-	{
-		fclose(in);
-		return NULL;
-	}
+    /* check and make sure we have something that is a file... */
+    if (fstat(fileno(in), &st) == -1)
+    {
+        fclose(in);
+        return NULL;
+    }
+    if (!S_ISREG(st.st_mode))
+    {
+        fclose(in);
+        return NULL;
+    }
 
-	cacheptr = rb_malloc(sizeof(struct cachefile));
+    cacheptr = rb_malloc(sizeof(struct cachefile));
 
-	rb_strlcpy(cacheptr->name, shortname, sizeof(cacheptr->name));
-	cacheptr->flags = flags;
+    rb_strlcpy(cacheptr->name, shortname, sizeof(cacheptr->name));
+    cacheptr->flags = flags;
 
-	/* cache the file... */
-	while(fgets(line, sizeof(line), in) != NULL)
-	{
-		if((p = strpbrk(line, "\r\n")) != NULL)
-			*p = '\0';
+    /* cache the file... */
+    while (fgets(line, sizeof(line), in) != NULL)
+    {
+        if ((p = strpbrk(line, "\r\n")) != NULL)
+            *p = '\0';
 
-		if(!EmptyString(line))
-		{
-			lineptr = rb_malloc(sizeof(struct cacheline));
-			untabify(lineptr->data, line, sizeof(lineptr->data));
-			rb_dlinkAddTail(lineptr, &lineptr->linenode, &cacheptr->contents);
-		}
-		else
-			rb_dlinkAddTailAlloc(emptyline, &cacheptr->contents);
-	}
+        if (!EmptyString(line))
+        {
+            lineptr = rb_malloc(sizeof(struct cacheline));
+            untabify(lineptr->data, line, sizeof(lineptr->data));
+            rb_dlinkAddTail(lineptr, &lineptr->linenode, &cacheptr->contents);
+        }
+        else
+            rb_dlinkAddTailAlloc(emptyline, &cacheptr->contents);
+    }
 
-	if(rb_dlink_list_length(&cacheptr->contents) == 0)
-	{
-		rb_free(cacheptr);
-		cacheptr = NULL;
-	}
-	fclose(in);
-	return cacheptr;
+    if (rb_dlink_list_length(&cacheptr->contents) == 0)
+    {
+        rb_free(cacheptr);
+        cacheptr = NULL;
+    }
+    fclose(in);
+    return cacheptr;
 }
 
 void
 cache_links(void *unused)
 {
-	struct Client *target_p;
-	rb_dlink_node *ptr;
-	rb_dlink_node *next_ptr;
-	char *links_line;
+    struct Client *target_p;
+    rb_dlink_node *ptr;
+    rb_dlink_node *next_ptr;
+    char *links_line;
 
-	RB_DLINK_FOREACH_SAFE(ptr, next_ptr, links_cache_list.head)
-	{
-		rb_free(ptr->data);
-		rb_free_rb_dlink_node(ptr);
-	}
+    RB_DLINK_FOREACH_SAFE(ptr, next_ptr, links_cache_list.head)
+    {
+        rb_free(ptr->data);
+        rb_free_rb_dlink_node(ptr);
+    }
 
-	links_cache_list.head = links_cache_list.tail = NULL;
-	links_cache_list.length = 0;
+    links_cache_list.head = links_cache_list.tail = NULL;
+    links_cache_list.length = 0;
 
-	RB_DLINK_FOREACH(ptr, global_serv_list.head)
-	{
-		target_p = ptr->data;
+    RB_DLINK_FOREACH(ptr, global_serv_list.head)
+    {
+        target_p = ptr->data;
 
-		/* skip ourselves (done in /links) and hidden servers */
-		if(IsMe(target_p) || (IsHidden(target_p) && !ConfigServerHide.disable_hidden))
-			continue;
+        /* skip ourselves (done in /links) and hidden servers */
+        if (IsMe(target_p) || (IsHidden(target_p) && !ConfigServerHide.disable_hidden))
+            continue;
 
-		/* if the below is ever modified, change LINKSLINELEN */
-		links_line = rb_malloc(LINKSLINELEN);
-		rb_snprintf(links_line, LINKSLINELEN, "%s %s :1 %s",
-			    target_p->name, me.name,
-			    target_p->info[0] ? target_p->info : "(Unknown Location)");
+        /* if the below is ever modified, change LINKSLINELEN */
+        links_line = rb_malloc(LINKSLINELEN);
+        rb_snprintf(links_line, LINKSLINELEN, "%s %s :1 %s",
+                    target_p->name, me.name,
+                    target_p->info[0] ? target_p->info : "(Unknown Location)");
 
-		rb_dlinkAddTailAlloc(links_line, &links_cache_list);
-	}
+        rb_dlinkAddTailAlloc(links_line, &links_cache_list);
+    }
 }
 
 /* free_cachefile()
  *
- * inputs	- cachefile to free
- * outputs	-
+ * inputs   - cachefile to free
+ * outputs  -
  * side effects - cachefile and its data is free'd
  */
 void
 free_cachefile(struct cachefile *cacheptr)
 {
-	rb_dlink_node *ptr;
-	rb_dlink_node *next_ptr;
+    rb_dlink_node *ptr;
+    rb_dlink_node *next_ptr;
 
-	if(cacheptr == NULL)
-		return;
+    if (cacheptr == NULL)
+        return;
 
-	RB_DLINK_FOREACH_SAFE(ptr, next_ptr, cacheptr->contents.head)
-	{
-		if(ptr->data != emptyline)
-			rb_free(ptr->data);
-	}
+    RB_DLINK_FOREACH_SAFE(ptr, next_ptr, cacheptr->contents.head)
+    {
+        if (ptr->data != emptyline)
+            rb_free(ptr->data);
+    }
 
-	rb_free(cacheptr);
+    rb_free(cacheptr);
 }
 
 /* load_help()
  *
- * inputs	-
- * outputs	-
+ * inputs   -
+ * outputs  -
  * side effects - contents of help directories are loaded.
  */
 void
 load_help(void)
 {
-	DIR *helpfile_dir = NULL;
-	struct dirent *ldirent = NULL;
-	char filename[MAXPATHLEN];
-	struct cachefile *cacheptr;
+    DIR *helpfile_dir = NULL;
+    struct dirent *ldirent = NULL;
+    char filename[MAXPATHLEN];
+    struct cachefile *cacheptr;
 
 #if defined(S_ISLNK) && defined(HAVE_LSTAT)
-	struct stat sb;
+    struct stat sb;
 #endif
 
 
-	/* opers must be done first */
-	helpfile_dir = opendir(HPATH);
+    /* opers must be done first */
+    helpfile_dir = opendir(HPATH);
 
-	if(helpfile_dir == NULL)
-		return;
+    if (helpfile_dir == NULL)
+        return;
 
-	while((ldirent = readdir(helpfile_dir)) != NULL)
-	{
-		rb_snprintf(filename, sizeof(filename), "%s/%s", HPATH, ldirent->d_name);
-		cacheptr = cache_file(filename, ldirent->d_name, HELP_OPER);
-		if(cacheptr != NULL)
-			add_to_help_hash(cacheptr->name, cacheptr);
-	}
+    while ((ldirent = readdir(helpfile_dir)) != NULL)
+    {
+        rb_snprintf(filename, sizeof(filename), "%s/%s", HPATH, ldirent->d_name);
+        cacheptr = cache_file(filename, ldirent->d_name, HELP_OPER);
+        if (cacheptr != NULL)
+            add_to_help_hash(cacheptr->name, cacheptr);
+    }
 
-	closedir(helpfile_dir);
-	helpfile_dir = opendir(UHPATH);
+    closedir(helpfile_dir);
+    helpfile_dir = opendir(UHPATH);
 
-	if(helpfile_dir == NULL)
-		return;
+    if (helpfile_dir == NULL)
+        return;
 
-	while((ldirent = readdir(helpfile_dir)) != NULL)
-	{
-		rb_snprintf(filename, sizeof(filename), "%s/%s", UHPATH, ldirent->d_name);
+    while ((ldirent = readdir(helpfile_dir)) != NULL)
+    {
+        rb_snprintf(filename, sizeof(filename), "%s/%s", UHPATH, ldirent->d_name);
 
 #if defined(S_ISLNK) && defined(HAVE_LSTAT)
-		if(lstat(filename, &sb) < 0)
-			continue;
+        if (lstat(filename, &sb) < 0)
+            continue;
 
-		/* ok, if its a symlink, we work on the presumption if an
-		 * oper help exists of that name, its a symlink to that --fl
-		 */
-		if(S_ISLNK(sb.st_mode))
-		{
-			cacheptr = hash_find_help(ldirent->d_name, HELP_OPER);
+        /* ok, if its a symlink, we work on the presumption if an
+         * oper help exists of that name, its a symlink to that --fl
+         */
+        if (S_ISLNK(sb.st_mode))
+        {
+            cacheptr = hash_find_help(ldirent->d_name, HELP_OPER);
 
-			if(cacheptr != NULL)
-			{
-				cacheptr->flags |= HELP_USER;
-				continue;
-			}
-		}
+            if (cacheptr != NULL)
+            {
+                cacheptr->flags |= HELP_USER;
+                continue;
+            }
+        }
 #endif
 
-		cacheptr = cache_file(filename, ldirent->d_name, HELP_USER);
-		if(cacheptr != NULL)
-			add_to_help_hash(cacheptr->name, cacheptr);
-	}
+        cacheptr = cache_file(filename, ldirent->d_name, HELP_USER);
+        if (cacheptr != NULL)
+            add_to_help_hash(cacheptr->name, cacheptr);
+    }
 
-	closedir(helpfile_dir);
+    closedir(helpfile_dir);
 }
 
 /* send_user_motd()
  *
- * inputs	- client to send motd to
- * outputs	- client is sent motd if exists, else ERR_NOMOTD
+ * inputs   - client to send motd to
+ * outputs  - client is sent motd if exists, else ERR_NOMOTD
  * side effects -
  */
 void
 send_user_motd(struct Client *source_p)
 {
-	struct cacheline *lineptr;
-	rb_dlink_node *ptr;
-	const char *myname = get_id(&me, source_p);
-	const char *nick = get_id(source_p, source_p);
-	if(user_motd == NULL || rb_dlink_list_length(&user_motd->contents) == 0)
-	{
-		sendto_one(source_p, form_str(ERR_NOMOTD), myname, nick);
-		return;
-	}
-	SetCork(source_p);
-	sendto_one(source_p, form_str(RPL_MOTDSTART), myname, nick, me.name);
+    struct cacheline *lineptr;
+    rb_dlink_node *ptr;
+    const char *myname = get_id(&me, source_p);
+    const char *nick = get_id(source_p, source_p);
+    if (user_motd == NULL || rb_dlink_list_length(&user_motd->contents) == 0)
+    {
+        sendto_one(source_p, form_str(ERR_NOMOTD), myname, nick);
+        return;
+    }
+    SetCork(source_p);
+    sendto_one(source_p, form_str(RPL_MOTDSTART), myname, nick, me.name);
 
-	RB_DLINK_FOREACH(ptr, user_motd->contents.head)
-	{
-		lineptr = ptr->data;
-		sendto_one(source_p, form_str(RPL_MOTD), myname, nick, lineptr->data);
-	}
-	ClearCork(source_p);
-	sendto_one(source_p, form_str(RPL_ENDOFMOTD), myname, nick);
+    RB_DLINK_FOREACH(ptr, user_motd->contents.head)
+    {
+        lineptr = ptr->data;
+        sendto_one(source_p, form_str(RPL_MOTD), myname, nick, lineptr->data);
+    }
+    ClearCork(source_p);
+    sendto_one(source_p, form_str(RPL_ENDOFMOTD), myname, nick);
 }
 
 void
 cache_user_motd(void)
 {
-	struct stat sb;
-	struct tm *local_tm;
+    struct stat sb;
+    struct tm *local_tm;
 
-	if(stat(MPATH, &sb) == 0)
-	{
-		local_tm = gmtime(&sb.st_mtime);
+    if (stat(MPATH, &sb) == 0)
+    {
+        local_tm = gmtime(&sb.st_mtime);
 
-		if(local_tm != NULL)
-		{
-			rb_snprintf(user_motd_changed, sizeof(user_motd_changed),
-				    "%d/%d/%d %d:%d",
-				    local_tm->tm_mday, local_tm->tm_mon + 1,
-				    1900 + local_tm->tm_year, local_tm->tm_hour, local_tm->tm_min);
-		}
-	}
-	free_cachefile(user_motd);
-	user_motd = cache_file(MPATH, "ircd.motd", 0);
+        if (local_tm != NULL)
+        {
+            rb_snprintf(user_motd_changed, sizeof(user_motd_changed),
+                        "%d/%d/%d %d:%d",
+                        local_tm->tm_mday, local_tm->tm_mon + 1,
+                        1900 + local_tm->tm_year, local_tm->tm_hour, local_tm->tm_min);
+        }
+    }
+    free_cachefile(user_motd);
+    user_motd = cache_file(MPATH, "ircd.motd", 0);
 }

@@ -40,32 +40,32 @@ struct _buf_line;
 struct _buf_head;
 
 /* How big we want a buffer - 510 data bytes, plus space for a '\0' */
-#define BUF_DATA_SIZE		511
+#define BUF_DATA_SIZE       511
 
 typedef struct _buf_line
 {
-	char buf[BUF_DATA_SIZE + 2];
-	uint8_t terminated;	/* Whether we've terminated the buffer */
-	uint8_t raw;		/* Whether this linebuf may hold 8-bit data */
-	int len;		/* How much data we've got */
-	int refcount;		/* how many linked lists are we in? */
+    char buf[BUF_DATA_SIZE + 2];
+    uint8_t terminated; /* Whether we've terminated the buffer */
+    uint8_t raw;        /* Whether this linebuf may hold 8-bit data */
+    int len;            /* How much data we've got */
+    int refcount;       /* how many linked lists are we in? */
 } buf_line_t;
 
 typedef struct _buf_head
 {
-	rb_dlink_list list;	/* the actual dlink list */
-	int len;		/* length of all the data */
-	int alloclen;		/* Actual allocated data length */
-	int writeofs;		/* offset in the first line for the write */
-	int numlines;		/* number of lines */
+    rb_dlink_list list; /* the actual dlink list */
+    int len;            /* length of all the data */
+    int alloclen;       /* Actual allocated data length */
+    int writeofs;       /* offset in the first line for the write */
+    int numlines;       /* number of lines */
 } buf_head_t;
 
 
 
 /* they should be functions, but .. */
-#define rb_linebuf_len(x)		((x)->len)
-#define rb_linebuf_alloclen(x)	((x)->alloclen)
-#define rb_linebuf_numlines(x)	((x)->numlines)
+#define rb_linebuf_len(x)       ((x)->len)
+#define rb_linebuf_alloclen(x)  ((x)->alloclen)
+#define rb_linebuf_numlines(x)  ((x)->numlines)
 
 void rb_linebuf_init(size_t heap_size);
 void rb_linebuf_newbuf(buf_head_t *);

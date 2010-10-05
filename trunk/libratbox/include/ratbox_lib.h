@@ -36,7 +36,7 @@
 #   ifdef _AIX
 #pragma alloca
 #   else
-#    ifndef alloca		/* predefined by HP cc +Olibcalls */
+#    ifndef alloca      /* predefined by HP cc +Olibcalls */
 char *alloca();
 #    endif
 #   endif
@@ -70,8 +70,8 @@ char *alloca();
 #ifdef rb_unlikely
 #undef rb_unlikely
 #endif
-#define rb_likely(x)	(x)
-#define rb_unlikely(x)	(x)
+#define rb_likely(x)    (x)
+#define rb_unlikely(x)  (x)
 #endif
 
 
@@ -91,7 +91,7 @@ char *alloca();
 char *rb_strerror(int error);
 
 
-#define ENOBUFS	    WSAENOBUFS
+#define ENOBUFS     WSAENOBUFS
 #define EINPROGRESS WSAEINPROGRESS
 #define EWOULDBLOCK WSAEWOULDBLOCK
 #define EMSGSIZE    WSAEMSGSIZE
@@ -114,31 +114,31 @@ char *rb_strerror(int error);
 
 
 #ifndef HOSTIPLEN
-#define HOSTIPLEN	53
+#define HOSTIPLEN   53
 #endif
 
 #ifdef __GNUC__
-#define slrb_assert(expr)	do								\
-			if(rb_unlikely(!(expr))) {							\
-				rb_lib_log( 						\
-				"file: %s line: %d (%s): Assertion failed: (%s)",	\
-				__FILE__, __LINE__, __PRETTY_FUNCTION__, #expr); 	\
-			}								\
-			while(0)
+#define slrb_assert(expr)   do                                      \
+            if(rb_unlikely(!(expr))) {                              \
+                rb_lib_log(                                         \
+                "file: %s line: %d (%s): Assertion failed: (%s)",   \
+                __FILE__, __LINE__, __PRETTY_FUNCTION__, #expr);    \
+            }                                                       \
+            while(0)
 #else
-#define slrb_assert(expr)	do								\
-			if(rb_unlikely(!(expr))) {							\
-				rb_lib_log(L_MAIN, 						\
-				"file: %s line: %d: Assertion failed: (%s)",		\
-				__FILE__, __LINE__, #expr); 				\
-			}								\
-			while(0)
+#define slrb_assert(expr)   do                                      \
+            if(rb_unlikely(!(expr))) {                              \
+                rb_lib_log(L_MAIN,                                  \
+                "file: %s line: %d: Assertion failed: (%s)",        \
+                __FILE__, __LINE__, #expr);                         \
+            }                                                       \
+            while(0)
 #endif
 
 #ifdef SOFT_ASSERT
-#define lrb_assert(expr) 	slrb_assert(expr)
+#define lrb_assert(expr)    slrb_assert(expr)
 #else
-#define lrb_assert(expr)	do { slrb_assert(expr); assert(expr); } while(0)
+#define lrb_assert(expr)    do { slrb_assert(expr); assert(expr); } while(0)
 #endif
 
 #ifdef RB_SOCKADDR_HAS_SA_LEN
@@ -148,11 +148,11 @@ char *rb_strerror(int error);
 #define GET_SS_FAMILY(x) (((const struct sockaddr *)(x))->sa_family)
 #define SET_SS_FAMILY(x, y) ((((struct sockaddr *)(x))->sa_family) = y)
 #ifdef RB_SOCKADDR_HAS_SA_LEN
-#define SET_SS_LEN(x, y)	do {							\
-					struct sockaddr *storage;		\
-					storage = ((struct sockaddr *)(x));\
-					storage->sa_len = (y);				\
-				} while (0)
+#define SET_SS_LEN(x, y)    do {                            \
+                    struct sockaddr *storage;               \
+                    storage = ((struct sockaddr *)(x));     \
+                    storage->sa_len = (y);                  \
+                } while (0)
 #define GET_SS_LEN(x) (((struct sockaddr *)(x))->sa_len)
 #else /* !RB_SOCKADDR_HAS_SA_LEN */
 #define SET_SS_LEN(x, y) (((struct sockaddr *)(x))->sa_family = ((struct sockaddr *)(x))->sa_family)
@@ -189,7 +189,7 @@ void rb_set_time(void);
 const char *rb_lib_version(void);
 
 void rb_lib_init(log_cb * xilog, restart_cb * irestart, die_cb * idie, int closeall, int maxfds,
-		 size_t dh_size, size_t fd_heap_size);
+                 size_t dh_size, size_t fd_heap_size);
 void rb_lib_loop(long delay);
 
 time_t rb_current_time(void);

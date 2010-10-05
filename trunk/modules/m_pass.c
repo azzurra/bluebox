@@ -26,10 +26,10 @@
 
 #include "stdinc.h"
 #include "struct.h"
-#include "client.h"		/* client struct */
+#include "client.h"     /* client struct */
 #include "match.h"
-#include "send.h"		/* sendto_one */
-#include "ircd.h"		/* me */
+#include "send.h"       /* sendto_one */
+#include "ircd.h"       /* me */
 #include "parse.h"
 #include "modules.h"
 #include "s_serv.h"
@@ -38,8 +38,8 @@
 static int mr_pass(struct Client *, struct Client *, int, const char **);
 
 struct Message pass_msgtab = {
-	"PASS", 0, 0, 0, MFLG_SLOW | MFLG_UNREG,
-	{{mr_pass, 2}, mg_reg, mg_ignore, mg_ignore, mg_ignore, mg_reg}
+    "PASS", 0, 0, 0, MFLG_SLOW | MFLG_UNREG,
+    {{mr_pass, 2}, mg_reg, mg_ignore, mg_ignore, mg_ignore, mg_reg}
 };
 
 mapi_clist_av1 pass_clist[] = { &pass_msgtab, NULL };
@@ -59,41 +59,41 @@ DECLARE_MODULE_AV1(pass, NULL, NULL, pass_clist, NULL, NULL, "$Revision: 26094 $
 static int
 mr_pass(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	if(client_p->localClient->passwd)
-	{
-		memset(client_p->localClient->passwd, 0, strlen(client_p->localClient->passwd));
-		rb_free(client_p->localClient->passwd);
-	}
+    if (client_p->localClient->passwd)
+    {
+        memset(client_p->localClient->passwd, 0, strlen(client_p->localClient->passwd));
+        rb_free(client_p->localClient->passwd);
+    }
 
-	client_p->localClient->passwd = rb_strndup(parv[1], PASSWDLEN);
+    client_p->localClient->passwd = rb_strndup(parv[1], PASSWDLEN);
 
-	if(parc > 2)
-	{
-		/* 
-		 * It looks to me as if orabidoo wanted to have more
-		 * than one set of option strings possible here...
-		 * i.e. ":AABBTS" as long as TS was the last two chars
-		 * however, as we are now using CAPAB, I think we can
-		 * safely assume if there is a ":TS" then its a TS server
-		 * -Dianora
-		 */
-		if(irccmp(parv[2], "TS") == 0 && client_p->tsinfo == 0)
-			client_p->tsinfo = TS_DOESTS;
+    if (parc > 2)
+    {
+        /*
+         * It looks to me as if orabidoo wanted to have more
+         * than one set of option strings possible here...
+         * i.e. ":AABBTS" as long as TS was the last two chars
+         * however, as we are now using CAPAB, I think we can
+         * safely assume if there is a ":TS" then its a TS server
+         * -Dianora
+         */
+        if (irccmp(parv[2], "TS") == 0 && client_p->tsinfo == 0)
+            client_p->tsinfo = TS_DOESTS;
 
-		/* kludge, if we're not using ts6, dont ever mark a server
-		 * as TS6 capable, that way we'll never send them TS6 data.
-		 */
-		if(parc == 5 && atoi(parv[3]) >= 6)
-		{
-			/* only mark as TS6 if the SID is valid.. */
-			if(IsDigit(parv[4][0]) && IsIdChar(parv[4][1]) &&
-			   IsIdChar(parv[4][2]) && parv[4][3] == '\0')
-			{
-				client_p->localClient->caps |= CAP_TS6;
-				strcpy(client_p->id, parv[4]);
-			}
-		}
-	}
+        /* kludge, if we're not using ts6, dont ever mark a server
+         * as TS6 capable, that way we'll never send them TS6 data.
+         */
+        if (parc == 5 && atoi(parv[3]) >= 6)
+        {
+            /* only mark as TS6 if the SID is valid.. */
+            if (IsDigit(parv[4][0]) && IsIdChar(parv[4][1]) &&
+                    IsIdChar(parv[4][2]) && parv[4][3] == '\0')
+            {
+                client_p->localClient->caps |= CAP_TS6;
+                strcpy(client_p->id, parv[4]);
+            }
+        }
+    }
 
-	return 0;
+    return 0;
 }

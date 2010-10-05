@@ -38,12 +38,12 @@ static int m_error(struct Client *, struct Client *, int, const char **);
 static int ms_error(struct Client *, struct Client *, int, const char **);
 
 struct Message error_msgtab = {
-	"ERROR", 0, 0, 0, MFLG_SLOW | MFLG_UNREG,
-	{{m_error, 0}, mg_ignore, mg_ignore, {ms_error, 0}, mg_ignore, mg_ignore}
+    "ERROR", 0, 0, 0, MFLG_SLOW | MFLG_UNREG,
+    {{m_error, 0}, mg_ignore, mg_ignore, {ms_error, 0}, mg_ignore, mg_ignore}
 };
 
 mapi_clist_av1 error_clist[] = {
-	&error_msgtab, NULL
+    &error_msgtab, NULL
 };
 
 DECLARE_MODULE_AV1(error, NULL, NULL, error_clist, NULL, NULL, "$Revision: 26120 $");
@@ -60,65 +60,65 @@ DECLARE_MODULE_AV1(error, NULL, NULL, error_clist, NULL, NULL, "$Revision: 26120
 int
 m_error(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	const char *para;
-	para = (parc > 1 && *parv[1] != '\0') ? parv[1] : "<>";
+    const char *para;
+    para = (parc > 1 && *parv[1] != '\0') ? parv[1] : "<>";
 
-	if(IsAnyServer(client_p))
-	{
-		ilog(L_SERVER, "Received ERROR message from %s: %s",
-		     log_client_name(source_p, SHOW_IP), para);
-	}
+    if (IsAnyServer(client_p))
+    {
+        ilog(L_SERVER, "Received ERROR message from %s: %s",
+             log_client_name(source_p, SHOW_IP), para);
+    }
 
-	if(IsAnyServer(client_p) && ConfigFileEntry.hide_error_messages < 2)
-	{
-		sendto_realops_flags(UMODE_ALL, L_ADMIN,
-				     "ERROR :from %s -- %s",
-				     EmptyString(client_p->name) ? "" : client_p->name, para);
+    if (IsAnyServer(client_p) && ConfigFileEntry.hide_error_messages < 2)
+    {
+        sendto_realops_flags(UMODE_ALL, L_ADMIN,
+                             "ERROR :from %s -- %s",
+                             EmptyString(client_p->name) ? "" : client_p->name, para);
 
-		if(!ConfigFileEntry.hide_error_messages)
-			sendto_realops_flags(UMODE_ALL, L_OPER,
-					     "ERROR :from %s -- %s",
-					     EmptyString(client_p->name) ? "" : client_p->name,
-					     para);
-	}
+        if (!ConfigFileEntry.hide_error_messages)
+            sendto_realops_flags(UMODE_ALL, L_OPER,
+                                 "ERROR :from %s -- %s",
+                                 EmptyString(client_p->name) ? "" : client_p->name,
+                                 para);
+    }
 
-	exit_client(client_p, source_p, source_p, "ERROR");
+    exit_client(client_p, source_p, source_p, "ERROR");
 
-	return 0;
+    return 0;
 }
 
 static int
 ms_error(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	const char *para;
+    const char *para;
 
-	para = (parc > 1 && *parv[1] != '\0') ? parv[1] : "<>";
+    para = (parc > 1 && *parv[1] != '\0') ? parv[1] : "<>";
 
-	ilog(L_SERVER, "Received ERROR message from %s: %s",
-	     log_client_name(source_p, SHOW_IP), para);
+    ilog(L_SERVER, "Received ERROR message from %s: %s",
+         log_client_name(source_p, SHOW_IP), para);
 
-	if(ConfigFileEntry.hide_error_messages == 2)
-		return 0;
+    if (ConfigFileEntry.hide_error_messages == 2)
+        return 0;
 
-	if(client_p == source_p)
-	{
-		sendto_realops_flags(UMODE_ALL, L_ADMIN, "ERROR :from %s -- %s",
-				     client_p->name, para);
+    if (client_p == source_p)
+    {
+        sendto_realops_flags(UMODE_ALL, L_ADMIN, "ERROR :from %s -- %s",
+                             client_p->name, para);
 
-		if(!ConfigFileEntry.hide_error_messages)
-			sendto_realops_flags(UMODE_ALL, L_OPER,
-					     "ERROR :from %s -- %s", client_p->name, para);
-	}
-	else
-	{
-		sendto_realops_flags(UMODE_ALL, L_ADMIN, "ERROR :from %s via %s -- %s",
-				     source_p->name, client_p->name, para);
+        if (!ConfigFileEntry.hide_error_messages)
+            sendto_realops_flags(UMODE_ALL, L_OPER,
+                                 "ERROR :from %s -- %s", client_p->name, para);
+    }
+    else
+    {
+        sendto_realops_flags(UMODE_ALL, L_ADMIN, "ERROR :from %s via %s -- %s",
+                             source_p->name, client_p->name, para);
 
-		if(!ConfigFileEntry.hide_error_messages)
-			sendto_realops_flags(UMODE_ALL, L_OPER,
-					     "ERROR :from %s via %s -- %s",
-					     source_p->name, client_p->name, para);
-	}
+        if (!ConfigFileEntry.hide_error_messages)
+            sendto_realops_flags(UMODE_ALL, L_OPER,
+                                 "ERROR :from %s via %s -- %s",
+                                 source_p->name, client_p->name, para);
+    }
 
-	return 0;
+    return 0;
 }

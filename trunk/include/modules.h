@@ -31,58 +31,58 @@
 
 struct module
 {
-	char *name;
-	const char *version;
-	void *address;
-	int core;
-	int mapi_version;
-	void *mapi_header;	/* actually struct mapi_mheader_av<mapi_version>    */
+    char *name;
+    const char *version;
+    void *address;
+    int core;
+    int mapi_version;
+    void *mapi_header;  /* actually struct mapi_mheader_av<mapi_version>    */
 };
 
 struct module_path
 {
-	char path[MAXPATHLEN];
+    char path[MAXPATHLEN];
 };
 
-#define MAPI_MAGIC_HDR	0x4D410000
+#define MAPI_MAGIC_HDR  0x4D410000
 
-#define MAPI_V1		(MAPI_MAGIC_HDR | 0x1)
+#define MAPI_V1     (MAPI_MAGIC_HDR | 0x1)
 
-#define MAPI_MAGIC(x)	((x) & 0xffff0000)
-#define MAPI_VERSION(x)	((x) & 0x0000ffff)
+#define MAPI_MAGIC(x)   ((x) & 0xffff0000)
+#define MAPI_VERSION(x) ((x) & 0x0000ffff)
 
 typedef struct Message *mapi_clist_av1;
 
 typedef struct
 {
-	const char *hapi_name;
-	int *hapi_id;
+    const char *hapi_name;
+    int *hapi_id;
 } mapi_hlist_av1;
 
 typedef struct
 {
-	const char *hapi_name;
-	void (*hookfn) (void *);
+    const char *hapi_name;
+    void (*hookfn) (void *);
 } mapi_hfn_list_av1;
 
 struct mapi_mheader_av1
 {
-	int mapi_version;	/* Module API version           */
-	int (*mapi_register) (void);	/* Register function;
-					   ret -1 = failure (unload)    */
-	void (*mapi_unregister) (void);	/* Unregister function.         */
-	mapi_clist_av1 *mapi_command_list;	/* List of commands to add.     */
-	mapi_hlist_av1 *mapi_hook_list;	/* List of hooks to add.        */
-	mapi_hfn_list_av1 *mapi_hfn_list;	/* List of hook_add_hook's to do */
-	const char *mapi_module_version;	/* Module's version (freeform)  */
+    int mapi_version;                   /* Module API version           */
+    int (*mapi_register) (void);        /* Register function;
+                                           ret -1 = failure (unload)    */
+    void (*mapi_unregister) (void);     /* Unregister function.         */
+    mapi_clist_av1 *mapi_command_list;  /* List of commands to add.     */
+    mapi_hlist_av1 *mapi_hook_list;     /* List of hooks to add.        */
+    mapi_hfn_list_av1 *mapi_hfn_list;   /* List of hook_add_hook's to do */
+    const char *mapi_module_version;    /* Module's version (freeform)  */
 };
 
 #ifndef STATIC_MODULES
 # define DECLARE_MODULE_AV1(name,reg,unreg,cl,hl,hfnlist, v) \
-	struct mapi_mheader_av1 _mheader = { MAPI_V1, reg, unreg, cl, hl, hfnlist, v}
+    struct mapi_mheader_av1 _mheader = { MAPI_V1, reg, unreg, cl, hl, hfnlist, v}
 #else
 # define DECLARE_MODULE_AV1(name,reg,unreg,cl,hl,hfnlist, v) \
-	struct mapi_mheader_av1 m_ ## name ## _mheader = { MAPI_V1, reg, unreg, cl, hl, hfnlist, v}
+    struct mapi_mheader_av1 m_ ## name ## _mheader = { MAPI_V1, reg, unreg, cl, hl, hfnlist, v}
 void load_static_modules(void);
 #endif
 

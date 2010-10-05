@@ -24,7 +24,7 @@
  */
 
 #include "setup.h"
-#include "config.h"		/* Gotta pull in the autoconf stuff */
+#include "config.h"     /* Gotta pull in the autoconf stuff */
 
 /* we include common.h and ircd_defs.h down at bottom */
 
@@ -43,7 +43,7 @@
 #   ifdef _AIX
 #pragma alloca
 #   else
-#    ifndef alloca		/* predefined by HP cc +Olibcalls */
+#    ifndef alloca      /* predefined by HP cc +Olibcalls */
 char *alloca();
 #    endif
 #   endif
@@ -173,7 +173,7 @@ extern int errno;
 #if defined(__INTEL_COMPILER) || defined(__GNUC__)
 # define LOCAL_COPY(s) __extension__({ char *_s = alloca(strlen(s) + 1); strcpy(_s, s); _s; })
 #else
-# define LOCAL_COPY(s) strcpy(alloca(strlen(s) + 1), s)	/* XXX Is that allowed? */
+# define LOCAL_COPY(s) strcpy(alloca(strlen(s) + 1), s) /* XXX Is that allowed? */
 #endif /* defined(__INTEL_COMPILER) || defined(__GNUC__) */
 #endif /* strdupa */
 
@@ -188,15 +188,15 @@ extern int errno;
 INLINE_FUNC size_t
 xc_strlcpy(char *dest, const char *src, size_t size)
 {
-	size_t ret = strlen(src);
+    size_t ret = strlen(src);
 
-	if(size)
-	{
-		size_t len = (ret >= size) ? size - 1 : ret;
-		memcpy(dest, src, len);
-		dest[len] = '\0';
-	}
-	return dest;
+    if (size)
+    {
+        size_t len = (ret >= size) ? size - 1 : ret;
+        memcpy(dest, src, len);
+        dest[len] = '\0';
+    }
+    return dest;
 }
 #endif /* defined(__INTEL_COMPILER) || defined(__GNUC__) */
 #endif /* strndupa */

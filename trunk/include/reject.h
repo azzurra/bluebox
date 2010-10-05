@@ -27,7 +27,7 @@
 #define INCLUDED_reject_h
 
 /* amount of time to delay a rejected clients exit */
-#define DELAYED_EXIT_TIME	10
+#define DELAYED_EXIT_TIME   10
 
 void init_reject(void);
 int check_reject(rb_fde_t *F, struct sockaddr *addr);

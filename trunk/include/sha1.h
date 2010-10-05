@@ -33,15 +33,15 @@
 #ifndef INCLUDED_sha1_h
 #define INCLUDED_sha1_h
 
-#define	SHA1_BLOCK_LENGTH		64
-#define	SHA1_DIGEST_LENGTH		20
+#define SHA1_BLOCK_LENGTH       64
+#define SHA1_DIGEST_LENGTH      20
 
 typedef struct {
-	uint32_t	state[5];
-	uint64_t	count;
-	unsigned char	buffer[SHA1_BLOCK_LENGTH];
+    uint32_t        state[5];
+    uint64_t        count;
+    unsigned char   buffer[SHA1_BLOCK_LENGTH];
 } SHA1_CTX;
-  
+
 void SHA1Init(SHA1_CTX * context);
 void SHA1Transform(uint32_t state[5], const unsigned char buffer[SHA1_BLOCK_LENGTH]);
 void SHA1Update(SHA1_CTX *context, const unsigned char *data, unsigned int len);

@@ -34,23 +34,23 @@ void cleanup_glines(void *unused);
 
 typedef struct gline_pending
 {
-	char oper_nick1[NICKLEN + 1];
-	char oper_user1[USERLEN + 1];
-	char oper_host1[HOSTLEN + 1];
-	const char *oper_server1;	/* point to scache */
-	char *reason1;
-	time_t time_request1;
+    char oper_nick1[NICKLEN + 1];
+    char oper_user1[USERLEN + 1];
+    char oper_host1[HOSTLEN + 1];
+    const char *oper_server1;   /* point to scache */
+    char *reason1;
+    time_t time_request1;
 
-	char oper_nick2[NICKLEN + 1];
-	char oper_user2[USERLEN + 1];
-	char oper_host2[HOSTLEN + 1];
-	const char *oper_server2;	/* point to scache */
-	char *reason2;
-	time_t time_request2;
+    char oper_nick2[NICKLEN + 1];
+    char oper_user2[USERLEN + 1];
+    char oper_host2[HOSTLEN + 1];
+    const char *oper_server2;   /* point to scache */
+    char *reason2;
+    time_t time_request2;
 
-	time_t last_gline_time;	/* for expiring entry */
-	char user[USERLEN + 1];
-	char host[HOSTLEN + 1];
+    time_t last_gline_time; /* for expiring entry */
+    char user[USERLEN + 1];
+    char host[HOSTLEN + 1];
 }
 gline_pending_t;
 
