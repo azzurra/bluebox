@@ -7,6 +7,15 @@
 #ifndef INCLUDED_HOOK_H
 #define INCLUDED_HOOK_H
 
+typedef enum
+{
+    HPRIO_LOWEST,
+    HPRIO_LOW,
+    HPRIO_NORMAL,
+    HPRIO_HIGH,
+    HPRIO_HIGHEST
+} hook_priority;
+
 typedef struct
 {
     char *name;
@@ -26,7 +35,7 @@ extern int h_server_introduced;
 
 void init_hook(void);
 int register_hook(const char *name);
-void add_hook(const char *name, hookfn fn);
+void add_hook(const char *name, hookfn fn, hook_priority prio);
 void remove_hook(const char *name, hookfn fn);
 void call_hook(int id, void *arg);
 

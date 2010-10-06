@@ -122,14 +122,6 @@ void
 modules_init(void)
 {
 #ifndef STATIC_MODULES
-#if 0
-    if (lt_dlinit())
-    {
-        ilog(L_MAIN, "lt_dlinit failed");
-        exit(0);
-    }
-#endif
-
     modlist = rb_malloc(sizeof(struct module) * (MODS_INCREMENT));
     mod_add_cmd(&modload_msgtab);
     mod_add_cmd(&modunload_msgtab);
@@ -590,6 +582,30 @@ unload_one_module(const char *name, int warn)
             mheader->mapi_unregister();
         break;
     }
+    case 2:
+    {
+        struct mapi_mheader_av2 *mheader = modlist[modindex]->mapi_header;
+        if (mheader->mapi_command_list)
+        {
+            struct Message **m;
+            for (m = mheader->mapi_command_list; *m; ++m)
+                mod_del_cmd(*m);
+        }
+
+        /* hook events are never removed, we simply lose the
+         * ability to call them --fl
+         */
+        if (mheader->mapi_hfn_list)
+        {
+            mapi_hfn_list_av2 *m;
+            for (m = mheader->mapi_hfn_list; m->hapi_name; ++m)
+                remove_hook(m->hapi_name, m->hookfn);
+        }
+
+        if (mheader->mapi_unregister)
+            mheader->mapi_unregister();
+        break;
+    }
     default:
         sendto_realops_flags(UMODE_ALL, L_ALL,
                              "Unknown/unsupported MAPI version %d when unloading %s!",
@@ -599,9 +615,6 @@ unload_one_module(const char *name, int warn)
         break;
     }
 
-#if 0
-    lt_dlclose(modlist[modindex]->address);
-#endif
     dlclose(modlist[modindex]->address);
 
     rb_free(modlist[modindex]->name);
@@ -631,9 +644,6 @@ unload_one_module(const char *name, int warn)
 int
 load_a_module(const char *path, int warn, int core)
 {
-#if 0
-    lt_dlhandle tmpptr = NULL;
-#endif
     void *tmpptr = NULL;
 
     char *mod_basename;
@@ -643,16 +653,10 @@ load_a_module(const char *path, int warn, int core)
     int *mapi_version;
 
     mod_basename = rb_basename(path);
-#if 0
-    tmpptr = lt_dlopen(path);
-#endif
     tmpptr = dlopen(path, RTLD_LAZY);
 
     if (tmpptr == NULL)
     {
-#if 0
-        const char *err = lt_dlerror();
-#endif
         const char *err = dlerror();
 
         sendto_realops_flags(UMODE_ALL, L_ALL,
@@ -668,15 +672,9 @@ load_a_module(const char *path, int warn, int core)
      * as a single int in order to determine the API version.
      *      -larne.
      */
-#if 0
-    mapi_base = lt_dlsym(tmpptr, "_mheader");
-#endif
     mapi_base = dlsym(tmpptr, "_mheader");
     if (mapi_base == NULL)
     {
-#if 0
-        mapi_base = lt_dlsym(tmpptr, "__mheader");
-#endif
         mapi_base = dlsym(tmpptr, "__mheader");
     }
 
@@ -688,9 +686,6 @@ load_a_module(const char *path, int warn, int core)
                              "Data format error: module %s has no MAPI header.",
                              mod_basename);
         ilog(L_MAIN, "Data format error: module %s has no MAPI header.", mod_basename);
-#if 0
-        lt_dlclose(tmpptr);
-#endif
         dlclose(tmpptr);
         rb_free(mod_basename);
         return -1;
@@ -708,9 +703,6 @@ load_a_module(const char *path, int warn, int core)
             sendto_realops_flags(UMODE_ALL, L_ALL,
                                  "Module %s indicated failure during load.",
                                  mod_basename);
-#if 0
-            lt_dlclose(tmpptr);
-#endif
             dlclose(tmpptr);
             rb_free(mod_basename);
             return -1;
@@ -733,7 +725,45 @@ load_a_module(const char *path, int warn, int core)
         {
             mapi_hfn_list_av1 *m;
             for (m = mheader->mapi_hfn_list; m->hapi_name; ++m)
-                add_hook(m->hapi_name, m->hookfn);
+                add_hook(m->hapi_name, m->hookfn, HPRIO_NORMAL);
+        }
+
+        ver = mheader->mapi_module_version;
+        break;
+    }
+    case 2:
+    {
+        struct mapi_mheader_av2 *mheader = mapi_base;   /* see above */
+        if (mheader->mapi_register && (mheader->mapi_register() == -1))
+        {
+            ilog(L_MAIN, "Module %s indicated failure during load.",
+                 mod_basename);
+            sendto_realops_flags(UMODE_ALL, L_ALL,
+                                 "Module %s indicated failure during load.",
+                                 mod_basename);
+            dlclose(tmpptr);
+            rb_free(mod_basename);
+            return -1;
+        }
+        if (mheader->mapi_command_list)
+        {
+            struct Message **m;
+            for (m = mheader->mapi_command_list; *m; ++m)
+                mod_add_cmd(*m);
+        }
+
+        if (mheader->mapi_hook_list)
+        {
+            mapi_hlist_av2 *m;
+            for (m = mheader->mapi_hook_list; m->hapi_name; ++m)
+                *m->hapi_id = register_hook(m->hapi_name);
+        }
+
+        if (mheader->mapi_hfn_list)
+        {
+            mapi_hfn_list_av2 *m;
+            for (m = mheader->mapi_hfn_list; m->hapi_name; ++m)
+                add_hook(m->hapi_name, m->hookfn, m->priority);
         }
 
         ver = mheader->mapi_module_version;
@@ -746,9 +776,6 @@ load_a_module(const char *path, int warn, int core)
         sendto_realops_flags(UMODE_ALL, L_ALL,
                              "Module %s has unknown/unsupported MAPI version %d.",
                              mod_basename, *mapi_version);
-#if 0
-        lt_dlclose(tmpptr);
-#endif
         dlclose(tmpptr);
         rb_free(mod_basename);
         return -1;
@@ -847,7 +874,41 @@ load_static_modules(void)
             {
                 mapi_hfn_list_av1 *m;
                 for (m = mheader->mapi_hfn_list; m->hapi_name; ++m)
-                    add_hook(m->hapi_name, m->hookfn);
+                    add_hook(m->hapi_name, m->hookfn, HPRIO_NORMAL);
+
+            }
+            break;
+        }
+        case 2:
+        {
+            const struct mapi_mheader_av2 *mheader =
+                (const struct mapi_mheader_av2 *)mapi_version;
+            if (mheader->mapi_register && (mheader->mapi_register() == -1))
+            {
+                ilog(L_MAIN,
+                     "Error: linked in module failed loading..giving up");
+                exit(70);
+            }
+
+            if (mheader->mapi_command_list)
+            {
+                struct Message **m;
+                for (m = mheader->mapi_command_list; *m; ++m)
+                    mod_add_cmd(*m);
+            }
+
+            if (mheader->mapi_hook_list)
+            {
+                mapi_hlist_av2 *m;
+                for (m = mheader->mapi_hook_list; m->hapi_name; ++m)
+                    *m->hapi_id = register_hook(m->hapi_name);
+            }
+
+            if (mheader->mapi_hfn_list)
+            {
+                mapi_hfn_list_av2 *m;
+                for (m = mheader->mapi_hfn_list; m->hapi_name; ++m)
+                    add_hook(m->hapi_name, m->hookfn, m->priority);
 
             }
             break;

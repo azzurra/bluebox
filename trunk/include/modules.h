@@ -47,9 +47,12 @@ struct module_path
 #define MAPI_MAGIC_HDR  0x4D410000
 
 #define MAPI_V1     (MAPI_MAGIC_HDR | 0x1)
+#define MAPI_V2     (MAPI_MAGIC_HDR | 0x2)
 
 #define MAPI_MAGIC(x)   ((x) & 0xffff0000)
 #define MAPI_VERSION(x) ((x) & 0x0000ffff)
+
+/* MAPI_V1 */
 
 typedef struct Message *mapi_clist_av1;
 
@@ -77,12 +80,40 @@ struct mapi_mheader_av1
     const char *mapi_module_version;    /* Module's version (freeform)  */
 };
 
+/* MAPI_V2 */
+
+typedef mapi_clist_av1 mapi_clist_av2;
+typedef mapi_hlist_av1 mapi_hlist_av2;
+
+typedef struct
+{
+    const char *hapi_name;
+    void (*hookfn) (void *);
+    int priority;
+} mapi_hfn_list_av2;
+
+struct mapi_mheader_av2
+{
+    int mapi_version;                   /* Module API version           */
+    int (*mapi_register) (void);        /* Register function;
+                                           ret -1 = failure (unload)    */
+    void (*mapi_unregister) (void);     /* Unregister function.         */
+    mapi_clist_av2 *mapi_command_list;  /* List of commands to add.     */
+    mapi_hlist_av2 *mapi_hook_list;     /* List of hooks to add.        */
+    mapi_hfn_list_av2 *mapi_hfn_list;   /* List of hook_add_hook's to do */
+    const char *mapi_module_version;    /* Module's version (freeform)  */
+};
+
 #ifndef STATIC_MODULES
 # define DECLARE_MODULE_AV1(name,reg,unreg,cl,hl,hfnlist, v) \
     struct mapi_mheader_av1 _mheader = { MAPI_V1, reg, unreg, cl, hl, hfnlist, v}
+# define DECLARE_MODULE_AV2(name,reg,unreg,cl,hl,hfnlist, v) \
+    struct mapi_mheader_av2 _mheader = { MAPI_V2, reg, unreg, cl, hl, hfnlist, v}
 #else
 # define DECLARE_MODULE_AV1(name,reg,unreg,cl,hl,hfnlist, v) \
     struct mapi_mheader_av1 m_ ## name ## _mheader = { MAPI_V1, reg, unreg, cl, hl, hfnlist, v}
+# define DECLARE_MODULE_AV2(name,reg,unreg,cl,hl,hfnlist, v) \
+    struct mapi_mheader_av2 m_ ## name ## _mheader = { MAPI_V2, reg, unreg, cl, hl, hfnlist, v}
 void load_static_modules(void);
 #endif
 

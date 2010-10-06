@@ -45,6 +45,7 @@ struct hook_info
 {
     rb_dlink_node node;
     hookfn fn;
+    hook_priority prio;
 };
 
 hook *hooks;
@@ -165,15 +166,28 @@ register_hook(const char *name)
  *   needed.
  */
 void
-add_hook(const char *name, hookfn fn)
+add_hook(const char *name, hookfn fn, hook_priority prio)
 {
-    struct hook_info *info;
+    struct hook_info *info, *info_p;
+    rb_dlink_node *ptr, *next;
     int i;
 
     i = register_hook(name);
     info = rb_malloc(sizeof(struct hook_info));
     info->fn = fn;
-    rb_dlinkAdd(info, &info->node, &hooks[i].hooks);
+    info->prio = prio;
+    /* Insert hook handler sorting by priority */
+    RB_DLINK_FOREACH_SAFE(ptr, next, hooks[i].hooks.head)
+    {
+        info_p = ptr->data;
+        if (info->prio >= info_p->prio)
+        {
+            rb_dlinkAddBefore(ptr, info, &info->node, &hooks[i].hooks);
+            return;
+        }
+    }
+    /* Empty list or lowest priority */
+    rb_dlinkAddTail(info, &info->node, &hooks[i].hooks);
 }
 
 /* remove_hook()

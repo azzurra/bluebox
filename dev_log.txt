@@ -22,3 +22,10 @@ Nel conf di default mancava cconnext in general{oper_only_umodes}.
    (ancora da riformattare: bandb, tools, ssld, resolver).
  * Spamfilter preliminare (da testare). Prossima mossa: aggiungere le priorita` agli hook,
    quindi version bump dell'API per i moduli (argh!).
+2010/10/06 (morph):
+ * hook.c: aggiunto il sorting in base alla priorita' (LOWEST, LOW, NORMAL, HIGH, HIGHEST).
+ * Ogni hook function registrata da un modulo MAPI_V1 ha priorita' NORMAL.
+ * Habemus MAPI_V2: praticamente identica a MAPI_V1, eccezion fatta per la lista delle hook function
+   in cui deve essere specificata la priorita' di ogni handler (si veda modules/m_spam.c per un esempio).
+ !!! NOTA BENE !!!: Entrambi le MAPI sono attualmente supportate nel loader, e' consigliabile usare MAPI_V2
+   per i nuovi moduli, ma NON e' strettamente necessario convertire i moduli preesistenti (anzi...).

@@ -85,22 +85,22 @@ struct Message bspam_msgtab = {
     {mg_ignore, mg_ignore, mg_ignore, mg_ignore, {me_bspam, 5}, mg_ignore}
 };
 
-mapi_clist_av1 spam_clist[] = {
+mapi_clist_av2 spam_clist[] = {
     &spam_msgtab,
     &unspam_msgtab,
     &bspam_msgtab,
     NULL
 };
 
-mapi_hfn_list_av1 spam_hfnlist[] = {
-    {"burst_finished", (hookfn) h_spam_burst_finished},
-    {"doing_stats", (hookfn) h_spam_stats},
-    {"client_message", (hookfn) h_spam_client_message},
-    {"channel_message", (hookfn) h_spam_channel_message},
+mapi_hfn_list_av2 spam_hfnlist[] = {
+    {"burst_finished", (hookfn) h_spam_burst_finished, HPRIO_NORMAL},
+    {"doing_stats", (hookfn) h_spam_stats, HPRIO_NORMAL},
+    {"client_message", (hookfn) h_spam_client_message, HPRIO_HIGH},
+    {"channel_message", (hookfn) h_spam_channel_message, HPRIO_HIGH},
     {NULL, NULL}
 };
 
-DECLARE_MODULE_AV1(spam, NULL, NULL, spam_clist, NULL, spam_hfnlist, "0.1");
+DECLARE_MODULE_AV2(spam, NULL, NULL, spam_clist, NULL, spam_hfnlist, "0.2");
 
 static int
 me_spam(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
