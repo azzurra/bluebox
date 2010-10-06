@@ -42,17 +42,6 @@
 #ifndef STATIC_MODULES
 
 #include <dlfcn.h>
-//#include "ltdl.h"
-#if 0
-#define lt_dlclose dlclose
-#define lt_dlopen dlopen
-#define lt_dlerror dlerror
-#define lt_dlsym dlsym
-
-int lt_dlinit() {
-    return 0;
-}
-#endif
 
 struct module **modlist = NULL;
 static char unknown_ver[] = "<unknown>";
@@ -296,7 +285,7 @@ load_core_modules(int warn)
     if (core_dir == NULL)
     {
         ilog(L_MAIN,
-             "Cannot find where core modules are located(tried %s and %s): terminating ircd",
+             "Cannot find where core modules are located (tried %s and %s): terminating ircd",
              MODPATH, dir_name);
         exit(0);
     }

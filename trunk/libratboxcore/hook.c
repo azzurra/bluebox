@@ -41,13 +41,6 @@
 #include "hook.h"
 #include "match.h"
 
-struct hook_info
-{
-    rb_dlink_node node;
-    hookfn fn;
-    hook_priority prio;
-};
-
 hook *hooks;
 
 #define HOOK_INCREMENT 10

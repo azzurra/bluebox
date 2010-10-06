@@ -24,6 +24,13 @@ typedef struct
 
 typedef void (*hookfn) (void *data);
 
+struct hook_info
+{
+    rb_dlink_node node;
+    hookfn fn;
+    hook_priority prio;
+};
+
 extern int h_iosend_id;
 extern int h_iorecv_id;
 extern int h_iorecvctrl_id;
