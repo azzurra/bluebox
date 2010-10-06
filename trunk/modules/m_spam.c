@@ -97,7 +97,7 @@ mapi_hfn_list_av2 spam_hfnlist[] = {
     {"doing_stats", (hookfn) h_spam_stats, HPRIO_NORMAL},
     {"client_message", (hookfn) h_spam_client_message, HPRIO_HIGH},
     {"channel_message", (hookfn) h_spam_channel_message, HPRIO_HIGH},
-    {NULL, NULL}
+    {NULL, NULL, 0}
 };
 
 DECLARE_MODULE_AV2(spam, NULL, NULL, spam_clist, NULL, spam_hfnlist, "0.2");
