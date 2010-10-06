@@ -80,14 +80,14 @@ mo_hdump(struct Client *client_p, struct Client *source_p, int parc, const char 
 
     /* Command can only be used by local admins */
     if (!IsOperAdmin(source_p))
-	{
+    {
         sendto_one_numeric(source_p, ERR_NOPRIVILEGES, form_str(ERR_NOPRIVILEGES));
         return 0;
-	}
+    }
 	
     SetCork(source_p);
 
-	if (parc < 2 || EmptyString(parv[1]))
+    if (parc < 2 || EmptyString(parv[1]))
         dump_all_hooks(source_p);
     else
         dump_single_hook(source_p, parv[1]);
