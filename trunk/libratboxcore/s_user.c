@@ -84,14 +84,15 @@ static struct flag_item user_modes[] = {
     {UMODE_SPAMNOTICE,  'm'},
     {UMODE_NCHANGE,     'n'},
     {UMODE_OPER,        'o'},
-    {UMODE_REJ,     'r'},
+    {UMODE_ILIKESPAM    'q'},
+    {UMODE_REJ,         'r'},
     {UMODE_REGONLY,     'R'},
     {UMODE_SERVNOTICE,  's'},
     {UMODE_SERVICE,     'S'},
     {UMODE_UNAUTH,      'u'},
     {UMODE_WALLOP,      'w'},
     {UMODE_CRYPTHOST,   'x'},
-    {UMODE_SPY,     'y'},
+    {UMODE_SPY,         'y'},
     {UMODE_OPERWALL,    'z'},
     {UMODE_OPERSPY,     'Z'},
     {0, 0}
@@ -103,61 +104,61 @@ int user_modes_from_c_to_bitmask[] = {
     /* 0x10 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 0x1F */
     /* 0x20 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 0x2F */
     /* 0x30 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 0x3F */
-    0,          /* @ */
-    0,          /* A */
-    0,          /* B */
+    0,                  /* @ */
+    0,                  /* A */
+    0,                  /* B */
     UMODE_CCONNEXT,     /* C */
-    UMODE_DEAF,     /* D */
+    UMODE_DEAF,         /* D */
     UMODE_EXTERNAL,     /* E */
-    0,          /* F */
-    0,          /* G */
-    0,          /* H */
+    0,                  /* F */
+    0,                  /* G */
+    0,                  /* H */
     UMODE_NOIDLE,       /* I */
-    0,          /* J */
-    0,          /* K */
-    0,          /* L */
-    0,          /* M */
-    0,          /* N */
-    0,          /* O */
-    0,          /* P */
-    0,          /* Q */
+    0,                  /* J */
+    0,                  /* K */
+    0,                  /* L */
+    0,                  /* M */
+    0,                  /* N */
+    0,                  /* O */
+    0,                  /* P */
+    0,                  /* Q */
     UMODE_REGONLY,      /* R */
     UMODE_SERVICE,      /* S */
-    0,          /* T */
-    0,          /* U */
-    0,          /* V */
-    0,          /* W */
-    0,          /* X */
-    0,          /* Y */
+    0,                  /* T */
+    0,                  /* U */
+    0,                  /* V */
+    0,                  /* W */
+    0,                  /* X */
+    0,                  /* Y */
     UMODE_OPERSPY,      /* Z */
     /* 0x5B */ 0, 0, 0, 0, 0, 0, /* 0x60 */
     UMODE_ADMIN,        /* a */
-    UMODE_BOTS,     /* b */
+    UMODE_BOTS,         /* b */
     UMODE_CCONN,        /* c */
     UMODE_DEBUG,        /* d */
-    0,          /* e */
-    UMODE_FULL,     /* f */
+    0,                  /* e */
+    UMODE_FULL,         /* f */
     UMODE_CALLERID,     /* g */
     UMODE_HELPOP,       /* h */
     UMODE_INVISIBLE,    /* i */
-    0,          /* j */
+    0,                  /* j */
     UMODE_SKILL,        /* k */
     UMODE_LOCOPS,       /* l */
     UMODE_SPAMNOTICE,   /* m */
     UMODE_NCHANGE,      /* n */
-    UMODE_OPER,     /* o */
-    0,          /* p */
-    0,          /* q */
-    UMODE_REJ,      /* r */
+    UMODE_OPER,         /* o */
+    0,                  /* p */
+    UMODE_ILIKESPAM,    /* q */
+    UMODE_REJ,          /* r */
     UMODE_SERVNOTICE,   /* s */
-    0,          /* t */
+    0,                  /* t */
     UMODE_UNAUTH,       /* u */
-    0,          /* v */
+    0,                  /* v */
     UMODE_WALLOP,       /* w */
     UMODE_CRYPTHOST,    /* x */
-    UMODE_SPY,      /* y */
+    UMODE_SPY,          /* y */
     UMODE_OPERWALL,     /* z */
-    /* 0x7B */ 0, 0, 0, 0, 0, /* 0x7F */
+    /* 0x7B */ 0, 0, 0, 0, 0,                                  /* 0x7F */
     /* 0x80 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 0x9F */
     /* 0x90 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 0x9F */
     /* 0xA0 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* 0xAF */

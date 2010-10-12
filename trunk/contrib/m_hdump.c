@@ -70,7 +70,7 @@ extern int max_hooks;
 extern struct module **modlist;
 extern int num_mods;
 
-DECLARE_MODULE_AV2(m_hdump, NULL, NULL, hdump_clist, NULL, NULL, "0.1");
+DECLARE_MODULE_AV2(hdump, NULL, NULL, hdump_clist, NULL, NULL, "0.1");
 
 static int
 mo_hdump(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])

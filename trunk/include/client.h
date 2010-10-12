@@ -149,6 +149,7 @@ struct LocalUser;
 #define FLAGS_EXEMPTSPAMBOT     0x01000000
 #define FLAGS_EXEMPTSHIDE       0x02000000
 #define FLAGS_EXEMPTJUPE        0x04000000
+#define FLAGS_SHUNNED           0x08000000  /* user is shunned */
 
 /* flags for local clients, this needs stuff moved from above to here at some point */
 #define LFLAGS_SSL              0x00000001
@@ -187,6 +188,7 @@ struct LocalUser;
 #define UMODE_CRYPTHOST    0x1000000    /* User is masking their hostname */
 #define UMODE_HELPOP       0x2000000    /* User is a help operator */
 #define UMODE_SPAMNOTICE   0x4000000    /* Operator can receive spam notices */
+#define UMODE_ILIKESPAM    0x8000000    /* User wants to opt out from spam filtering */
 
 #define UMODE_ALL          UMODE_SERVNOTICE
 
@@ -196,7 +198,7 @@ struct LocalUser;
 #define SEND_UMODES  (UMODE_INVISIBLE | UMODE_OPER | UMODE_WALLOP | \
               UMODE_ADMIN | UMODE_SERVICE | UMODE_DEAF | \
               UMODE_NOIDLE | UMODE_REGONLY | UMODE_CRYPTHOST | \
-              UMODE_SPY | UMODE_HELPOP)
+              UMODE_SPY | UMODE_HELPOP | UMODE_ILIKESPAM)
 #define DEFAULT_OPER_UMODES (UMODE_SERVNOTICE | UMODE_OPERWALL | \
                  UMODE_WALLOP | UMODE_LOCOPS)
 #define ALL_UMODES   (SEND_UMODES | UMODE_SERVNOTICE | UMODE_CCONN | \
@@ -235,6 +237,9 @@ struct LocalUser;
 #define IsTGChange(x)       ((x)->flags & FLAGS_TGCHANGE)
 #define SetTGChange(x)      ((x)->flags |= FLAGS_TGCHANGE)
 #define ClearTGChange(x)    ((x)->flags &= ~FLAGS_TGCHANGE)
+#define IsShunned(x)        ((x)->flags & FLAGS_SHUNNED)
+#define SetShun(x)          ((x)->flags |= FLAGS_SHUNNED)
+#define ClearShun(x)        ((x)->flags &= ~FLAGS_SHUNNED)
 
 /* local flags */
 
@@ -284,6 +289,7 @@ struct LocalUser;
 #define IsService(x)            ((x)->umodes & UMODE_SERVICE)
 #define IsDeaf(x)               ((x)->umodes & UMODE_DEAF)
 #define IsCloaked(x)            ((x)->umodes & UMODE_CRYPTHOST)
+#define ILikeSpam(x)            ((x)->umodes & UMODE_ILIKESPAM)
 
 #define SetNeedId(x)            ((x)->flags |= FLAGS_NEEDID)
 #define IsNeedId(x)             (((x)->flags & FLAGS_NEEDID) != 0)

@@ -29,3 +29,6 @@ Nel conf di default mancava cconnext in general{oper_only_umodes}.
    in cui deve essere specificata la priorita' di ogni handler (si veda modules/m_spam.c per un esempio).
  !!! NOTA BENE !!!: Entrambi le MAPI sono attualmente supportate nel loader, e' consigliabile usare MAPI_V2
    per i nuovi moduli, ma NON e' strettamente necessario convertire i moduli preesistenti (anzi...).
+2010/10/13 (morph):
+ * umode +q -> disabilita lo spamfilter sui messaggi destinati all'utente. Il nome simbolico del mode
+   e' UMODE_ILIKESPAM e la macro per il check e' (ovviamente) ILikeSpam(struct Client *).

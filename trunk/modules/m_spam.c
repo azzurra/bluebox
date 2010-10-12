@@ -260,8 +260,8 @@ h_spam_client_message(hook_data_message *hdata)
     if (hdata->block)
         return;
 
-    /* TODO: skip spam filter for targets with UMODE_NOSPAM */
-    if (!IsOper(target_p) && !IsService(target_p) && (target_p != hdata->client))
+    /* Don't block messages targeted to IRC operators, services, same user or users who like being spammed */
+    if (!IsOper(target_p) && !IsService(target_p) && (target_p != hdata->client) && !ILikeSpam(target_p))
         hdata->block = check_for_spam(hdata->client, target_p->name, hdata->command, hdata->text);
     else
         hdata->block = FALSE;
