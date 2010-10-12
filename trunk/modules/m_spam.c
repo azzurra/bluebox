@@ -263,8 +263,6 @@ h_spam_client_message(hook_data_message *hdata)
     /* Don't block messages targeted to IRC operators, services, same user or users who like being spammed */
     if (!IsOper(target_p) && !IsService(target_p) && (target_p != hdata->client) && !ILikeSpam(target_p))
         hdata->block = check_for_spam(hdata->client, target_p->name, hdata->command, hdata->text);
-    else
-        hdata->block = FALSE;
 }
 
 static void
@@ -276,8 +274,9 @@ h_spam_channel_message(hook_data_message *hdata)
     if (hdata->block)
         return;
 
-    /* TODO: skip spam filter for channels with MODE_NOSPAM */
-    hdata->block = check_for_spam(hdata->client, chptr->chname, hdata->command, hdata->text);
+    /* Do they like spam? */
+    if (!SpamPlease(chptr))
+        hdata->block = check_for_spam(hdata->client, chptr->chname, hdata->command, hdata->text);
 }
 
 static int

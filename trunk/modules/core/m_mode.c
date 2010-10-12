@@ -1396,64 +1396,64 @@ struct ChannelMode
 static struct ChannelMode ModeTable[255] =
 {
     {chm_nosuch,  0, 0 },
-    {chm_nosuch,  0, 0 },             /* A */
-    {chm_nosuch,  0, 0 },             /* B */
-    {chm_nosuch,  0, 0 },             /* C */
-    {chm_nosuch,  0, 0 },             /* D */
-    {chm_nosuch,  0, 0 },             /* E */
-    {chm_nosuch,  0, 0 },             /* F */
-    {chm_nosuch,  0, 0 },             /* G */
-    {chm_nosuch,  0, 0 },             /* H */
-    {chm_ban, CHFL_INVEX, FALSE },        /* I */
-    {chm_nosuch,  0, 0 },             /* J */
-    {chm_nosuch,  0, 0 },             /* K */
-    {chm_nosuch,  0, 0 },             /* L */
-    {chm_nosuch,  0, 0 },             /* M */
-    {chm_nosuch,  0, 0 },             /* N */
-    {chm_nosuch,  0, 0 },             /* O */
-    {chm_nosuch,  0, 0 },             /* P */
-    {chm_nosuch,  0, 0 },             /* Q */
-    {chm_nosuch,  0, 0 },             /* R */
-    {chm_sslonly, MODE_SSLONLY, FALSE },      /* S */
-    {chm_nosuch,  0, 0 },             /* T */
-    {chm_nosuch,  0, 0 },             /* U */
-    {chm_nosuch,  0, 0 },             /* V */
-    {chm_nosuch,  0, 0 },             /* W */
-    {chm_nosuch,  0, 0 },             /* X */
-    {chm_nosuch,  0, 0 },             /* Y */
-    {chm_nosuch,  0, 0 },             /* Z */
+    {chm_nosuch,  0, 0 },                   /* A */
+    {chm_nosuch,  0, 0 },                   /* B */
+    {chm_nosuch,  0, 0 },                   /* C */
+    {chm_nosuch,  0, 0 },                   /* D */
+    {chm_nosuch,  0, 0 },                   /* E */
+    {chm_nosuch,  0, 0 },                   /* F */
+    {chm_nosuch,  0, 0 },                   /* G */
+    {chm_nosuch,  0, 0 },                   /* H */
+    {chm_ban,     CHFL_INVEX, FALSE },      /* I */
+    {chm_nosuch,  0, 0 },                   /* J */
+    {chm_nosuch,  0, 0 },                   /* K */
+    {chm_nosuch,  0, 0 },                   /* L */
+    {chm_nosuch,  0, 0 },                   /* M */
+    {chm_nosuch,  0, 0 },                   /* N */
+    {chm_nosuch,  0, 0 },                   /* O */
+    {chm_nosuch,  0, 0 },                   /* P */
+    {chm_nosuch,  0, 0 },                   /* Q */
+    {chm_nosuch,  0, 0 },                   /* R */
+    {chm_sslonly, MODE_SSLONLY, FALSE },    /* S */
+    {chm_nosuch,  0, 0 },                   /* T */
+    {chm_nosuch,  0, 0 },                   /* U */
+    {chm_nosuch,  0, 0 },                   /* V */
+    {chm_nosuch,  0, 0 },                   /* W */
+    {chm_nosuch,  0, 0 },                   /* X */
+    {chm_nosuch,  0, 0 },                   /* Y */
+    {chm_nosuch,  0, 0 },                   /* Z */
     {chm_nosuch,  0, 0 },
     {chm_nosuch,  0, 0 },
     {chm_nosuch,  0, 0 },
     {chm_nosuch,  0, 0 },
     {chm_nosuch,  0, 0 },
     {chm_nosuch,  0, 0 },
-    {chm_nosuch,  0, 0 },             /* a */
-    {chm_ban, CHFL_BAN, FALSE },      /* b */
-    {chm_nosuch,  0, 0 },             /* c */
-    {chm_nosuch,  0, 0 },             /* d */
-    {chm_ban, CHFL_EXCEPTION, FALSE },    /* e */
-    {chm_nosuch,  0, 0 },             /* f */
-    {chm_nosuch,  0, 0 },             /* g */
-    {chm_halfop,  0, 0 },             /* h */
-    {chm_simple,  MODE_INVITEONLY, FALSE },   /* i */
-    {chm_nosuch,  0, 0 },             /* j */
-    {chm_key, 0, 0 },             /* k */
-    {chm_limit,   0, 0 },             /* l */
-    {chm_simple,  MODE_MODERATED, TRUE },     /* m */
-    {chm_simple,  MODE_NOPRIVMSGS, TRUE },    /* n */
-    {chm_op,  0, 0 },             /* o */
-    {chm_simple,  MODE_PRIVATE, FALSE },      /* p */
-    {chm_nosuch,  0, 0 },             /* q */
-    {chm_regonly, 0, 0 },             /* r */
-    {chm_simple,  MODE_SECRET, FALSE },       /* s */
-    {chm_simple,  MODE_TOPICLIMIT, TRUE },    /* t */
-    {chm_nosuch,  0, 0 },             /* u */
-    {chm_voice,   0, 0 },             /* v */
-    {chm_nosuch,  0, 0 },             /* w */
-    {chm_nosuch,  0, 0 },             /* x */
-    {chm_nosuch,  0, 0 },             /* y */
-    {chm_nosuch,  0, 0 },             /* z */
+    {chm_nosuch,  0, 0 },                   /* a */
+    {chm_ban,     CHFL_BAN, FALSE },        /* b */
+    {chm_nosuch,  0, 0 },                   /* c */
+    {chm_nosuch,  0, 0 },                   /* d */
+    {chm_ban,     CHFL_EXCEPTION, FALSE },  /* e */
+    {chm_nosuch,  0, 0 },                   /* f */
+    {chm_nosuch,  0, 0 },                   /* g */
+    {chm_halfop,  0, 0 },                   /* h */
+    {chm_simple,  MODE_INVITEONLY, FALSE }, /* i */
+    {chm_nosuch,  0, 0 },                   /* j */
+    {chm_key,     0, 0 },                   /* k */
+    {chm_limit,   0, 0 },                   /* l */
+    {chm_simple,  MODE_MODERATED, TRUE },   /* m */
+    {chm_simple,  MODE_NOPRIVMSGS, TRUE },  /* n */
+    {chm_op,      0, 0 },                   /* o */
+    {chm_simple,  MODE_PRIVATE, FALSE },    /* p */
+    {chm_nosuch,  0, 0 },                   /* q */
+    {chm_regonly, 0, 0 },                   /* r */
+    {chm_simple,  MODE_SECRET, FALSE },     /* s */
+    {chm_simple,  MODE_TOPICLIMIT, TRUE },  /* t */
+    {chm_nosuch,  0, 0 },                   /* u */
+    {chm_voice,   0, 0 },                   /* v */
+    {chm_nosuch,  0, 0 },                   /* w */
+    {chm_simple,  MODE_SPAMPLEASE, FALSE }, /* x */
+    {chm_nosuch,  0, 0 },                   /* y */
+    {chm_nosuch,  0, 0 },                   /* z */
 };
 /* *INDENT-ON* */
 

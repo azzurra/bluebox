@@ -32,3 +32,4 @@ Nel conf di default mancava cconnext in general{oper_only_umodes}.
 2010/10/13 (morph):
  * umode +q -> disabilita lo spamfilter sui messaggi destinati all'utente. Il nome simbolico del mode
    e' UMODE_ILIKESPAM e la macro per il check e' (ovviamente) ILikeSpam(struct Client *).
+ * cmode +x -> equivalente dell'umode +q per i canali. MODE_SPAMPLEASE e SpamPlease(struct Channel *).

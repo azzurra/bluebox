@@ -151,9 +151,10 @@ struct ChCapCombo
 #define MODE_NOPRIVMSGS 0x0020
 #define MODE_REGONLY    0x0040
 #define MODE_SSLONLY    0x0080
-#define CHFL_BAN        0x0100  /* ban channel flag */
-#define CHFL_EXCEPTION  0x0200  /* exception to ban channel flag */
-#define CHFL_INVEX      0x0400
+#define MODE_SPAMPLEASE 0x0100
+#define CHFL_BAN        0x0200  /* ban channel flag */
+#define CHFL_EXCEPTION  0x0400  /* exception to ban channel flag */
+#define CHFL_INVEX      0x0800
 
 /* mode flags for direction indication */
 #define MODE_QUERY     0
@@ -164,6 +165,8 @@ struct ChCapCombo
 #define HiddenChannel(x)        ((x) && ((x)->mode.mode & MODE_PRIVATE))
 #define PubChannel(x)           ((!x) || ((x)->mode.mode &\
                                 (MODE_PRIVATE | MODE_SECRET)) == 0)
+
+#define SpamPlease(x)           ((x) && ((x)->mode.mode & MODE_SPAMPLEASE))
 
 /* channel visible */
 #define ShowChannel(v,c)        (PubChannel(c) || IsMember((v),(c)))

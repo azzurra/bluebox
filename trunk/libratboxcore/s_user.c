@@ -84,7 +84,7 @@ static struct flag_item user_modes[] = {
     {UMODE_SPAMNOTICE,  'm'},
     {UMODE_NCHANGE,     'n'},
     {UMODE_OPER,        'o'},
-    {UMODE_ILIKESPAM    'q'},
+    {UMODE_ILIKESPAM,   'q'},
     {UMODE_REJ,         'r'},
     {UMODE_REGONLY,     'R'},
     {UMODE_SERVNOTICE,  's'},

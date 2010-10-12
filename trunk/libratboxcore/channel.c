@@ -827,6 +827,8 @@ channel_modes(struct Channel *chptr, struct Client *client_p)
         *mbuf++ = 'r';
     if (chptr->mode.mode & MODE_SSLONLY)
         *mbuf++ = 'S';
+    if (chptr->mode.mode & MODE_SPAMPLEASE)
+        *mbuf++ = 'x';
 
     if (chptr->mode.limit && *chptr->mode.key)
     {
