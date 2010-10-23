@@ -85,13 +85,7 @@
 
 #include "setup.h"
 
-#ifndef _WIN32
 #include <netdb.h>
-#else
-#include "getaddrinfo.h"
-#include "getnameinfo.h"
-extern const char * get_windows_nameservers(void);
-#endif
 
 #include "res.h"
 #include "reslib.h"
@@ -126,11 +120,7 @@ static const char digitvalue[256] = {
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, /*256*/
 };
 
-#ifndef _WIN32
 static int parse_resvconf(void);
-#else
-static void parse_windows_resolvers(void);
-#endif
 static void add_nameserver(const char *);
 
 static const char digits[] = "0123456789";
@@ -157,31 +147,12 @@ int
 irc_res_init(void)
 {
   irc_nscount = 0;
-#ifndef _WIN32
   parse_resvconf();
-#else
-  parse_windows_resolvers();  
-#endif
   if (irc_nscount == 0)
     add_nameserver("127.0.0.1");
   return 0;
 }
 
-#ifdef _WIN32
-static void
-parse_windows_resolvers(void)
-{
-	const char *ns = get_windows_nameservers();
-	char *server;
-	char *p;
-	char *buf = rb_strdup(ns);
-	for(server = rb_strtok_r(buf, " ", &p); server != NULL;server = rb_strtok_r(NULL, " ", &p))
-	{
-		add_nameserver(server);	
-	}
-	rb_free(buf);
-}
-#else
 /* parse_resvconf()
  *
  * inputs - NONE
@@ -247,7 +218,6 @@ parse_resvconf(void)
   fclose(file);
   return 0;
 }
-#endif
 
 /* add_nameserver()
  *

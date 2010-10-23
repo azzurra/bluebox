@@ -39,8 +39,7 @@
  *
  * 1. mmap() anonymous pages with the MMAP_ANON flag.
  * 2. mmap() via the /dev/zero trick.
- * 3. HeapCreate/HeapAlloc (on win32)
- * 4. malloc()
+ * 3. malloc()
  *
  * The advantages of 1 and 2 are this.  We can munmap() the pages which will
  * return the pages back to the operating system, thus reducing the size
@@ -100,10 +99,6 @@ static void rb_bh_gc_event(void *unused);
 #endif /* !NOBALLOC */
 static rb_dlink_list *heap_lists;
 
-#if defined(WIN32)
-static HANDLE block_heap;
-#endif
-
 #define rb_bh_fail(x) _rb_bh_fail(x, __FILE__, __LINE__)
 
 static void
@@ -127,11 +122,7 @@ free_block(void *ptr, size_t size)
 #ifdef HAVE_MMAP
     munmap(ptr, size);
 #else
-#ifdef _WIN32
-    HeapFree(block_heap, 0, ptr);
-#else
     free(ptr);
-#endif
 #endif
 }
 #endif /* !NOBALLOC */
@@ -161,9 +152,6 @@ rb_init_bh(void)
 #endif
 
 #ifndef NOBALLOC
-#ifdef _WIN32
-    block_heap = HeapCreate(HEAP_NO_SERIALIZE, 0, 0);
-#endif
     rb_event_addish("rb_bh_gc_event", rb_bh_gc_event, NULL, 300);
 #endif /* !NOBALLOC */
 }
@@ -194,11 +182,7 @@ get_block(size_t size)
     if (ptr == MAP_FAILED)
         ptr = NULL;
 #else
-#ifdef _WIN32
-    ptr = HeapAlloc(block_heap, 0, size);
-#else
     ptr = malloc(size);
-#endif
 #endif
     return (ptr);
 }

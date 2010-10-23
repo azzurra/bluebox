@@ -838,7 +838,6 @@ stats_resv(struct Client *source_p)
 static void
 stats_usage(struct Client *source_p)
 {
-#ifndef _WIN32
     struct rusage rus;
     time_t secs;
     time_t rup;
@@ -885,7 +884,6 @@ stats_usage(struct Client *source_p)
     sendto_one_numeric(source_p, RPL_STATSDEBUG,
                        "R :Signals %ld Context Vol. %ld Invol %ld",
                        rus.ru_nsignals, rus.ru_nvcsw, rus.ru_nivcsw);
-#endif
 }
 
 static void

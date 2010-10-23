@@ -54,7 +54,6 @@ struct dns_request
 };
 
 
-#ifndef WINDOWS
 static void
 dummy_handler(int sig)
 {
@@ -66,12 +65,10 @@ rehash(int sig)
 {
 	do_rehash = 1;
 }
-#endif
 
 static void
 setup_signals()
 {
-#ifndef WINDOWS
 	struct sigaction act;
 
 	act.sa_flags = 0;
@@ -98,7 +95,6 @@ setup_signals()
 	act.sa_handler = rehash;
 	sigaddset(&act.sa_mask, SIGHUP);
 	sigaction(SIGHUP, &act, 0);
-#endif
 }
 
 static void

@@ -34,11 +34,7 @@
 #define FD_DESC_SZ 128      /* hostlen + comment */
 
 
-#ifdef _WIN32
-#define rb_get_errno() do { errno = WSAGetLastError(); WSASetLastError(errno); } while(0)
-#else
 #define rb_get_errno()
-#endif
 
 #define rb_hash_fd(x) ((x ^ (x >> RB_FD_HASH_BITS) ^ (x >> (RB_FD_HASH_BITS * 2))) & RB_FD_HASH_MASK)
 
@@ -234,10 +230,5 @@ int rb_init_netio_select(void);
 int rb_select_select(long);
 int rb_setup_fd_select(rb_fde_t *F);
 
-/* win32 versions */
-void rb_setselect_win32(rb_fde_t *F, unsigned int type, PF * handler, void *client_data);
-int rb_init_netio_win32(void);
-int rb_select_win32(long);
-int rb_setup_fd_win32(rb_fde_t *F);
 #endif
 

@@ -72,19 +72,15 @@ server_reboot(void)
      * bah, for now, the program ain't coming back to here, so forcibly
      * close everything the "wrong" way for now, and just LEAVE...
      */
-#ifndef _WIN32
     int i;
     for (i = 0; i < maxconnections; ++i)
         close(i);
-#endif
 
     unlink(pidFileName);
-#ifndef _WIN32
     int fd = open("/dev/null", O_RDWR);
     dup2(fd, 0);
     dup2(fd, 1);
     dup2(fd, 2);
-#endif
 
     execv(SPATH, (void *)myargv);
 

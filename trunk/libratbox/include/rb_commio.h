@@ -64,11 +64,7 @@ enum
 #define RB_FD_NONE              0x01
 #define RB_FD_FILE              0x02
 #define RB_FD_SOCKET            0x04
-#ifndef _WIN32
 #define RB_FD_PIPE              0x08
-#else
-#define RB_FD_PIPE              RB_FD_SOCKET
-#endif
 #define RB_FD_LISTEN            0x10
 #define RB_FD_SSL               0x20
 #define RB_FD_UNKNOWN           0x40
@@ -156,9 +152,6 @@ typedef enum
 {
     RB_PRNG_EGD,
     RB_PRNG_FILE,
-#ifdef _WIN32
-    RB_PRNGWIN32,
-#endif
     RB_PRNG_DEFAULT,
 } prng_seed_t;
 

@@ -166,12 +166,8 @@ get_vm_top(void)
      * offset from 0 (NULL), so the result of sbrk is cast to a size_t and
      * returned. We really shouldn't be using it here but...
      */
-#ifndef _WIN32
     void *vptr = sbrk(0);
     return (unsigned long)vptr;
-#else
-    return -1;
-#endif
 }
 
 /*
@@ -233,7 +229,6 @@ init_sys(void)
 static int
 make_daemon(void)
 {
-#ifndef _WIN32
     int pid, fd;
 
     if ((pid = fork()) < 0)
@@ -255,7 +250,6 @@ make_daemon(void)
     dup2(fd, 1);
     dup2(fd, 2);
     close(fd);
-#endif
     return 0;
 }
 
@@ -482,7 +476,6 @@ diecb(const char *buf)
     abort();
 }
 
-#ifndef _WIN32
 static int
 seed_with_urandom(void)
 {
@@ -501,7 +494,6 @@ seed_with_urandom(void)
     }
     return 0;
 }
-#endif
 
 static void
 seed_with_clock(void)
@@ -518,9 +510,7 @@ seed_random(void *unused)
     unsigned int seed;
     if (rb_get_random(&seed, sizeof(seed)) == -1)
     {
-#ifndef _WIN32
         if (!seed_with_urandom())
-#endif
             seed_with_clock();
         return;
     }
@@ -533,13 +523,11 @@ ratbox_main(int argc, char *argv[])
     char emptyname[] = "";
     int r;
     /* Check to see if the user is running us as root, which is a nono */
-#ifndef _WIN32
     if (geteuid() == 0)
     {
         fprintf(stderr, "Don't run ircd as root!!!\n");
         exit(EXIT_FAILURE);
     }
-#endif
     init_sys();
 
 
@@ -646,7 +634,7 @@ ratbox_main(int argc, char *argv[])
 
 
 
-#if defined(__CYGWIN__) || defined(_WIN32) || defined(RATBOX_PROFILE)
+#ifdef RATBOX_PROFILE
     server_state_foreground = 1;
 #endif
 

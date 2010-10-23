@@ -546,9 +546,6 @@ rb_init_prng(const char *path, prng_seed_t seed_type)
 {
     if (seed_type == RB_PRNG_DEFAULT)
     {
-#ifdef _WIN32
-        RAND_screen();
-#endif
         return RAND_status();
     }
     if (path == NULL)
@@ -564,11 +561,6 @@ rb_init_prng(const char *path, prng_seed_t seed_type)
         if (RAND_load_file(path, -1) == -1)
             return -1;
         break;
-#ifdef _WIN32
-    case RB_PRNGWIN32:
-        RAND_screen();
-        break;
-#endif
     default:
         return -1;
     }

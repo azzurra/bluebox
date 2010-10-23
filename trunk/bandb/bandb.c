@@ -218,18 +218,15 @@ error_cb(rb_helper *helper)
 	exit(1);
 }
 
-#ifndef WINDOWS
 static void
 dummy_handler(int sig)
 {
 	return;
 }
-#endif
 
 static void
 setup_signals()
 {
-#ifndef WINDOWS
 	struct sigaction act;
 
 	act.sa_flags = 0;
@@ -252,7 +249,6 @@ setup_signals()
 
 	act.sa_handler = dummy_handler;
 	sigaction(SIGALRM, &act, 0);
-#endif
 }
 
 

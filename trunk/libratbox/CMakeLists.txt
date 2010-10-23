@@ -58,7 +58,6 @@ CHECK_FUNCTION_EXISTS(writev HAVE_WRITEV)
 
 SET(ratbox_LIB_SRCS
 src/unix.c      
-src/win32.c     
 src/crypt.c     
 src/balloc.c    
 src/commio.c    

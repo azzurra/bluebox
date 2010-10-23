@@ -174,23 +174,14 @@ ilog(ilogfile dest, const char *format, ...)
     char buf2[BUFSIZE];
     va_list args;
 
-#ifndef _WIN32
-
     if (logfile == NULL)
         return;
-#endif
+
     va_start(args, format);
     rb_vsnprintf(buf, sizeof(buf), format, args);
     va_end(args);
 
     rb_snprintf(buf2, sizeof(buf2), "%s %s\n", smalldate(rb_current_time()), buf);
-#ifdef _WIN32
-    fputs(buf2, stderr);
-    fflush(stderr);
-
-    if (logfile == NULL)
-        return;
-#endif
     if (fputs(buf2, logfile) < 0)
     {
         sendto_realops_flags(UMODE_ALL, L_ALL, "Closing logfile: %s (%s)",

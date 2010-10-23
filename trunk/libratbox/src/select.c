@@ -29,15 +29,10 @@
 #include <ratbox_lib.h>
 #include <commio-int.h>
 
-#if defined(HAVE_SELECT) || defined(_WIN32)
+#ifdef HAVE_SELECT
 
-#ifdef _WIN32
-#define MY_FD_SET(x, y) FD_SET((SOCKET)x, y)
-#define MY_FD_CLR(x, y) FD_CLR((SOCKET)x, y)
-#else
 #define MY_FD_SET(x, y) FD_SET(x, y)
 #define MY_FD_CLR(x, y) FD_CLR(x, y)
-#endif
 
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
