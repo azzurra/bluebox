@@ -1,4 +1,4 @@
-trunk/build
+build
 *.swp
 *~
 .DS_Store
